@@ -25,17 +25,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build project
-        uses: game-ci/unity-builder@v2
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          targetPlatform: WebGL
-          buildsPath: builds
-          customImage: 'unityci/editor:2022.1.6f1-webgl-1'
-
       - name: Log in to the Container registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
@@ -57,4 +46,3 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-        
