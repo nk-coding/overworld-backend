@@ -1,6 +1,4 @@
-package com.example.overworldbackend.baseClasses;
-
-import org.hibernate.annotations.GeneratorType;
+package com.example.overworldbackend.data;
 
 import javax.persistence.*;
 
