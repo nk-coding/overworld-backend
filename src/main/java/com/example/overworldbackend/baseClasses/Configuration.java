@@ -1,5 +1,7 @@
 package com.example.overworldbackend.baseClasses;
 
+import org.hibernate.annotations.GeneratorType;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,14 +9,22 @@ import javax.persistence.*;
 public class Configuration {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private long id;
-    @Column(nullable = false)
+
+    @Column(nullable = false, unique = true)
+    private String staticWorldId;
+    @Column(nullable = false, unique = true)
     private String configurationString;
 
-    public Configuration(long id, String configurationString) {
-        this.id = id;
+    @Column(nullable = false)
+    private String minigameType;
+
+    public Configuration(String staticWorldId, String configurationString, String minigameType) {
+        this.staticWorldId = staticWorldId;
         this.configurationString = configurationString;
+        this.minigameType = minigameType;
     }
 
     public Configuration() {
@@ -35,5 +45,21 @@ public class Configuration {
 
     public void setConfigurationString(String configurationString) {
         this.configurationString = configurationString;
+    }
+
+    public String getStaticWorldId() {
+        return staticWorldId;
+    }
+
+    public void setStaticWorldId(String staticWorldId) {
+        this.staticWorldId = staticWorldId;
+    }
+
+    public String getMinigameType() {
+        return minigameType;
+    }
+
+    public void setMinigameType(String minigameType) {
+        this.minigameType = minigameType;
     }
 }

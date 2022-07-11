@@ -31,15 +31,12 @@ public class OverworldController {
         return overworldRepository.save(configurationToChange.get());
     }
 
-    @GetMapping("/get-configurationString-by-id/{id}")
-    public String getConfigurationString(@PathVariable Long id) {
-        /*
-        Optional<Configuration> configuration = overworldRepository.findById(id);
+    @GetMapping("/get-configurationString-by-staticWorldId/{staticWorldId}")
+    public Configuration getConfigurationString(@PathVariable String staticWorldId) {
+        Optional<Configuration> configuration = Optional.ofNullable(overworldRepository.findByStaticWorldId(staticWorldId));
         if(configuration.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no configuration with id"+ id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no configuration with id"+ staticWorldId);
         }
-        return configuration.get().getConfigurationString();
-         */
-        return "m1w1";
+        return configuration.get();
     }
 }
