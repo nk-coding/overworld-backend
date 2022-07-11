@@ -1,6 +1,6 @@
 package com.example.overworldbackend.controller;
 
-import com.example.overworldbackend.baseClasses.Configuration;
+import com.example.overworldbackend.data.Configuration;
 import com.example.overworldbackend.repositories.OverworldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
