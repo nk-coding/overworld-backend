@@ -21,7 +21,7 @@ public class OverworldController {
         return overworldRepository.save(configuration);
     }
 
-    @PutMapping("/change-minigame-config")
+    @PutMapping("/config/minigame")
     public Configuration changeConfiguration(@RequestBody Configuration configuration) {
         Optional<Configuration> configurationToChange = overworldRepository.findById(configuration.getId());
         if(configurationToChange.isEmpty()){
