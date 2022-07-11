@@ -16,7 +16,7 @@ public class OverworldController {
     @Autowired
     OverworldRepository overworldRepository;
 
-    @PostMapping("/save-minigame-config")
+    @PostMapping("/config/minigame")
     public Configuration saveConfiguration(@RequestBody Configuration configuration) {
         return overworldRepository.save(configuration);
     }
