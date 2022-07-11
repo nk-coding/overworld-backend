@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>overworld-service</artifactId>
+	<artifactId>overworld-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>overworld-backend</name>
 	<description>this is the overworld backend microservice</description>
