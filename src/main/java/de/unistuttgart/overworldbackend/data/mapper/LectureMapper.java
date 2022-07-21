@@ -1,0 +1,21 @@
+package de.unistuttgart.overworldbackend.data.mapper;
+
+import de.unistuttgart.overworldbackend.data.Dungeon;
+import de.unistuttgart.overworldbackend.data.DungeonDTO;
+import de.unistuttgart.overworldbackend.data.Lecture;
+import de.unistuttgart.overworldbackend.data.LectureDTO;
+import java.util.List;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface LectureMapper {
+  LectureDTO lectureToLectureDTO(final Lecture lecture);
+
+  Lecture lectureDTOToLecture(final LectureDTO lectureDTO);
+
+  List<LectureDTO> lecturesToLectureDTOs(final List<Lecture> lectures);
+
+  Dungeon map(final DungeonDTO dungeonDTO);
+
+  DungeonDTO map(final Dungeon dungeon);
+}
