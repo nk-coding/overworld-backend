@@ -14,8 +14,4 @@ public interface LectureMapper {
   Lecture lectureDTOToLecture(final LectureDTO lectureDTO);
 
   List<LectureDTO> lecturesToLectureDTOs(final List<Lecture> lectures);
-
-  Dungeon map(final DungeonDTO dungeonDTO);
-
-  DungeonDTO map(final Dungeon dungeon);
 }
