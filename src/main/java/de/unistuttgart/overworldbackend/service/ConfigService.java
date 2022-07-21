@@ -1,13 +1,12 @@
-package com.example.overworldbackend.service;
+package de.unistuttgart.overworldbackend.service;
 
-import com.example.overworldbackend.repositories.OverworldRepository;
+import de.unistuttgart.overworldbackend.repositories.OverworldRepository;
+import javax.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 
 @Service
 @Transactional
@@ -15,10 +14,6 @@ import javax.transaction.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConfigService {
 
-    @Autowired
-    OverworldRepository overworldRepository;
-
-
-
-
+  @Autowired
+  OverworldRepository overworldRepository;
 }
