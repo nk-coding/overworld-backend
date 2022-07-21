@@ -2,6 +2,7 @@ package de.unistuttgart.overworldbackend.controller;
 
 import de.unistuttgart.overworldbackend.data.Configuration;
 import de.unistuttgart.overworldbackend.repositories.OverworldRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+@Tag(name = "Ignore this", description = "Ignore this here in swagger documentation :/")
 @RestController
 @Slf4j
 @RequestMapping("/config")
