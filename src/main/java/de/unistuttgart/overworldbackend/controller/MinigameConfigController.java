@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/overworld/config")
+@RequestMapping("/config")
 public class MinigameConfigController {
 
   @Autowired
