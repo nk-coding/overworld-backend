@@ -1,6 +1,5 @@
 package de.unistuttgart.overworldbackend.data.config;
 
-import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;

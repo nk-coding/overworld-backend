@@ -3,7 +3,6 @@ package de.unistuttgart.overworldbackend.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
-import de.unistuttgart.overworldbackend.data.LectureDTO;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.LectureConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
@@ -12,6 +11,7 @@ import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -53,11 +53,12 @@ public class LectureService {
       );
   }
 
-  public LectureDTO updateLecture(final LectureDTO lectureDTO){
-    Lecture lecture = getLecture(lectureDTO.getId());
+  public LectureDTO updateLecture(final LectureDTO lectureDTO, final int lectureId){
+    Lecture lecture = getLecture(lectureId);
     lecture.setLectureName(lectureDTO.getLectureName());
     lecture.setDescription(lectureDTO.getDescription());
-    return lectureMapper.lectureToLectureDTO(lectureRepository.save(lecture));
+    Lecture updatedLecture = lectureRepository.save(lecture);
+    return lectureMapper.lectureToLectureDTO(updatedLecture);
   }
 
   public LectureDTO createLecture(final LectureInitialData lectureInit) {

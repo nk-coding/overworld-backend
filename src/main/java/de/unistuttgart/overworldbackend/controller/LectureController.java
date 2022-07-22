@@ -1,16 +1,17 @@
 package de.unistuttgart.overworldbackend.controller;
 
-import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.LectureDTO;
+import de.unistuttgart.overworldbackend.data.LectureInitialData;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Lecture", description = "Modify lectures")
@@ -43,6 +44,7 @@ public class LectureController {
   }
 
   @Operation(summary = "Create a lecture")
+  @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
   public LectureDTO createLecture(@RequestBody LectureInitialData lecture) {
     log.debug("create lecture {}");
@@ -53,7 +55,8 @@ public class LectureController {
   @PutMapping("/{id}")
   public LectureDTO updateLecture(@PathVariable int id, @RequestBody LectureDTO lectureDTO) {
     log.debug("update lecture {}", id);
-    return lectureService.updateLecture(lectureDTO);
+    LectureDTO lectureDTO1 = new LectureDTO();
+    return lectureService.updateLecture(lectureDTO, id);
   }
 
   @Operation(summary = "Delete a lecture by its id")
