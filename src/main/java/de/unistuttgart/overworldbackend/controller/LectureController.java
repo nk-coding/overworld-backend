@@ -52,8 +52,9 @@ public class LectureController {
 
   @Operation(summary = "Create a lecture")
   @PostMapping("")
-  public void createLecture() {
+  public LectureDTO createLecture(@RequestBody LectureInitialData lecture) {
     log.debug("create lecture {}");
+    return lectureService.createLecture(lecture);
   }
 
   @Operation(summary = "Update a lecture by its id")
