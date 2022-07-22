@@ -1,9 +1,9 @@
 package de.unistuttgart.overworldbackend.service;
 
-import de.unistuttgart.overworldbackend.data.LectureDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.LectureDTO;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.LectureConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
@@ -46,12 +46,11 @@ public class LectureService {
    * @return the found lecture
    */
   public Lecture getLecture(final int id) {
-    return
-      lectureRepository
-        .findById(id)
-        .orElseThrow(() ->
-          new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no lecture with id %s.", id))
-        );
+    return lectureRepository
+      .findById(id)
+      .orElseThrow(() ->
+        new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no lecture with id %s.", id))
+      );
   }
 
   public LectureDTO updateLecture(final LectureDTO lectureDTO){
@@ -72,6 +71,19 @@ public class LectureService {
 
     Lecture lecture = new Lecture(lectureInit.getLectureName(), lectureInit.getDescription(), worlds);
     lectureRepository.save(lecture);
+    return lectureMapper.lectureToLectureDTO(lecture);
+  }
+
+  /**
+   * Delete a lecture by its id
+   *
+   * @throws ResponseStatusException when lecture with its id does not exist
+   * @param id the lecture that should be deleted
+   * @return the deleted lecture as DTO
+   */
+  public LectureDTO deleteLecture(final int id) {
+    Lecture lecture = getLecture(id);
+    lectureRepository.delete(lecture);
     return lectureMapper.lectureToLectureDTO(lecture);
   }
 

@@ -58,7 +58,8 @@ public class LectureController {
 
   @Operation(summary = "Delete a lecture by its id")
   @DeleteMapping("/{id}")
-  public void deleteLecture(@PathVariable int id) {
+  public LectureDTO deleteLecture(@PathVariable int id) {
     log.debug("delete lecture {}", id);
+    return lectureService.deleteLecture(id);
   }
 }
