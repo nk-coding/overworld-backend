@@ -12,6 +12,7 @@ import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -59,8 +60,10 @@ class LectureControllerTest {
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of());
     world.setDungeons(Set.of());
+    Set<World> worlds = new HashSet<>();
+    worlds.add(world);
 
-    Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Set.of(world));
+    Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
     initialLecture = lectureRepository.save(lecture);
     initialLectureDTO = lectureMapper.lectureToLectureDTO(initialLecture);
 
@@ -106,7 +109,31 @@ class LectureControllerTest {
     assertEquals(initialLectureDTO, lectureDTO);
   }
 
-  
+
+  @Test
+  void updateLecture() throws Exception {
+
+    LectureDTO lectureToUpdate = new LectureDTO("Software-engineering", "Basic lecture of software engineering students", Set.of());
+
+    final String bodyValue = objectMapper.writeValueAsString(lectureToUpdate);
+
+    final MvcResult result = mvc
+            .perform(put(fullURL + "/" + initialLectureDTO.getId())
+                    .content(bodyValue)
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    final LectureDTO updatedLecture = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            LectureDTO.class
+    );
+
+    assertEquals(lectureToUpdate.getLectureName(), updatedLecture.getLectureName());
+    assertEquals(lectureToUpdate.getDescription(), updatedLecture.getDescription());
+    assertEquals(lectureToUpdate.getLectureName(),lectureRepository.getReferenceById(updatedLecture.getId()).getLectureName());
+    assertEquals(lectureToUpdate.getDescription(),lectureRepository.getReferenceById(updatedLecture.getId()).getDescription());
+  }
 
   @Test
   void deleteLecture() throws Exception {
