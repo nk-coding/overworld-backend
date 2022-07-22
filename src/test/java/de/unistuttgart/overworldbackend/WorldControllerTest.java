@@ -35,9 +35,6 @@ class WorldControllerTest {
   private LectureRepository lectureRepository;
 
   @Autowired
-  private WorldRepository worldRepository;
-
-  @Autowired
   private WorldMapper worldMapper;
 
   private final String API_URL = "/api/v1/overworld";

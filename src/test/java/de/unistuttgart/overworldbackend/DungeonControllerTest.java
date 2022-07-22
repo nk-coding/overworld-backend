@@ -35,9 +35,6 @@ class DungeonControllerTest {
   private LectureRepository lectureRepository;
 
   @Autowired
-  private WorldRepository worldRepository;
-
-  @Autowired
   private WorldMapper worldMapper;
 
   @Autowired
