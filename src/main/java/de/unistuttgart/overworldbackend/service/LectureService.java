@@ -1,24 +1,20 @@
 package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.LectureDTO;
-import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
+import de.unistuttgart.overworldbackend.data.config.LectureConfig;
+import de.unistuttgart.overworldbackend.data.config.WorldConfig;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
-import io.github.classgraph.Resource;
 import java.io.*;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
