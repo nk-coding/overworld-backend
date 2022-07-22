@@ -45,14 +45,20 @@ public class LectureService {
    * @param id the id of the lecture searching for
    * @return the found lecture
    */
-  public LectureDTO getLecture(final int id) {
-    return lectureMapper.lectureToLectureDTO(
+  public Lecture getLecture(final int id) {
+    return
       lectureRepository
         .findById(id)
         .orElseThrow(() ->
           new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no lecture with id %s.", id))
-        )
-    );
+        );
+  }
+
+  public LectureDTO updateLecture(final LectureDTO lectureDTO){
+    Lecture lecture = getLecture(lectureDTO.getId());
+    lecture.setLectureName(lectureDTO.getLectureName());
+    lecture.setDescription(lectureDTO.getDescription());
+    return lectureMapper.lectureToLectureDTO(lectureRepository.save(lecture));
   }
 
   public LectureDTO createLecture(final LectureInitialData lectureInit) {

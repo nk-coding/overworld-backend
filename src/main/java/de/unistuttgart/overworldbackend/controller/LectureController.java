@@ -32,14 +32,6 @@ public class LectureController {
   @GetMapping("")
   public List<LectureDTO> getLectures() {
     log.debug("get lectures");
-    NPC npc = new NPC("location", "text");
-    NPC npcDungeon = new NPC("locationDungeon", "textDungeon");
-    MinigameTask task = new MinigameTask("location", "moorhuhn", UUID.randomUUID());
-    MinigameTask taskDungeon = new MinigameTask("locationDungeon", "moorhuhn", UUID.randomUUID());
-    Dungeon dungeon = new Dungeon("dungeon name", "topic name", true, Set.of(taskDungeon), Set.of(npcDungeon));
-    World world = new World("static name", "other name", true, Set.of(task), Set.of(npc), Set.of(dungeon));
-    Lecture lecture = new Lecture("name", "description", Set.of(world));
-    lectureRepository.save(lecture);
     return lectureMapper.lecturesToLectureDTOs(lectureRepository.findAll());
   }
 
@@ -47,7 +39,7 @@ public class LectureController {
   @GetMapping("/{id}")
   public LectureDTO getLecture(@PathVariable int id) {
     log.debug("get lecture {}", id);
-    return lectureService.getLecture(id);
+    return lectureMapper.lectureToLectureDTO(lectureService.getLecture(id));
   }
 
   @Operation(summary = "Create a lecture")
@@ -59,8 +51,9 @@ public class LectureController {
 
   @Operation(summary = "Update a lecture by its id")
   @PutMapping("/{id}")
-  public void updateLecture(@PathVariable int id) {
+  public LectureDTO updateLecture(@PathVariable int id, @RequestBody LectureDTO lectureDTO) {
     log.debug("update lecture {}", id);
+    return lectureService.updateLecture(lectureDTO);
   }
 
   @Operation(summary = "Delete a lecture by its id")
