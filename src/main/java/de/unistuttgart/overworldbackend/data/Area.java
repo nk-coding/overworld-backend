@@ -29,11 +29,14 @@ public abstract class Area {
 
   boolean active;
 
-  @OneToMany
+  @OneToMany(cascade = CascadeType.ALL)
   Set<MinigameTask> minigameTasks;
 
-  @OneToMany
+  @OneToMany(cascade = CascadeType.ALL)
   Set<NPC> npcs;
+
+  @ManyToOne
+  Lecture lecture;
 
   public Area(
     String staticName,

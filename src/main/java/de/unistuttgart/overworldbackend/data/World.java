@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class World extends Area {
 
-  @OneToMany
+  @OneToMany(cascade = CascadeType.ALL)
   Set<Dungeon> dungeons;
 
   public World(

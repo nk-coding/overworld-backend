@@ -1,8 +1,6 @@
 package de.unistuttgart.overworldbackend.controller;
 
-import de.unistuttgart.overworldbackend.data.Lecture;
-import de.unistuttgart.overworldbackend.data.LectureDTO;
-import de.unistuttgart.overworldbackend.data.World;
+import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.service.LectureService;
@@ -10,6 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +33,12 @@ public class LectureController {
   @GetMapping("")
   public List<LectureDTO> getLectures() {
     log.debug("get lectures");
-    World world = new World("static name", "other name", true, Set.of(), Set.of(), Set.of());
+    NPC npc = new NPC("location","text");
+    NPC npcDungeon = new NPC("locationDungeon","textDungeon");
+    MinigameTask task = new MinigameTask("location", "moorhuhn", UUID.randomUUID());
+    MinigameTask taskDungeon = new MinigameTask("locationDungeon", "moorhuhn", UUID.randomUUID());
+    Dungeon dungeon = new Dungeon("dungeon name", "topic name", true, Set.of(taskDungeon), Set.of(npcDungeon));
+    World world = new World("static name", "other name", true, Set.of(task), Set.of(npc), Set.of(dungeon));
     Lecture lecture = new Lecture("name", "description", Set.of(world));
     lectureRepository.save(lecture);
     return lectureMapper.lecturesToLectureDTOs(lectureRepository.findAll());
