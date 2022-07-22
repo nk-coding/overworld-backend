@@ -29,6 +29,9 @@ jobs:
           - 5432:5432
 
     steps:
+      - name: Sleep for 5 seconds
+        run: sleep 5s
+        shell: bash
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
