@@ -23,10 +23,10 @@ public class World extends Area {
     String topicName,
     boolean active,
     Set<MinigameTask> minigameTasks,
-    Set<NPCTask> npcTasks,
+    Set<NPC> npcs,
     Set<Dungeon> dungeons
   ) {
-    super(staticName, topicName, active, minigameTasks, npcTasks);
+    super(staticName, topicName, active, minigameTasks, npcs);
     this.dungeons = dungeons;
   }
 }

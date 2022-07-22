@@ -2,7 +2,6 @@ package de.unistuttgart.overworldbackend.data;
 
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,5 +27,5 @@ public class AreaDTO {
   boolean active;
 
   Set<MinigameTaskDTO> minigameTasks;
-  Set<NPCTaskDTO> npcTasks;
+  Set<NPCDTO> npcs;
 }

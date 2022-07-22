@@ -33,19 +33,19 @@ public abstract class Area {
   Set<MinigameTask> minigameTasks;
 
   @OneToMany
-  Set<NPCTask> npcTasks;
+  Set<NPC> npcs;
 
   public Area(
     String staticName,
     String topicName,
     boolean active,
     Set<MinigameTask> minigameTasks,
-    Set<NPCTask> npcTasks
+    Set<NPC> npcs
   ) {
     this.staticName = staticName;
     this.topicName = topicName;
     this.active = active;
     this.minigameTasks = minigameTasks;
-    this.npcTasks = npcTasks;
+    this.npcs = npcs;
   }
 }

@@ -1,12 +1,12 @@
 package de.unistuttgart.overworldbackend.data.mapper;
 
-import de.unistuttgart.overworldbackend.data.NPCTask;
-import de.unistuttgart.overworldbackend.data.NPCTaskDTO;
+import de.unistuttgart.overworldbackend.data.NPC;
+import de.unistuttgart.overworldbackend.data.NPCDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface NPCTaskMapper {
-  NPCTaskDTO NPCTaskToNPCTaskDTO(final NPCTask npcTask);
+  NPCDTO NPCTaskToNPCTaskDTO(final NPC npc);
 
-  NPCTask NPCTaskDTOToNPCTask(final NPCTaskDTO npcTaskDTO);
+  NPC NPCTaskDTOToNPCTask(final NPCDTO npcDTO);
 }
