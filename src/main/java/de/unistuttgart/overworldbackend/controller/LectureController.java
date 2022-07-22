@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +32,8 @@ public class LectureController {
   @GetMapping("")
   public List<LectureDTO> getLectures() {
     log.debug("get lectures");
-    NPC npc = new NPC("location","text");
-    NPC npcDungeon = new NPC("locationDungeon","textDungeon");
+    NPC npc = new NPC("location", "text");
+    NPC npcDungeon = new NPC("locationDungeon", "textDungeon");
     MinigameTask task = new MinigameTask("location", "moorhuhn", UUID.randomUUID());
     MinigameTask taskDungeon = new MinigameTask("locationDungeon", "moorhuhn", UUID.randomUUID());
     Dungeon dungeon = new Dungeon("dungeon name", "topic name", true, Set.of(taskDungeon), Set.of(npcDungeon));

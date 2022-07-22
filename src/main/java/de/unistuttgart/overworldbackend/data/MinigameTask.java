@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,10 +25,11 @@ public class MinigameTask {
   String location;
   String game;
   UUID configurationId;
+
   @ManyToOne
   Lecture lecture;
 
-  public MinigameTask(String location, String game, UUID configurationId){
+  public MinigameTask(String location, String game, UUID configurationId) {
     this.location = location;
     this.game = game;
     this.configurationId = configurationId;
