@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,10 +24,11 @@ public class NPC {
 
   String startLocation;
   String text;
+
   @ManyToOne
   Lecture lecture;
 
-  public NPC(String startLocation, String text){
+  public NPC(String startLocation, String text) {
     this.startLocation = startLocation;
     this.text = text;
   }

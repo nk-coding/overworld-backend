@@ -38,13 +38,7 @@ public abstract class Area {
   @ManyToOne
   Lecture lecture;
 
-  public Area(
-    String staticName,
-    String topicName,
-    boolean active,
-    Set<MinigameTask> minigameTasks,
-    Set<NPC> npcs
-  ) {
+  public Area(String staticName, String topicName, boolean active, Set<MinigameTask> minigameTasks, Set<NPC> npcs) {
     this.staticName = staticName;
     this.topicName = topicName;
     this.active = active;
