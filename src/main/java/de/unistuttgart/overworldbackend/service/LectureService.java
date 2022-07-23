@@ -11,7 +11,6 @@ import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,7 @@ public class LectureService {
       );
   }
 
-  public LectureDTO updateLecture(final LectureDTO lectureDTO, final int lectureId){
+  public LectureDTO updateLecture(final LectureDTO lectureDTO, final int lectureId) {
     Lecture lecture = getLecture(lectureId);
     lecture.setLectureName(lectureDTO.getLectureName());
     lecture.setDescription(lectureDTO.getDescription());

@@ -15,9 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class DungeonService {
 
   @Autowired
-  private WorldService worldService;
-
-  @Autowired
   private DungeonRepository dungeonRepository;
 
   @Autowired
@@ -31,9 +28,9 @@ public class DungeonService {
    * @param dungeonId the id of the dungeon searching for
    * @return the found dungeon object
    */
-  private Dungeon getDungeonFromLectureOrThrowNotFound(final int lectureId, final UUID dungeonId) {
+  private Dungeon getDungeonFromLectureOrThrowNotFound(final int lectureId, final UUID worldId, final UUID dungeonId) {
     return dungeonRepository
-      .findByIdAndLectureId(dungeonId, lectureId)
+      .findByIdAndLectureIdAndWorldId(dungeonId, lectureId, worldId)
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
@@ -51,7 +48,7 @@ public class DungeonService {
    * @return a list of dungeons as DTO
    */
   public Set<DungeonDTO> getDungeonsFromLectureAndWorld(final int lectureId, final UUID worldId) {
-    return worldService.getWorldFromLecture(lectureId, worldId).getDungeons();
+    return dungeonMapper.dungeonsToDungeonDTOs(dungeonRepository.findAllByLectureIdAndWorldId(lectureId, worldId));
   }
 
   /**
@@ -64,7 +61,7 @@ public class DungeonService {
    * @return the found dungeon as DTO
    */
   public DungeonDTO getDungeonFromLectureAndWorld(final int lectureId, final UUID worldId, final UUID dungeonId) {
-    return dungeonMapper.dungeonToDungeonDTO(getDungeonFromLectureOrThrowNotFound(lectureId, dungeonId));
+    return dungeonMapper.dungeonToDungeonDTO(getDungeonFromLectureOrThrowNotFound(lectureId, worldId, dungeonId));
   }
 
   /**
@@ -85,7 +82,7 @@ public class DungeonService {
     final UUID dungeonId,
     final DungeonDTO dungeonDTO
   ) {
-    final Dungeon dungeon = getDungeonFromLectureOrThrowNotFound(lectureId, dungeonId);
+    final Dungeon dungeon = getDungeonFromLectureOrThrowNotFound(lectureId, worldId, dungeonId);
     dungeon.setTopicName(dungeonDTO.getTopicName());
     dungeon.setActive(dungeonDTO.isActive());
     final Dungeon updatedDungeon = dungeonRepository.save(dungeon);

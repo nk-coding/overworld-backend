@@ -11,10 +11,9 @@ import de.unistuttgart.overworldbackend.data.LectureInitialData;
 import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
-
 import java.util.HashSet;
 import java.util.Set;
-
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -24,8 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import javax.transaction.Transactional;
 
 @AutoConfigureMockMvc
 @Transactional
@@ -78,13 +75,13 @@ class LectureControllerTest {
   @Test
   void getLecture() throws Exception {
     final MvcResult result = mvc
-            .perform(get(fullURL + "/" + initialLectureDTO.getId()).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(get(fullURL + "/" + initialLectureDTO.getId()).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
 
     final LectureDTO lectureDTOResult = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            LectureDTO.class
+      result.getResponse().getContentAsString(),
+      LectureDTO.class
     );
 
     assertEquals(initialLectureDTO, lectureDTOResult);
@@ -93,15 +90,11 @@ class LectureControllerTest {
 
   @Test
   void getLectures() throws Exception {
-    final MvcResult result = mvc
-            .perform(get(fullURL))
-            .andExpect(status().isOk())
-            .andReturn();
+    final MvcResult result = mvc.perform(get(fullURL)).andExpect(status().isOk()).andReturn();
 
-    final Set<LectureDTO> lectureDTOResult = Set.of(objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            LectureDTO[].class
-    ));
+    final Set<LectureDTO> lectureDTOResult = Set.of(
+      objectMapper.readValue(result.getResponse().getContentAsString(), LectureDTO[].class)
+    );
 
     final LectureDTO lectureDTO = lectureDTOResult.stream().findFirst().get();
     assertSame(1, lectureDTOResult.size());
@@ -109,30 +102,38 @@ class LectureControllerTest {
     assertEquals(initialLectureDTO, lectureDTO);
   }
 
-
   @Test
   void updateLecture() throws Exception {
-
-    LectureDTO lectureToUpdate = new LectureDTO("Software-engineering", "Basic lecture of software engineering students", Set.of());
+    LectureDTO lectureToUpdate = new LectureDTO(
+      "Software-engineering",
+      "Basic lecture of software engineering students",
+      Set.of()
+    );
 
     final String bodyValue = objectMapper.writeValueAsString(lectureToUpdate);
 
     final MvcResult result = mvc
-            .perform(put(fullURL + "/" + initialLectureDTO.getId())
-                    .content(bodyValue)
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(
+        put(fullURL + "/" + initialLectureDTO.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
 
     final LectureDTO updatedLecture = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            LectureDTO.class
+      result.getResponse().getContentAsString(),
+      LectureDTO.class
     );
 
     assertEquals(lectureToUpdate.getLectureName(), updatedLecture.getLectureName());
     assertEquals(lectureToUpdate.getDescription(), updatedLecture.getDescription());
-    assertEquals(lectureToUpdate.getLectureName(),lectureRepository.getReferenceById(updatedLecture.getId()).getLectureName());
-    assertEquals(lectureToUpdate.getDescription(),lectureRepository.getReferenceById(updatedLecture.getId()).getDescription());
+    assertEquals(
+      lectureToUpdate.getLectureName(),
+      lectureRepository.getReferenceById(updatedLecture.getId()).getLectureName()
+    );
+    assertEquals(
+      lectureToUpdate.getDescription(),
+      lectureRepository.getReferenceById(updatedLecture.getId()).getDescription()
+    );
   }
 
   @Test
@@ -154,24 +155,28 @@ class LectureControllerTest {
 
   @Test
   void createLecture() throws Exception {
-    final LectureInitialData toCreateLecture = new LectureInitialData("testName","testDescription");
+    final LectureInitialData toCreateLecture = new LectureInitialData("testName", "testDescription");
     final String bodyValue = objectMapper.writeValueAsString(toCreateLecture);
 
     final MvcResult result = mvc
-            .perform(post(fullURL)
-                    .content(bodyValue)
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated())
-            .andReturn();
+      .perform(post(fullURL).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isCreated())
+      .andReturn();
 
     final LectureDTO createdLecture = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            LectureDTO.class
+      result.getResponse().getContentAsString(),
+      LectureDTO.class
     );
 
-    assertEquals(toCreateLecture.getLectureName(),createdLecture.getLectureName());
-    assertEquals(toCreateLecture.getDescription(),createdLecture.getDescription());
-    assertEquals(createdLecture.getLectureName(),lectureRepository.getReferenceById(createdLecture.getId()).getLectureName());
-    assertEquals(createdLecture.getDescription(),lectureRepository.getReferenceById(createdLecture.getId()).getDescription());
+    assertEquals(toCreateLecture.getLectureName(), createdLecture.getLectureName());
+    assertEquals(toCreateLecture.getDescription(), createdLecture.getDescription());
+    assertEquals(
+      createdLecture.getLectureName(),
+      lectureRepository.getReferenceById(createdLecture.getId()).getLectureName()
+    );
+    assertEquals(
+      createdLecture.getDescription(),
+      lectureRepository.getReferenceById(createdLecture.getId()).getDescription()
+    );
   }
 }

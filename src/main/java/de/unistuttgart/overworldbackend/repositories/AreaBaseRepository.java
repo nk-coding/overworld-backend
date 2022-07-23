@@ -6,5 +6,5 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AreaBaseRepository<T extends Area> extends JpaRepository<T, UUID> {
-  Optional<Area> findByIdAndLectureId(UUID id, int lecture_id);
+  Optional<Area> findByIdAndLectureId(UUID id, int lectureId);
 }

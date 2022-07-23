@@ -7,7 +7,9 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DungeonRepository extends JpaRepository<Dungeon, UUID> {
-  Optional<Dungeon> findByIdAndLectureId(UUID id, int lecture_id);
+  Optional<Dungeon> findByIdAndLectureId(UUID id, int lectureId);
+  Optional<Dungeon> findByIdAndLectureIdAndWorldId(UUID id, int lectureId, UUID worldId);
 
-  Set<Dungeon> findAllByLectureId(int lecture_id);
+  Set<Dungeon> findAllByLectureId(int lectureId);
+  Set<Dungeon> findAllByLectureIdAndWorldId(int lectureId, UUID worldId);
 }

@@ -41,13 +41,12 @@ public class Lecture {
       world.setLecture(this);
       world.getMinigameTasks().forEach(minigameTask -> minigameTask.setLecture(this));
       world.getNpcs().forEach(npc -> npc.setLecture(this));
-      world
-        .getDungeons()
-        .forEach(dungeon -> {
-          dungeon.setLecture(this);
-          dungeon.getMinigameTasks().forEach(minigameTask -> minigameTask.setLecture(this));
-          dungeon.getNpcs().forEach(npc -> npc.setLecture(this));
-        });
+      for (Dungeon dungeon : world.getDungeons()) {
+        dungeon.setWorld(world);
+        dungeon.setLecture(this);
+        dungeon.getMinigameTasks().forEach(minigameTask -> minigameTask.setLecture(this));
+        dungeon.getNpcs().forEach(npc -> npc.setLecture(this));
+      }
     });
   }
 }

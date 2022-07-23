@@ -24,6 +24,7 @@ public class LectureDTO {
   String description;
 
   Set<WorldDTO> worlds;
+
   public LectureDTO(String lectureName, String description, Set<WorldDTO> worlds) {
     this.lectureName = lectureName;
     this.description = description;
