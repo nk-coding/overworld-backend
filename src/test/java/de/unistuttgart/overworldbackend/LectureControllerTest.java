@@ -5,14 +5,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.unistuttgart.overworldbackend.data.Lecture;
-import de.unistuttgart.overworldbackend.data.LectureDTO;
-import de.unistuttgart.overworldbackend.data.LectureInitialData;
-import de.unistuttgart.overworldbackend.data.World;
+import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,14 +47,22 @@ class LectureControllerTest {
   public void createBasicData() {
     lectureRepository.deleteAll();
 
+    Dungeon dungeon = new Dungeon();
+    dungeon.setStaticName("Dark Dungeon");
+    dungeon.setTopicName("Dark UML");
+    dungeon.setActive(true);
+    dungeon.setMinigameTasks(Set.of());
+    dungeon.setNpcs(Set.of());
+    List<Dungeon> dungeons = new ArrayList<>();
+
     World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of());
-    world.setDungeons(Set.of());
-    Set<World> worlds = new HashSet<>();
+    world.setDungeons(dungeons);
+    List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
     Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
@@ -107,7 +112,7 @@ class LectureControllerTest {
     LectureDTO lectureToUpdate = new LectureDTO(
       "Software-engineering",
       "Basic lecture of software engineering students",
-      Set.of()
+            Arrays.asList()
     );
 
     final String bodyValue = objectMapper.writeValueAsString(lectureToUpdate);

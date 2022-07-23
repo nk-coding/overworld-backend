@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import javax.persistence.*;
@@ -27,9 +28,9 @@ public class Lecture {
   String description;
 
   @OneToMany(cascade = CascadeType.ALL)
-  Set<World> worlds;
+  List<World> worlds;
 
-  public Lecture(String lectureName, String description, Set<World> worlds) {
+  public Lecture(String lectureName, String description, List<World> worlds) {
     this.lectureName = lectureName;
     this.description = description;
     this.worlds = worlds;

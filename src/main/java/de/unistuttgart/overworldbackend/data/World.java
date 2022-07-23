@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 import lombok.AccessLevel;
@@ -16,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 public class World extends Area {
 
   @OneToMany(cascade = CascadeType.ALL)
-  Set<Dungeon> dungeons;
+  List<Dungeon> dungeons;
 
   public World(
     String staticName,
@@ -24,7 +25,7 @@ public class World extends Area {
     boolean active,
     Set<MinigameTask> minigameTasks,
     Set<NPC> npcs,
-    Set<Dungeon> dungeons
+    List<Dungeon> dungeons
   ) {
     super(staticName, topicName, active, minigameTasks, npcs);
     this.dungeons = dungeons;

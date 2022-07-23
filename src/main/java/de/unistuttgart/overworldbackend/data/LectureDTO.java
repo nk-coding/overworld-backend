@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.List;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -23,9 +24,9 @@ public class LectureDTO {
 
   String description;
 
-  Set<WorldDTO> worlds;
+  List<WorldDTO> worlds;
 
-  public LectureDTO(String lectureName, String description, Set<WorldDTO> worlds) {
+  public LectureDTO(String lectureName, String description, List<WorldDTO> worlds) {
     this.lectureName = lectureName;
     this.description = description;
     this.worlds = worlds;

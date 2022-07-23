@@ -79,7 +79,7 @@ public class LectureService {
    * @return the created lecture as DTO with all its generated worlds, dungeons, minigame tasks and npcs
    */
   public LectureDTO createLecture(final LectureInitialData lectureInit) {
-    Set<World> worlds = new HashSet<>();
+    List<World> worlds = new ArrayList<>();
     AtomicInteger worldId = new AtomicInteger(0);
     configLecture
       .getWorlds()
@@ -105,10 +105,11 @@ public class LectureService {
     return lectureMapper.lectureToLectureDTO(lecture);
   }
 
-  private void configureWorld(Set<World> worlds, int worldId, WorldConfig worldConfig) {
+
+  private void configureWorld(List<World> worlds, int worldId, WorldConfig worldConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
-    Set<Dungeon> dungeons = new HashSet<>();
+    List<Dungeon> dungeons = new ArrayList<>();
     AtomicInteger dungeonId = new AtomicInteger(0);
     worldConfig
       .getDungeons()

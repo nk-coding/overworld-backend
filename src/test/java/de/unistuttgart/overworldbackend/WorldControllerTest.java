@@ -11,6 +11,8 @@ import de.unistuttgart.overworldbackend.data.WorldDTO;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.repositories.WorldRepository;
+
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,9 +57,9 @@ class WorldControllerTest {
     world.setActive(true);
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of());
-    world.setDungeons(Set.of());
+    world.setDungeons(Arrays.asList());
 
-    Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Set.of(world));
+    Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
     initialLecture = lectureRepository.save(lecture);
     initialWorld = initialLecture.getWorlds().stream().findFirst().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
