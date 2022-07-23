@@ -42,7 +42,7 @@ public class PlayerTaskStatisticService {
     List<PlayerTaskStatistic> statisticList = playerTaskStatisticRepository
       .findPlayerTaskStatisticByLectureId(lectureId)
       .stream()
-      .filter(playerTaskStatistic -> playerTaskStatistic.getPlayerstatistic().getPlayerId().equals(playerId))
+      .filter(playerTaskStatistic -> playerTaskStatistic.getPlayerstatistic().getUserId().equals(playerId))
       .collect(Collectors.toList());
     return playerTaskStatisticMapper.playerTaskStatisticsToPlayerTaskStatisticDTO(statisticList);
   }
@@ -52,7 +52,7 @@ public class PlayerTaskStatisticService {
     if (
       statistic.isEmpty() ||
       statistic.get().getLecture().getId() != lectureId ||
-      statistic.get().getPlayerstatistic().getPlayerId().equals(playerId)
+      statistic.get().getPlayerstatistic().getUserId().equals(playerId)
     ) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Statistic not found");
     }
@@ -70,7 +70,7 @@ public class PlayerTaskStatisticService {
     Lecture lecture = minigameTask.get().getLecture();
     Optional<Playerstatistic> playerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
       lecture.getId(),
-      data.getPlayerId()
+      data.getUserId()
     );
     if (playerstatistic.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player not found");
@@ -104,7 +104,7 @@ public class PlayerTaskStatisticService {
     actionLog.setPlayerTaskStatistic(currentPlayerTaskStatistic);
     actionLog.setLecture(lecture);
     actionLog.setDate(new Date());
-    actionLog.setScore(completedScore);
+    actionLog.setScore(data.getScore());
     actionLog.setCurrentHighscore(currentPlayerTaskStatistic.getHighscore());
     actionLog.setGainedKnowledge(gainedKnowledge);
     actionLog.setGame(data.getGame());

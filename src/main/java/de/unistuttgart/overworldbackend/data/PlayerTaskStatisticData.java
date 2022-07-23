@@ -27,5 +27,5 @@ public class PlayerTaskStatisticData {
   long score;
 
   @NotNull
-  String playerId;
+  String userId;
 }

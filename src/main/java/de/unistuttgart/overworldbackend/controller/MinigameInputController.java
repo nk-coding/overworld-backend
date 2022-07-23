@@ -23,7 +23,7 @@ public class MinigameInputController {
   @Operation(summary = "Input Data from a minigame")
   @PostMapping("/submit-game-pass")
   public PlayerTaskStatisticDTO inputData(@RequestBody PlayerTaskStatisticData data) {
-    log.debug("submittet data");
+    log.debug("submitted data {}", data);
     return playerTaskStatisticService.submitData(data);
   }
 }

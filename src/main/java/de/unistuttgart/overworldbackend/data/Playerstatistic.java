@@ -39,8 +39,6 @@ public class Playerstatistic {
   @NotNull
   String username;
 
-  String playerId;
-
   long knowledge = 0;
 
   public void addKnowledge(long gainedKnowledge) {
