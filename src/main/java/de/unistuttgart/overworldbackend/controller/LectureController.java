@@ -54,7 +54,6 @@ public class LectureController {
   @PutMapping("/{id}")
   public LectureDTO updateLecture(@PathVariable int id, @RequestBody LectureDTO lectureDTO) {
     log.debug("update lecture {}", id);
-    LectureDTO lectureDTO1 = new LectureDTO();
     return lectureService.updateLecture(id, lectureDTO);
   }
 

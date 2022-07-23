@@ -5,8 +5,8 @@ import de.unistuttgart.overworldbackend.data.NPCDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface NPCTaskMapper {
-  NPCDTO NPCTaskToNPCTaskDTO(final NPC npc);
+public interface NPCMapper {
+  NPCDTO npcToNPCDTO(final NPC npc);
 
-  NPC NPCTaskDTOToNPCTask(final NPCDTO npcDTO);
+  NPC npcDTOToNPC(final NPCDTO npcDTO);
 }

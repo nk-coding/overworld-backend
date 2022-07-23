@@ -12,7 +12,6 @@ import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.repositories.WorldRepository;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
@@ -61,17 +60,17 @@ class MinigameTaskControllerTest {
   public void createBasicData() {
     lectureRepository.deleteAll();
 
-    MinigameTask minigameTask1 = new MinigameTask();
+    final MinigameTask minigameTask1 = new MinigameTask();
     minigameTask1.setConfigurationId(UUID.randomUUID());
     minigameTask1.setGame("Bugfinder");
     minigameTask1.setLocation("w1-p1");
 
-    MinigameTask minigameTask2 = new MinigameTask();
+    final MinigameTask minigameTask2 = new MinigameTask();
     minigameTask2.setConfigurationId(UUID.randomUUID());
     minigameTask2.setGame("Moorhuhn");
     minigameTask2.setLocation("w1-p2");
 
-    World world = new World();
+    final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
@@ -79,7 +78,7 @@ class MinigameTaskControllerTest {
     world.setNpcs(Set.of());
     world.setDungeons(Arrays.asList());
 
-    Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
+    final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
     initialLecture = lectureRepository.save(lecture);
 
     initialWorld = initialLecture.getWorlds().stream().findFirst().get();

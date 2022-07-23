@@ -81,11 +81,7 @@ public class LectureService {
   public LectureDTO createLecture(final LectureInitialData lectureInit) {
     List<World> worlds = new ArrayList<>();
     AtomicInteger worldId = new AtomicInteger(0);
-    configLecture
-      .getWorlds()
-      .forEach(worldConfig ->
-        configureWorld(worlds, worldId.getAndIncrement(), worldConfig)
-      );
+    configLecture.getWorlds().forEach(worldConfig -> configureWorld(worlds, worldId.getAndIncrement(), worldConfig));
 
     Lecture lecture = new Lecture(lectureInit.getLectureName(), lectureInit.getDescription(), worlds);
     lectureRepository.save(lecture);
@@ -105,7 +101,6 @@ public class LectureService {
     return lectureMapper.lectureToLectureDTO(lecture);
   }
 
-
   private void configureWorld(List<World> worlds, int worldId, WorldConfig worldConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
@@ -113,9 +108,7 @@ public class LectureService {
     AtomicInteger dungeonId = new AtomicInteger(0);
     worldConfig
       .getDungeons()
-      .forEach(dungeonConfig ->
-        dungeons.add(configureDungeon(worldId, dungeonId.incrementAndGet(), dungeonConfig))
-      );
+      .forEach(dungeonConfig -> dungeons.add(configureDungeon(worldId, dungeonId.incrementAndGet(), dungeonConfig)));
     for (int minigameId = 0; minigameId < worldConfig.getNumberOfMinigames(); minigameId++) {
       MinigameTask minigame = new MinigameTask("w" + worldId + "g" + minigameId, "empty", null);
       minigames.add(minigame);

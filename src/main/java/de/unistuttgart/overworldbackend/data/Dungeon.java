@@ -3,7 +3,6 @@ package de.unistuttgart.overworldbackend.data;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.builder.EqualsExclude;

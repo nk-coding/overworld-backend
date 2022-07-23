@@ -11,7 +11,6 @@ import de.unistuttgart.overworldbackend.data.WorldDTO;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.repositories.WorldRepository;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
@@ -51,7 +50,7 @@ class WorldControllerTest {
   public void createBasicData() {
     lectureRepository.deleteAll();
 
-    World world = new World();
+    final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
@@ -59,7 +58,7 @@ class WorldControllerTest {
     world.setNpcs(Set.of());
     world.setDungeons(Arrays.asList());
 
-    Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
+    final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
     initialLecture = lectureRepository.save(lecture);
     initialWorld = initialLecture.getWorlds().stream().findFirst().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);

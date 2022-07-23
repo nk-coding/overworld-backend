@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
-
 import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,15 +46,15 @@ class LectureControllerTest {
   public void createBasicData() {
     lectureRepository.deleteAll();
 
-    Dungeon dungeon = new Dungeon();
+    final Dungeon dungeon = new Dungeon();
     dungeon.setStaticName("Dark Dungeon");
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
     dungeon.setNpcs(Set.of());
-    List<Dungeon> dungeons = new ArrayList<>();
+    final List<Dungeon> dungeons = new ArrayList<>();
 
-    World world = new World();
+    final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
@@ -65,7 +64,7 @@ class LectureControllerTest {
     List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
-    Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
+    final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
     initialLecture = lectureRepository.save(lecture);
     initialLectureDTO = lectureMapper.lectureToLectureDTO(initialLecture);
 
@@ -109,11 +108,9 @@ class LectureControllerTest {
 
   @Test
   void updateLecture() throws Exception {
-    LectureDTO lectureToUpdate = new LectureDTO(
-      "Software-engineering",
-      "Basic lecture of software engineering students",
-            Arrays.asList()
-    );
+    LectureDTO lectureToUpdate = new LectureDTO();
+    lectureToUpdate.setLectureName("Software-engineering");
+    lectureToUpdate.setDescription("Basic lecture of software engineering students");
 
     final String bodyValue = objectMapper.writeValueAsString(lectureToUpdate);
 
