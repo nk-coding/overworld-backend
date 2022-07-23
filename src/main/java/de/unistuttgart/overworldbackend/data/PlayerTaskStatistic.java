@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
@@ -31,7 +32,7 @@ public class PlayerTaskStatistic {
   @ManyToOne
   Lecture lecture;
 
-  long highscore;
+  long highscore = 0;
 
-  boolean completed;
+  boolean completed = false;
 }
