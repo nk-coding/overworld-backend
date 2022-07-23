@@ -160,10 +160,40 @@ class MinigameInputControllerTest {
     assertNotNull(actionLog);
     assertEquals(playerTaskStatisticData.getGame(), actionLog.getGame());
     assertEquals(playerTaskStatisticData.getConfigurationId(), actionLog.getConfigurationId());
+    assertEquals(playerTaskStatisticData.getScore(), actionLog.getScore());
     assertEquals(
       playerTaskStatisticData.getUserId(),
       actionLog.getPlayerTaskStatistic().getPlayerstatistic().getUserId()
     );
-    assertEquals(playerTaskStatisticData.getScore(), actionLog.getScore());
+  }
+
+  @Test
+  void submitGameData_PlayerDoesNotExist_ThrowNotFound() throws Exception {
+    PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    playerTaskStatisticData.setUserId(UUID.randomUUID().toString());
+    playerTaskStatisticData.setGame(initialMinigameTask.getGame());
+    playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
+    playerTaskStatisticData.setScore(80);
+
+    final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+
+    mvc
+      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
+    PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
+    playerTaskStatisticData.setGame(UUID.randomUUID().toString());
+    playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
+    playerTaskStatisticData.setScore(80);
+
+    final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+
+    mvc
+      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isNotFound());
   }
 }
