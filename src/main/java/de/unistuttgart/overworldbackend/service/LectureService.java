@@ -52,7 +52,17 @@ public class LectureService {
       );
   }
 
-  public LectureDTO updateLecture(final LectureDTO lectureDTO, final int lectureId) {
+  /**
+   * Update a lecture by its id.
+   *
+   * Only the lecture name and description is updatable.
+   *
+   * @throws ResponseStatusException if lecture, world or dungeon by its id do not exist
+   * @param lectureId the id of the lecture thath should get updated
+   * @param lectureDTO the updated parameters
+   * @return the updated lecture as DTO
+   */
+  public LectureDTO updateLecture(final int lectureId, final LectureDTO lectureDTO) {
     Lecture lecture = getLecture(lectureId);
     lecture.setLectureName(lectureDTO.getLectureName());
     lecture.setDescription(lectureDTO.getDescription());
@@ -60,14 +70,22 @@ public class LectureService {
     return lectureMapper.lectureToLectureDTO(updatedLecture);
   }
 
+  /**
+   * Create a lecture with initial data.
+   *
+   * Creates a lecture with pre generated worlds, dungeons, minigame tasks and npcs.
+   *
+   * @param lectureInit the initial data with the lecture should be created with
+   * @return the created lecture as DTO with all its generated worlds, dungeons, minigame tasks and npcs
+   */
   public LectureDTO createLecture(final LectureInitialData lectureInit) {
     Set<World> worlds = new HashSet<>();
-    AtomicInteger i = new AtomicInteger(0);
+    AtomicInteger worldId = new AtomicInteger(0);
     configLecture
       .getWorlds()
-      .forEach(worldConfig -> {
-        configureWorld(worlds, i.getAndIncrement(), worldConfig);
-      });
+      .forEach(worldConfig ->
+        configureWorld(worlds, worldId.getAndIncrement(), worldConfig)
+      );
 
     Lecture lecture = new Lecture(lectureInit.getLectureName(), lectureInit.getDescription(), worlds);
     lectureRepository.save(lecture);
@@ -87,39 +105,39 @@ public class LectureService {
     return lectureMapper.lectureToLectureDTO(lecture);
   }
 
-  private void configureWorld(Set<World> worlds, int i, WorldConfig worldConfig) {
+  private void configureWorld(Set<World> worlds, int worldId, WorldConfig worldConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
     Set<Dungeon> dungeons = new HashSet<>();
-    AtomicInteger j = new AtomicInteger(0);
+    AtomicInteger dungeonId = new AtomicInteger(0);
     worldConfig
       .getDungeons()
-      .forEach(dungeonConfig -> {
-        dungeons.add(configureDungeon(i, j.incrementAndGet(), dungeonConfig));
-      });
-    for (int k = 0; k < worldConfig.getNumberOfMinigames(); k++) {
-      MinigameTask minigame = new MinigameTask("w" + i + "g" + k, "empty", null);
+      .forEach(dungeonConfig ->
+        dungeons.add(configureDungeon(worldId, dungeonId.incrementAndGet(), dungeonConfig))
+      );
+    for (int minigameId = 0; minigameId < worldConfig.getNumberOfMinigames(); minigameId++) {
+      MinigameTask minigame = new MinigameTask("w" + worldId + "g" + minigameId, "empty", null);
       minigames.add(minigame);
     }
-    for (int k = 0; k < worldConfig.getNumberOfNPCs(); k++) {
-      NPC npc = new NPC("w" + i + "n" + k, "");
+    for (int npcId = 0; npcId < worldConfig.getNumberOfNPCs(); npcId++) {
+      NPC npc = new NPC("w" + worldId + "n" + npcId, "");
       npcs.add(npc);
     }
     World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, dungeons);
     worlds.add(world);
   }
 
-  private Dungeon configureDungeon(int i, int j, DungeonConfig dungeonConfig) {
-    Set<MinigameTask> dungeonMinigames = new HashSet<>();
-    Set<NPC> dungeonNpcs = new HashSet<>();
+  private Dungeon configureDungeon(int worldId, int dungoenId, DungeonConfig dungeonConfig) {
+    Set<MinigameTask> minigames = new HashSet<>();
+    Set<NPC> npcs = new HashSet<>();
     for (int k = 0; k < dungeonConfig.getNumberOfMinigames(); k++) {
-      MinigameTask minigame = new MinigameTask("w" + i + "d" + j + "g" + k, "empty", null);
-      dungeonMinigames.add(minigame);
+      MinigameTask minigame = new MinigameTask("w" + worldId + "d" + dungoenId + "g" + k, "empty", null);
+      minigames.add(minigame);
     }
     for (int k = 0; k < dungeonConfig.getNumberOfNPCs(); k++) {
-      NPC npc = new NPC("w" + i + "d" + j + "n" + k, "");
-      dungeonNpcs.add(npc);
+      NPC npc = new NPC("w" + worldId + "d" + dungoenId + "n" + k, "");
+      npcs.add(npc);
     }
-    return new Dungeon(dungeonConfig.getStaticName(), "", false, dungeonMinigames, dungeonNpcs);
+    return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs);
   }
 }

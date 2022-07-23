@@ -55,7 +55,7 @@ public class LectureController {
   public LectureDTO updateLecture(@PathVariable int id, @RequestBody LectureDTO lectureDTO) {
     log.debug("update lecture {}", id);
     LectureDTO lectureDTO1 = new LectureDTO();
-    return lectureService.updateLecture(lectureDTO, id);
+    return lectureService.updateLecture(id, lectureDTO);
   }
 
   @Operation(summary = "Delete a lecture by its id")
