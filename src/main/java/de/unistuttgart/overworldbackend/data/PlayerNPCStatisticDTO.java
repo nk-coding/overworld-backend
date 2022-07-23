@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,21 +8,20 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerNPCStatisticDTO {
-    @Nullable
-    UUID id;
 
-    Playerstatistic playerstatistic;
+  @Nullable
+  UUID id;
 
-    NPC npc;
+  PlayerstatisticDTO playerstatistic;
 
-    Lecture lecture;
+  NPC npc;
 
-    boolean completed;
+  LectureDTO lecture;
+
+  boolean completed;
 }

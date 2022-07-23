@@ -1,5 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,26 +9,25 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
 
-import java.util.List;
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerstatisticDTO {
-    @Nullable
-    UUID id;
 
-    List<Area> unlockedAreas;
+  @Nullable
+  UUID id;
 
-    List<Dungeon> completedDungeons;
+  List<AreaDTO> unlockedAreas;
 
-    Area currentArea;
+  List<DungeonDTO> completedDungeons;
 
-    Lecture lecture;
+  AreaDTO currentArea;
 
-    String username;
+  LectureDTO lecture;
 
-    long knowledge;
+  String userId;
+  String username;
+
+  long knowledge;
 }

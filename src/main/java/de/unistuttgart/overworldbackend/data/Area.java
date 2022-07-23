@@ -16,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public abstract class Area {
+public class Area {
 
   @Id
   @GeneratedValue(generator = "uuid")
