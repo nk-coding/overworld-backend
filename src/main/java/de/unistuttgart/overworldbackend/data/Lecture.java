@@ -33,9 +33,9 @@ public class Lecture {
     this.lectureName = lectureName;
     this.description = description;
     this.worlds = worlds;
-    updateLectureIds();
   }
 
+  @PrePersist
   private void updateLectureIds() {
     worlds.forEach(world -> {
       world.setLecture(this);
