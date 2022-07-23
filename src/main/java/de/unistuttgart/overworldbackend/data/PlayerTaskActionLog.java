@@ -36,4 +36,8 @@ public class PlayerTaskActionLog {
     long currentHighscore;
 
     long gainedKnowledge;
+
+    UUID configurationId;
+
+    String game;
 }
