@@ -17,7 +17,7 @@ public class AreaService {
   /**
    * Get an area of a lecture
    *
-   * @throws ResponseStatusException if area with its id could not be found in the lecture
+   * @throws ResponseStatusException (404) if area with its id could not be found in the lecture
    * @param lectureId the id of the lecture the area should be part of
    * @param areaId the id of the area searching for
    * @return the found area object

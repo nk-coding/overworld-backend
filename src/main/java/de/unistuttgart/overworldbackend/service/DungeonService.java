@@ -23,7 +23,7 @@ public class DungeonService {
   /**
    * Get a dungeon of a lecture and a world
    *
-   * @throws ResponseStatusException if dungeon with its id could not be found in the lecture
+   * @throws ResponseStatusException (404) if dungeon with its id could not be found in the lecture
    * @param lectureId the id of the lecture the dungeon is part of
    * @param dungeonId the id of the dungeon searching for
    * @return the found dungeon object
@@ -42,7 +42,7 @@ public class DungeonService {
   /**
    * Get a list of dungeons of a lecture and a world
    *
-   * @throws ResponseStatusException if lecture or world with its id do not exist
+   * @throws ResponseStatusException (404) if lecture or world with its id do not exist
    * @param lectureId the id of the lecture the dungeons are part of
    * @param worldId the id of the world where the dungeons should be listed
    * @return a list of dungeons as DTO
@@ -54,7 +54,7 @@ public class DungeonService {
   /**
    * Get a dungeon by its id from a lecture and a world
    *
-   * @throws ResponseStatusException if lecture, world or dungeon by its id do not exist
+   * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture the dungeon is part of
    * @param worldId the id of the world where the dungeon should be listed
    * @param dungeonId the id of the dungeon searching for
@@ -69,7 +69,7 @@ public class DungeonService {
    *
    * Only the topic name and active status is updatable.
    *
-   * @throws ResponseStatusException if lecture, world or dungeon by its id do not exist
+   * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture the dungeon is part of
    * @param worldId the id of the world where the dungeon should be listed
    * @param dungeonId the id of the dungeon that should get updated

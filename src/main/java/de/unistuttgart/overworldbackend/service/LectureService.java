@@ -40,7 +40,7 @@ public class LectureService {
   }
 
   /**
-   * @throws ResponseStatusException when lecture by its id could not be found
+   * @throws ResponseStatusException (404) when lecture by its id could not be found
    * @param id the id of the lecture searching for
    * @return the found lecture
    */
@@ -57,7 +57,7 @@ public class LectureService {
    *
    * Only the lecture name and description is updatable.
    *
-   * @throws ResponseStatusException if lecture, world or dungeon by its id do not exist
+   * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture thath should get updated
    * @param lectureDTO the updated parameters
    * @return the updated lecture as DTO
@@ -91,7 +91,7 @@ public class LectureService {
   /**
    * Delete a lecture by its id
    *
-   * @throws ResponseStatusException when lecture with its id does not exist
+   * @throws ResponseStatusException (404) when lecture with its id does not exist
    * @param id the lecture that should be deleted
    * @return the deleted lecture as DTO
    */

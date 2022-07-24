@@ -26,7 +26,7 @@ public class MinigameTaskService {
   /**
    * Get a minigame task of an area
    *
-   * @throws ResponseStatusException if area or task with its id could not be found in the lecture
+   * @throws ResponseStatusException (404) if area or task with its id could not be found in the lecture
    * @param lectureId the id of the lecture the minigame task is part of
    * @param areaId the id of the area the task is part of
    * @param taskId the id of the task searching for
@@ -54,7 +54,7 @@ public class MinigameTaskService {
   /**
    * Get a list of minigame tasks of a lecture and an area
    *
-   * @throws ResponseStatusException if lecture or area with its id do not exist
+   * @throws ResponseStatusException (404) if lecture or area with its id do not exist
    * @param lectureId the id of the lecture the minigame tasks should be part of
    * @param areaId the id of the area where the minigame tasks should be part of
    * @return a list of minigame tasks as DTO
@@ -67,7 +67,7 @@ public class MinigameTaskService {
   /**
    * Get a minigame task by its id from a lecture and an area
    *
-   * @throws ResponseStatusException if lecture, area or task by its id do not exist
+   * @throws ResponseStatusException (404) if lecture, area or task by its id do not exist
    * @param lectureId the id of the lecture the minigame task should be part of
    * @param areaId the id of the area where the minigame task should be part of
    * @param taskId the id of the minigame task searching for
@@ -83,7 +83,7 @@ public class MinigameTaskService {
    *
    * Only the game and configuration id is updatable.
    *
-   * @throws ResponseStatusException if lecture, world or dungeon by its id do not exist
+   * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture the minigame task should be part of
    * @param areaId the id of the area where the minigame task should be part of
    * @param taskId the id of the minigame task that should get updated

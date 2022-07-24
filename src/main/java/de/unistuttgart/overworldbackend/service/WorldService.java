@@ -23,7 +23,7 @@ public class WorldService {
   /**
    * Get a world of a lecture
    *
-   * @throws ResponseStatusException if world with its id could not be found in the lecture
+   * @throws ResponseStatusException (404) if world with its id could not be found in the lecture
    * @param lectureId the id of the lecture the world is part of
    * @param worldId the id of the world searching for
    * @return the found world object
@@ -42,7 +42,7 @@ public class WorldService {
   /**
    * Get a list of worlds of a lecture
    *
-   * @throws ResponseStatusException if lecture with its id does not exist
+   * @throws ResponseStatusException (404) if lecture with its id does not exist
    * @param lectureId the id of the lecture the worlds are part of
    * @return a list of worlds as DTO
    */
@@ -53,7 +53,7 @@ public class WorldService {
   /**
    * Get a world by its id from a lecture
    *
-   * @throws ResponseStatusException if lecture or world by its id do not exist
+   * @throws ResponseStatusException (404) if lecture or world by its id do not exist
    * @param lectureId the id of the lecture the world is part of
    * @param worldId the id of the world searching for
    * @return the found world as DTO
@@ -67,7 +67,7 @@ public class WorldService {
    *
    * Only the topic name and active status is updatable.
    *
-   * @throws ResponseStatusException if lecture or world by its id do not exist
+   * @throws ResponseStatusException (404) if lecture or world by its id do not exist
    * @param lectureId the id of the lecture the world is part of
    * @param worldId the id of the world that should get updated
    * @param worldDTO the updated parameters

@@ -25,7 +25,7 @@ public class NPCService {
   /**
    * Get a npc of an area
    *
-   * @throws ResponseStatusException if area or task with its id could not be found in the lecture
+   * @throws ResponseStatusException (404) if area or task with its id could not be found in the lecture
    * @param lectureId the id of the lecture the npc is part of
    * @param areaId the id of the area the npc is part of
    * @param npcId the id of the npc searching for
@@ -51,7 +51,7 @@ public class NPCService {
    *
    * Only the text is updatable.
    *
-   * @throws ResponseStatusException if lecture, world or dungeon by its id do not exist
+   * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture the minigame task should be part of
    * @param areaId the id of the area where the minigame task should be part of
    * @param npcId the id of the minigame task that should get updated
