@@ -38,6 +38,12 @@ public class PlayerTaskStatisticService {
   @Autowired
   PlayerTaskActionLogRepository playerTaskActionLogRepository;
 
+  /**
+   * Gets a list of all playerTaskStatistics of a player of the given lecture
+   * @param lectureId lecture which the statistics belong to
+   * @param playerId player which the statistics belong to
+   * @return List of playerTaskStatistiks of the player of the lecture
+   */
   public List<PlayerTaskStatisticDTO> getAllStatisticsOfPlayer(int lectureId, String playerId) {
     List<PlayerTaskStatistic> statisticList = playerTaskStatisticRepository
       .findPlayerTaskStatisticByLectureId(lectureId)
@@ -47,6 +53,13 @@ public class PlayerTaskStatisticService {
     return playerTaskStatisticMapper.playerTaskStatisticsToPlayerTaskStatisticDTO(statisticList);
   }
 
+  /**
+   * Gets the playerStatistic of the lecture of the plyer of the statisticId
+   * @param lectureId lecture which the statistic belongs to
+   * @param playerId player which the statistic belongs to
+   * @param statisticId id of the statistic, which is returned
+   * @return playerTaskStatistic with the given statisticId
+   */
   public PlayerTaskStatisticDTO getStatisticOfPlayer(int lectureId, String playerId, UUID statisticId) {
     Optional<PlayerTaskStatistic> statistic = playerTaskStatisticRepository.findById(statisticId);
     if (
@@ -59,6 +72,14 @@ public class PlayerTaskStatisticService {
     return playerTaskStatisticMapper.playerTaskStatisticToPlayerTaskStatisticDTO(statistic.get());
   }
 
+  /**
+   * Returns the update PlayerTaskStatistic with the given data
+   * This method gets a data object with a Player, a Game, a Configuration and a score.
+   * The given data gets logged as a PlayerTaskActionLog.
+   * It calculates the progess of the player with the given score and updates the value in the correct Playerstatistic object.
+   * @param data Data of a game run
+   * @return updated playerTaskStatistic
+   */
   public PlayerTaskStatisticDTO submitData(PlayerTaskStatisticData data) {
     Optional<MinigameTask> minigameTask = minigameTaskRepository.findByGameAndConfigurationId(
       data.getGame(),
@@ -100,6 +121,19 @@ public class PlayerTaskStatisticService {
       currentPlayerTaskStatistic.setCompleted(checkCompleted(data.getScore()));
     }
 
+    logData(data, lecture, currentPlayerTaskStatistic, gainedKnowledge);
+
+    //TODO:calculate completed dungeons and unlocked areas
+
+    playerstatistic.get().addKnowledge(gainedKnowledge);
+    playerstatisticRepository.save(playerstatistic.get());
+
+    return playerTaskStatisticMapper.playerTaskStatisticToPlayerTaskStatisticDTO(
+      playerTaskStatisticRepository.save(currentPlayerTaskStatistic)
+    );
+  }
+
+  private void logData(PlayerTaskStatisticData data, Lecture lecture, PlayerTaskStatistic currentPlayerTaskStatistic, long gainedKnowledge) {
     PlayerTaskActionLog actionLog = new PlayerTaskActionLog();
     actionLog.setPlayerTaskStatistic(currentPlayerTaskStatistic);
     actionLog.setLecture(lecture);
@@ -110,15 +144,6 @@ public class PlayerTaskStatisticService {
     actionLog.setGame(data.getGame());
     actionLog.setConfigurationId(data.getConfigurationId());
     playerTaskActionLogRepository.save(actionLog);
-
-    //TODO:calculate completed dungeons and unlocked areas
-
-    playerstatistic.get().addKnowledge(gainedKnowledge);
-    playerstatisticRepository.save(playerstatistic.get());
-
-    return playerTaskStatisticMapper.playerTaskStatisticToPlayerTaskStatisticDTO(
-      playerTaskStatisticRepository.save(currentPlayerTaskStatistic)
-    );
   }
 
   private long calculateKnowledge(long score, long highscore) {
