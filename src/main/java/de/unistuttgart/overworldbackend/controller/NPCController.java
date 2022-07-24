@@ -22,7 +22,7 @@ public class NPCController {
 
   @Operation(summary = "Update a npc by its id from a world")
   @PutMapping("/npcs/{npcId}")
-  public NPCDTO updateMinigameTasksFromWorld(
+  public NPCDTO updateNPCFromWorld(
     @PathVariable int lectureId,
     @PathVariable UUID worldId,
     @PathVariable UUID npcId,
@@ -34,7 +34,7 @@ public class NPCController {
 
   @Operation(summary = "Update a npc by its id from a dungeon")
   @PutMapping("/dungeons/{dungeonId}/npcs/{npcId}")
-  public NPCDTO updateMinigameTasksFromDungeon(
+  public NPCDTO updateNPCFromDungeon(
     @PathVariable int lectureId,
     @PathVariable UUID worldId,
     @PathVariable UUID dungeonId,

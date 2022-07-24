@@ -10,7 +10,6 @@ import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
-import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
@@ -38,7 +37,6 @@ class WorldControllerTest {
   @Autowired
   private WorldMapper worldMapper;
 
-  private final String API_URL = "/api/v1/overworld";
   private String fullURL;
   private ObjectMapper objectMapper;
 
@@ -60,7 +58,7 @@ class WorldControllerTest {
 
     final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
     initialLecture = lectureRepository.save(lecture);
-    initialWorld = initialLecture.getWorlds().stream().findFirst().get();
+    initialWorld = initialLecture.getWorlds().stream().findAny().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
 
     assertNotNull(initialWorld.getId());
@@ -81,7 +79,11 @@ class WorldControllerTest {
     final Set<WorldDTO> worlds = Set.of(
       objectMapper.readValue(result.getResponse().getContentAsString(), WorldDTO[].class)
     );
-    final WorldDTO worldDTO = worlds.stream().findFirst().get();
+    final WorldDTO worldDTO = worlds
+      .stream()
+      .filter(world -> world.getStaticName().equals(initialWorldDTO.getStaticName()))
+      .findAny()
+      .get();
     assertSame(1, worlds.size());
     assertEquals(initialWorldDTO.getId(), worldDTO.getId());
     assertEquals(initialWorldDTO, worldDTO);

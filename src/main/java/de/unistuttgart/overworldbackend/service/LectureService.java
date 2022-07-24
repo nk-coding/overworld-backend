@@ -121,15 +121,15 @@ public class LectureService {
     worlds.add(world);
   }
 
-  private Dungeon configureDungeon(int worldId, int dungoenId, DungeonConfig dungeonConfig) {
+  private Dungeon configureDungeon(int worldId, int dungeonId, DungeonConfig dungeonConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
     for (int k = 0; k < dungeonConfig.getNumberOfMinigames(); k++) {
-      MinigameTask minigame = new MinigameTask("w" + worldId + "d" + dungoenId + "g" + k, "empty", null);
+      MinigameTask minigame = new MinigameTask("w" + worldId + "d" + dungeonId + "g" + k, "empty", null);
       minigames.add(minigame);
     }
     for (int k = 0; k < dungeonConfig.getNumberOfNPCs(); k++) {
-      NPC npc = new NPC("w" + worldId + "d" + dungoenId + "n" + k, "");
+      NPC npc = new NPC("w" + worldId + "d" + dungeonId + "n" + k, "");
       npcs.add(npc);
     }
     return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs);

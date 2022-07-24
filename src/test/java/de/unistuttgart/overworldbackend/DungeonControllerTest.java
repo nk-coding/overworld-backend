@@ -41,7 +41,6 @@ class DungeonControllerTest {
   @Autowired
   private DungeonMapper dungeonMapper;
 
-  private final String API_URL = "/api/v1/overworld";
   private String fullURL;
   private ObjectMapper objectMapper;
 

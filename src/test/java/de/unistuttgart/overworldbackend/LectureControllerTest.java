@@ -35,7 +35,6 @@ class LectureControllerTest {
   @Autowired
   private LectureMapper lectureMapper;
 
-  private final String API_URL = "/api/v1/overworld";
   private String fullURL;
   private ObjectMapper objectMapper;
 
@@ -152,7 +151,7 @@ class LectureControllerTest {
 
     assertEquals(initialLectureDTO, lectureDTOResult);
     assertEquals(initialLectureDTO.getId(), lectureDTOResult.getId());
-    assertSame(0, lectureRepository.findAll().size());
+    assertTrue(lectureRepository.findAll().isEmpty());
   }
 
   @Test
