@@ -32,7 +32,7 @@ public class NPCService {
    * @param lectureId the id of the lecture
    * @param worldIndex the index of the word
    * @param npcIndex the index of the npc
-   * @return the found NPC
+   * @return the found npc
    */
   public NPC getNPCFromWorld(final int lectureId, final int worldIndex, int npcIndex) {
     UUID worldId = worldService.getWorldByIndexFromLecture(lectureId, worldIndex).getId();
@@ -59,7 +59,7 @@ public class NPCService {
    * @param worldIndex the index of the word
    * @param dungeonIndex the index of the dungeon
    * @param npcIndex the index of the npc
-   * @return the found NPC
+   * @return the found npc
    */
   public NPC getNPCFromDungeon(final int lectureId, final int worldIndex, final int dungeonIndex, int npcIndex) {
     UUID dungeonId = dungeonService.getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex).getId();
@@ -88,7 +88,7 @@ public class NPCService {
    * @param worldIndex the index of the world
    * @param npcIndex the index of the npc
    * @param npcDTO the updated parameters
-   * @return the updated area as DTO
+   * @return the npc area as DTO
    */
   public NPCDTO updateNPCFromWorld(final int lectureId, final int worldIndex, final int npcIndex, final NPCDTO npcDTO) {
     final NPC npc = getNPCFromWorld(lectureId, worldIndex, npcIndex);
@@ -108,7 +108,7 @@ public class NPCService {
    * @param dungeonIndex the index of the dungeon
    * @param npcIndex the index of the npc
    * @param npcDTO the updated parameters
-   * @return the updated area as DTO
+   * @return the npc area as DTO
    */
   public NPCDTO updateNPCFromDungeon(
     final int lectureId,

@@ -56,6 +56,7 @@ class DungeonControllerTest {
     lectureRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
+    dungeon.setIndex(1);
     dungeon.setStaticName("Dark Dungeon");
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
@@ -63,6 +64,7 @@ class DungeonControllerTest {
     dungeon.setNpcs(Set.of());
 
     final World world = new World();
+    world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
@@ -85,7 +87,7 @@ class DungeonControllerTest {
     assertNotNull(initialDungeon.getId());
     assertNotNull(initialDungeonDTO.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getStaticName() + "/dungeons";
+    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getIndex() + "/dungeons";
 
     objectMapper = new ObjectMapper();
   }
@@ -109,7 +111,7 @@ class DungeonControllerTest {
   @Test
   void getDungeonFromWorld() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialDungeon.getStaticName()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialDungeon.getIndex()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -122,7 +124,7 @@ class DungeonControllerTest {
   @Test
   void getDungeonFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + Integer.MAX_VALUE).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -138,7 +140,7 @@ class DungeonControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialDungeon.getStaticName()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        put(fullURL + "/" + initialDungeon.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
@@ -149,6 +151,7 @@ class DungeonControllerTest {
     );
 
     assertEquals(initialDungeonDTO.getId(), updatedDungeonDTOResult.getId());
+    assertEquals(initialDungeonDTO.getIndex(), updatedDungeonDTOResult.getIndex());
     assertEquals(newTopicName, updatedDungeonDTOResult.getTopicName());
     assertEquals(newActiveStatus, updatedDungeonDTOResult.isActive());
     assertEquals(initialDungeonDTO.getStaticName(), updatedDungeonDTOResult.getStaticName());
@@ -170,7 +173,7 @@ class DungeonControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialDungeon.getStaticName()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        put(fullURL + "/" + initialDungeon.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
@@ -181,6 +184,7 @@ class DungeonControllerTest {
     );
 
     assertEquals(initialDungeonDTO.getId(), updatedDungeonDTOResult.getId());
+    assertEquals(initialDungeonDTO.getIndex(), updatedDungeonDTOResult.getIndex());
     assertEquals(newTopicName, updatedDungeonDTOResult.getTopicName());
     assertEquals(newActiveStatus, updatedDungeonDTOResult.isActive());
     assertNotEquals(newStaticName, updatedDungeonDTOResult.getStaticName());
