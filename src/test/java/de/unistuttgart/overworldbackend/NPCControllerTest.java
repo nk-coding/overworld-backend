@@ -82,7 +82,7 @@ class NPCControllerTest {
     assertNotNull(initialNPC.getId());
     assertNotNull(initialNPCDTO.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getStaticName()+ "/npcs";
+    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getStaticName() + "/npcs";
 
     objectMapper = new ObjectMapper();
   }

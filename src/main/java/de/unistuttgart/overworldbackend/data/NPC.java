@@ -22,14 +22,14 @@ public class NPC {
   @GeneratedValue(generator = "uuid")
   UUID id;
 
-  String startLocation;
+  int index;
   String text;
 
   @ManyToOne
   Lecture lecture;
 
-  public NPC(String startLocation, String text) {
-    this.startLocation = startLocation;
+  public NPC(final String text, final int index) {
     this.text = text;
+    this.index = index;
   }
 }

@@ -41,7 +41,13 @@ public class NPCController {
     @PathVariable UUID npcId,
     @RequestBody NPCDTO npcDTO
   ) {
-    log.debug("update npc {} of dungeon {} from world {} of lecture {}", npcId, staticDungeonName, staticWorldName, lectureId);
+    log.debug(
+      "update npc {} of dungeon {} from world {} of lecture {}",
+      npcId,
+      staticDungeonName,
+      staticWorldName,
+      lectureId
+    );
     return npcService.updateNPCFromArea(lectureId, staticDungeonName, npcId, npcDTO);
   }
 }

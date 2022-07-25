@@ -41,7 +41,12 @@ public class NPCService {
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format("There is no npc with id %s world wit id %s in lecture with id %s.", npcId, staticName, lectureId)
+          String.format(
+            "There is no npc with id %s world wit id %s in lecture with id %s.",
+            npcId,
+            staticName,
+            lectureId
+          )
         )
       );
   }

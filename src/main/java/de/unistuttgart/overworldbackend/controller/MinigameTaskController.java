@@ -21,7 +21,10 @@ public class MinigameTaskController {
 
   @Operation(summary = "Get all task from a world")
   @GetMapping("/minigame-tasks")
-  public Set<MinigameTaskDTO> getMinigameTasksFromWorld(@PathVariable int lectureId, @PathVariable String staticWorldName) {
+  public Set<MinigameTaskDTO> getMinigameTasksFromWorld(
+    @PathVariable int lectureId,
+    @PathVariable String staticWorldName
+  ) {
     log.debug("get tasks of world {} of lecture {}", staticWorldName, lectureId);
     return minigameTaskService.getMinigameTasksFromArea(lectureId, staticWorldName);
   }
@@ -56,7 +59,13 @@ public class MinigameTaskController {
     @PathVariable String staticDungeonName,
     @PathVariable UUID taskId
   ) {
-    log.debug("get task {} of dungeon {} from world {} of lecture {}", taskId, staticDungeonName, staticWorldName, lectureId);
+    log.debug(
+      "get task {} of dungeon {} from world {} of lecture {}",
+      taskId,
+      staticDungeonName,
+      staticWorldName,
+      lectureId
+    );
     return minigameTaskService.getMinigameTaskFromArea(lectureId, staticDungeonName, taskId);
   }
 
@@ -81,7 +90,13 @@ public class MinigameTaskController {
     @PathVariable UUID taskId,
     @RequestBody MinigameTaskDTO minigameTaskDTO
   ) {
-    log.debug("update task {} of dungeon {} from world {} of lecture {}", taskId, staticDungeonName, staticWorldName, lectureId);
+    log.debug(
+      "update task {} of dungeon {} from world {} of lecture {}",
+      taskId,
+      staticDungeonName,
+      staticWorldName,
+      lectureId
+    );
     return minigameTaskService.updateMinigameTaskFromArea(lectureId, staticDungeonName, taskId, minigameTaskDTO);
   }
 }

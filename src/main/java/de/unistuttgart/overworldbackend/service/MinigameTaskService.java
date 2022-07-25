@@ -76,8 +76,16 @@ public class MinigameTaskService {
    * @param staticDungeonName the static name of the dungeon where the minigame tasks should be part of
    * @return a list of minigame tasks as DTO
    */
-  public Set<MinigameTaskDTO> getMinigameTasksFromArea(final int lectureId, final String staticWorldName, final String staticDungeonName) {
-    final Dungeon dungeon = dungeonService.getDungeonByStaticNameFromLecture(lectureId, staticWorldName, staticDungeonName);
+  public Set<MinigameTaskDTO> getMinigameTasksFromArea(
+    final int lectureId,
+    final String staticWorldName,
+    final String staticDungeonName
+  ) {
+    final Dungeon dungeon = dungeonService.getDungeonByStaticNameFromLecture(
+      lectureId,
+      staticWorldName,
+      staticDungeonName
+    );
     return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(dungeon.getMinigameTasks());
   }
 

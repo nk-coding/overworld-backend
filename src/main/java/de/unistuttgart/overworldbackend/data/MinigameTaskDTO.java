@@ -20,7 +20,7 @@ public class MinigameTaskDTO {
   @Nullable
   UUID id;
 
-  String location;
+  int index;
   String game;
   UUID configurationId;
 }
