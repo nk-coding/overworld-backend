@@ -87,20 +87,10 @@ public class MinigameTaskService {
    * @param worldIndex the index of the world where the minigame tasks should be part of
    * @return a list of minigame tasks as DTO
    */
-  public Set<MinigameTaskDTO> getMinigameTasksFromArea(
-    final int lectureId,
-    final int worldIndex,
-    final Optional<Integer> dungeonIndex
-  ) {
-    if (dungeonIndex.isEmpty()) {
-      return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(
-        worldService.getWorldByIndexFromLecture(lectureId, worldIndex).getMinigameTasks()
-      );
-    } else {
-      return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(
-        dungeonService.getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex.get()).getMinigameTasks()
-      );
-    }
+  public Set<MinigameTaskDTO> getMinigameTasksFromArea(final int lectureId, final int worldIndex) {
+    return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(
+      worldService.getWorldByIndexFromLecture(lectureId, worldIndex).getMinigameTasks()
+    );
   }
 
   /**
