@@ -2,7 +2,6 @@ package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
-import de.unistuttgart.overworldbackend.repositories.AreaBaseRepository;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import java.util.Set;
 import java.util.UUID;
@@ -81,11 +80,7 @@ public class MinigameTaskService {
     final String staticWorldName,
     final String staticDungeonName
   ) {
-    final Dungeon dungeon = dungeonService.getDungeonByStaticNameFromLecture(
-      lectureId,
-      staticWorldName,
-      staticDungeonName
-    );
+    final Dungeon dungeon = dungeonService.getDungeonByIndexFromLecture(lectureId, staticWorldName, staticDungeonName);
     return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(dungeon.getMinigameTasks());
   }
 

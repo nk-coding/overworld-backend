@@ -28,6 +28,9 @@ public class NPC {
   @ManyToOne
   Lecture lecture;
 
+  @ManyToOne
+  Area area;
+
   public NPC(final String text, final int index) {
     this.text = text;
     this.index = index;

@@ -19,16 +19,16 @@ public class AreaService {
    *
    * @throws ResponseStatusException (404) if area with its id could not be found in the lecture
    * @param lectureId the id of the lecture the area should be part of
-   * @param staticName the static name of the area searching for
+   * @param index the static name of the area searching for
    * @return the found area object
    */
-  public Area getAreaFromLectureOrThrowNotFound(final int lectureId, final String staticName) {
+  public Area getAreaFromLectureOrThrowNotFound(final int lectureId, final int index) {
     return areaBaseRepository
-      .findByStaticNameAndLectureId(staticName, lectureId)
+      .findByStaticNameAndLectureId(index, lectureId)
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format("There is no area with id %s in lecture with id %s.", staticName, lectureId)
+          String.format("There is no area with id %s in lecture with id %s.", index, lectureId)
         )
       );
   }

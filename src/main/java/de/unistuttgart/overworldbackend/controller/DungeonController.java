@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Dungeon", description = "Get and update dungeons from worlds")
 @RestController
 @Slf4j
-@RequestMapping("/lectures/{lectureId}/worlds/{staticWorldName}/dungeons")
+@RequestMapping("/lectures/{lectureId}/worlds/{worldIndex}/dungeons")
 public class DungeonController {
 
   @Autowired
@@ -28,33 +28,33 @@ public class DungeonController {
 
   @Operation(summary = "Get all dungeons of a world by its id from a lecture by its id")
   @GetMapping("")
-  public Set<DungeonDTO> getDungeons(@PathVariable int lectureId, @PathVariable String staticWorldName) {
-    log.debug("get dungeons of world by static name {} of lecture {}", staticWorldName, lectureId);
-    return dungeonService.getDungeonsFromWorld(lectureId, staticWorldName);
+  public Set<DungeonDTO> getDungeons(@PathVariable int lectureId, @PathVariable int worldIndex) {
+    log.debug("get dungeons of world by index {} of lecture {}", worldIndex, lectureId);
+    return dungeonService.getDungeonsFromWorld(lectureId, worldIndex);
   }
 
   @Operation(summary = "Get a dungeon by its static name of a world by its id from a lecture by its id")
-  @GetMapping("/{staticDungeonName}")
+  @GetMapping("/{dungeonIndex}")
   public DungeonDTO getDungeon(
     @PathVariable int lectureId,
-    @PathVariable String staticWorldName,
-    @PathVariable String staticDungeonName
+    @PathVariable int worldIndex,
+    @PathVariable int dungeonIndex
   ) {
-    log.debug("get dungeon {} of world {} of lecture {}", staticDungeonName, staticWorldName, lectureId);
+    log.debug("get dungeon {} of world {} of lecture {}", dungeonIndex, worldIndex, lectureId);
     return dungeonMapper.dungeonToDungeonDTO(
-      dungeonService.getDungeonByStaticNameFromLecture(lectureId, staticWorldName, staticDungeonName)
+      dungeonService.getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex)
     );
   }
 
   @Operation(summary = "Update a dungeon by its static name of a world by its id from a lecture by its id")
-  @PutMapping("/{staticDungeonName}")
+  @PutMapping("/{dungeonIndex}")
   public DungeonDTO updateDungeon(
     @PathVariable int lectureId,
-    @PathVariable String staticWorldName,
-    @PathVariable String staticDungeonName,
+    @PathVariable int worldIndex,
+    @PathVariable int dungeonIndex,
     @RequestBody DungeonDTO dungeonDTO
   ) {
-    log.debug("update dungeon {} of world {} of lecture {}", staticDungeonName, staticWorldName, lectureId);
-    return dungeonService.updateDungeonFromLecture(lectureId, staticWorldName, staticDungeonName, dungeonDTO);
+    log.debug("update dungeon {} of world {} of lecture {}", dungeonIndex, worldIndex, lectureId);
+    return dungeonService.updateDungeonFromLecture(lectureId, worldIndex, dungeonIndex, dungeonDTO);
   }
 }

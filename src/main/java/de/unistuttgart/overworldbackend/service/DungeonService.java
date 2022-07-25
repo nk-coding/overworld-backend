@@ -25,25 +25,21 @@ public class DungeonService {
    *
    * @throws ResponseStatusException (404) if dungeon with its static name could not be found in the lecture
    * @param lectureId the id of the lecture the dungeon is part of
-   * @param staticWorldName the static name of the world the dungeon is part of
-   * @param staticDungeonName the static name of the dungeon searching of
+   * @param worldIndex the index of the world the dungeon is part of
+   * @param dungeonIndex the index of the dungeon searching of
    * @return the found dungeon object
    */
-  public Dungeon getDungeonByStaticNameFromLecture(
-    final int lectureId,
-    final String staticWorldName,
-    final String staticDungeonName
-  ) {
+  public Dungeon getDungeonByIndexFromLecture(final int lectureId, final int worldIndex, final int dungeonIndex) {
     return dungeonRepository
-      .findByStaticNameAndLectureId(staticDungeonName, lectureId)
-      .filter(dungeon -> dungeon.getWorld().getStaticName().equals(staticWorldName))
+      .findByIndexAndLectureId(dungeonIndex, lectureId)
+      .filter(dungeon -> dungeon.getWorld().getIndex() == worldIndex)
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
           String.format(
-            "There is no dungeon with static name %s in world with static name %s in lecture with id %s.",
-            staticDungeonName,
-            staticWorldName,
+            "There is no dungeon with index %s in world with index %s in lecture with id %s.",
+            dungeonIndex,
+            worldIndex,
             lectureId
           )
         )
@@ -55,15 +51,15 @@ public class DungeonService {
    *
    * @throws ResponseStatusException (404) if world with its static name could not be found in the lecture
    * @param lectureId the id of the lecture the dungeons are part of
-   * @param staticWorldName the static name of the world the dungeons are part of
+   * @param worldIndex the index of the world the dungeons are part of
    * @return the found dungeon object
    */
-  public Set<DungeonDTO> getDungeonsFromWorld(final int lectureId, final String staticWorldName) {
+  public Set<DungeonDTO> getDungeonsFromWorld(final int lectureId, final int worldIndex) {
     return dungeonMapper.dungeonsToDungeonDTOs(
       dungeonRepository
         .findAllByLectureId(lectureId)
         .stream()
-        .filter(dungeon -> dungeon.getWorld().getStaticName().equals(staticWorldName))
+        .filter(dungeon -> dungeon.getWorld().getIndex() == worldIndex)
         .collect(Collectors.toSet())
     );
   }
@@ -75,18 +71,18 @@ public class DungeonService {
    *
    * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture the dungeon is part of
-   * @param staticWorldName the static name of the world where the dungeon should be listed
-   * @param staticDungeonName the static name of the dungeon that should get updated
+   * @param worldIndex the index of the world where the dungeon should be listed
+   * @param dungeonIndex the index of the dungeon that should get updated
    * @param dungeonDTO the updated parameters
    * @return the updated dungeon as DTO
    */
   public DungeonDTO updateDungeonFromLecture(
     final int lectureId,
-    final String staticWorldName,
-    final String staticDungeonName,
+    final int worldIndex,
+    final int dungeonIndex,
     final DungeonDTO dungeonDTO
   ) {
-    final Dungeon dungeon = getDungeonByStaticNameFromLecture(lectureId, staticWorldName, staticDungeonName);
+    final Dungeon dungeon = getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex);
     dungeon.setTopicName(dungeonDTO.getTopicName());
     dungeon.setActive(dungeonDTO.isActive());
     final Dungeon updatedDungeon = dungeonRepository.save(dungeon);

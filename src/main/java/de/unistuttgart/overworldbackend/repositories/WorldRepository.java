@@ -12,6 +12,7 @@ public interface WorldRepository extends JpaRepository<World, UUID> {
   Optional<World> findByIdAndLectureId(UUID id, int lectureId);
 
   Optional<World> findByStaticNameAndLectureId(String staticName, int lectureId);
+  Optional<World> findByIndexAndLectureId(int index, int lectureId);
 
   Set<World> findAllByLectureId(int lectureId);
 }

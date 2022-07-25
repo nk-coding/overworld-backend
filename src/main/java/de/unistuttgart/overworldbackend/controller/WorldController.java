@@ -34,20 +34,20 @@ public class WorldController {
   }
 
   @Operation(summary = "Get a world by its static name from a lecture by its id")
-  @GetMapping("/{staticName}")
-  public WorldDTO getWorldByStaticName(@PathVariable int lectureId, @PathVariable String staticName) {
-    log.debug("get world by static name {} of lecture {}", staticName, lectureId);
-    return worldMapper.worldToWorldDTO(worldService.getWorldByStaticNameFromLecture(lectureId, staticName));
+  @GetMapping("/{worldIndex}")
+  public WorldDTO getWorldByStaticName(@PathVariable int lectureId, @PathVariable int worldIndex) {
+    log.debug("get world by index {} of lecture {}", worldIndex, lectureId);
+    return worldMapper.worldToWorldDTO(worldService.getWorldByIndexFromLecture(lectureId, worldIndex));
   }
 
   @Operation(summary = "Update a world by static name id from a lecture by its id")
-  @PutMapping("/{staticName}")
+  @PutMapping("/{worldIndex}")
   public WorldDTO updateWorld(
     @PathVariable int lectureId,
-    @PathVariable String staticName,
+    @PathVariable int worldIndex,
     @RequestBody WorldDTO worldDTO
   ) {
-    log.debug("update world by static name {} of lecture {}", staticName, lectureId);
-    return worldService.updateWorldFromLecture(lectureId, staticName, worldDTO);
+    log.debug("update world by index {} of lecture {}", worldIndex, lectureId);
+    return worldService.updateWorldFromLecture(lectureId, worldIndex, worldDTO);
   }
 }
