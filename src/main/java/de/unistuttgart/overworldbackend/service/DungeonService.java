@@ -5,7 +5,6 @@ import de.unistuttgart.overworldbackend.data.DungeonDTO;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,7 +58,7 @@ public class DungeonService {
    * @param staticWorldName the static name of the world the dungeons are part of
    * @return the found dungeon object
    */
-  public Set<DungeonDTO> getDungeonsNameFromLecture(final int lectureId, final String staticWorldName) {
+  public Set<DungeonDTO> getDungeonsFromWorld(final int lectureId, final String staticWorldName) {
     return dungeonMapper.dungeonsToDungeonDTOs(
       dungeonRepository
         .findAllByLectureId(lectureId)
