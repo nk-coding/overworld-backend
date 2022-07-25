@@ -58,7 +58,7 @@ public class DungeonService {
     return dungeonMapper.dungeonsToDungeonDTOs(
       dungeonRepository
         .findAllByLectureId(lectureId)
-        .stream()
+        .parallelStream()
         .filter(dungeon -> dungeon.getWorld().getIndex() == worldIndex)
         .collect(Collectors.toSet())
     );

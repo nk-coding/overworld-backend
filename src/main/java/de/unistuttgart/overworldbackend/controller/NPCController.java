@@ -38,7 +38,7 @@ public class NPCController {
     @PathVariable int npcIndex,
     @RequestBody NPCDTO npcDTO
   ) {
-    log.debug("update npc {} of dungeon {} from world {} of lecture {}", npcIndex, dungeonIndex, worldIndex, lectureId);
+    log.debug("update npc {} of dungeon {} from world {} of lecture {} with {}", npcIndex, dungeonIndex, worldIndex, lectureId, npcDTO);
     return npcService.updateNPCFromDungeon(lectureId, worldIndex, dungeonIndex, npcIndex, npcDTO);
   }
 }

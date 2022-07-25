@@ -65,11 +65,11 @@ class NPCControllerTest {
     lectureRepository.deleteAll();
 
     final NPC npc = new NPC();
-    npc.setText("You want to learn PSE?\n" + "This is so cool\n" + "Let's go!");
+    npc.setText("You want to learn PSE?\nThis is so cool\nLet's go!");
     npc.setIndex(1);
 
     final NPC dungeonNPC = new NPC();
-    npc.setText("You want to learn DSA?\n" + "This is so cool\n" + "Let's go!");
+    npc.setText("You want to learn DSA?\nThis is so cool\nLet's go!");
     npc.setIndex(1);
 
     final Dungeon dungeon = new Dungeon();
@@ -113,15 +113,14 @@ class NPCControllerTest {
     assertNotNull(initialDungeonNPC.getId());
     assertNotNull(initialDungeonNPCDTO.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getIndex() + "/npcs";
+    fullURL = String.format("/lectures/%d/worlds/%d/npcs", initialLecture.getId(), initialWorld.getIndex());
     fullDungeonURL =
-      "/lectures/" +
-      initialLecture.getId() +
-      "/worlds/" +
-      initialWorld.getIndex() +
-      "/dungeons/" +
-      initialDungoen.getIndex() +
-      "/npcs";
+      String.format(
+        "/lectures/%d/worlds/%d/dungeons/%d/npcs",
+        initialLecture.getId(),
+        initialWorld.getIndex(),
+        initialDungoen.getIndex()
+      );
 
     objectMapper = new ObjectMapper();
   }

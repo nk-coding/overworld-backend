@@ -47,7 +47,7 @@ public class WorldController {
     @PathVariable int worldIndex,
     @RequestBody WorldDTO worldDTO
   ) {
-    log.debug("update world by index {} of lecture {}", worldIndex, lectureId);
+    log.debug("update world by index {} of lecture {} with {}", worldIndex, lectureId, worldDTO);
     return worldService.updateWorldFromLecture(lectureId, worldIndex, worldDTO);
   }
 }

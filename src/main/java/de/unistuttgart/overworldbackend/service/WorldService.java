@@ -32,7 +32,7 @@ public class WorldService {
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format("There is no world with static name %s in lecture with id %s.", worldIndex, lectureId)
+          String.format("There is no world with static name %s in the lecture with ID %s.", worldIndex, lectureId)
         )
       );
   }

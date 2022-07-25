@@ -65,7 +65,7 @@ class WorldControllerTest {
     assertNotNull(initialWorld.getId());
     assertNotNull(initialWorldDTO.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds";
+    fullURL = String.format("/lectures/%d/worlds", initialLecture.getId());
 
     objectMapper = new ObjectMapper();
   }

@@ -87,7 +87,7 @@ class DungeonControllerTest {
     assertNotNull(initialDungeon.getId());
     assertNotNull(initialDungeonDTO.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getIndex() + "/dungeons";
+    fullURL = String.format("/lectures/%d/worlds/%d/dungeons", initialLecture.getId(), initialWorld.getIndex());
 
     objectMapper = new ObjectMapper();
   }

@@ -48,7 +48,7 @@ public class MinigameTaskService {
       return worldService
         .getWorldByIndexFromLecture(lectureId, worldIndex)
         .getMinigameTasks()
-        .stream()
+        .parallelStream()
         .filter(minigameTask -> minigameTask.getId().equals(taskId))
         .findAny()
         .orElseThrow(() ->
@@ -61,7 +61,7 @@ public class MinigameTaskService {
       return dungeonService
         .getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex.get())
         .getMinigameTasks()
-        .stream()
+        .parallelStream()
         .filter(minigameTask -> minigameTask.getId().equals(taskId))
         .findAny()
         .orElseThrow(() ->

@@ -37,18 +37,13 @@ public class NPCService {
     return worldService
       .getWorldByIndexFromLecture(lectureId, worldIndex)
       .getNpcs()
-      .stream()
+      .parallelStream()
       .filter(npc -> npc.getIndex() == npcIndex)
       .findAny()
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format(
-            "There is no npc with index %s world with index %s in lecture with id %s.",
-            npcIndex,
-            worldIndex,
-            lectureId
-          )
+          String.format("There is no NPC %d in world %d, lecture %d.", npcIndex, worldIndex, lectureId)
         )
       );
   }
@@ -67,14 +62,14 @@ public class NPCService {
     return dungeonService
       .getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex)
       .getNpcs()
-      .stream()
+      .parallelStream()
       .filter(npc -> npc.getIndex() == npcIndex)
       .findAny()
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
           String.format(
-            "There is no npc with index %s dungeon with index %s, world with index %s in lecture with id %s.",
+            "There is no NPC %d in dungeon %d, world %d, lecture %d.",
             npcIndex,
             dungeonIndex,
             worldIndex,
