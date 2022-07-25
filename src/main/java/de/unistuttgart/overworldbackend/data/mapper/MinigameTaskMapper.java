@@ -2,8 +2,9 @@ package de.unistuttgart.overworldbackend.data.mapper;
 
 import de.unistuttgart.overworldbackend.data.MinigameTask;
 import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
-import java.util.Set;
 import org.mapstruct.Mapper;
+
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface MinigameTaskMapper {

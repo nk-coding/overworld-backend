@@ -1,15 +1,18 @@
 package de.unistuttgart.overworldbackend.service;
 
-import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.Dungeon;
+import de.unistuttgart.overworldbackend.data.MinigameTask;
+import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class MinigameTaskService {
