@@ -92,7 +92,7 @@ class WorldControllerTest {
   @Test
   void getWorldFromLecture() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialWorldDTO.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialWorldDTO.getStaticName()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -120,7 +120,9 @@ class WorldControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updatedWorldDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialWorldDTO.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialWorldDTO.getStaticName()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -151,7 +153,9 @@ class WorldControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updatedWorldDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialWorld.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialWorld.getStaticName()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 

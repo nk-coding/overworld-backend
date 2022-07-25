@@ -85,7 +85,7 @@ class DungeonControllerTest {
     assertNotNull(initialDungeon.getId());
     assertNotNull(initialDungeonDTO.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getId() + "/dungeons";
+    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getStaticName() + "/dungeons";
 
     objectMapper = new ObjectMapper();
   }
@@ -109,7 +109,7 @@ class DungeonControllerTest {
   @Test
   void getDungeonFromWorld() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialDungeon.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialDungeon.getStaticName()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -137,7 +137,9 @@ class DungeonControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updateDungeonDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialDungeon.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialDungeon.getStaticName()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -167,7 +169,9 @@ class DungeonControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updatedDungeonDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialDungeon.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialDungeon.getStaticName()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 

@@ -11,5 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface WorldRepository extends JpaRepository<World, UUID> {
   Optional<World> findByIdAndLectureId(UUID id, int lectureId);
 
+  Optional<World> findByStaticNameAndLectureId(String staticName, int lectureId);
+
   Set<World> findAllByLectureId(int lectureId);
 }

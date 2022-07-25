@@ -6,6 +6,7 @@ import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,45 +24,49 @@ public class DungeonService {
   /**
    * Get a dungeon of a lecture and a world
    *
-   * @throws ResponseStatusException (404) if dungeon with its id could not be found in the lecture
+   * @throws ResponseStatusException (404) if dungeon with its static name could not be found in the lecture
    * @param lectureId the id of the lecture the dungeon is part of
-   * @param dungeonId the id of the dungeon searching for
+   * @param staticWorldName the static name of the world the dungeon is part of
+   * @param staticDungeonName the static name of the dungeon searching of
    * @return the found dungeon object
    */
-  private Dungeon getDungeonFromLectureOrThrowNotFound(final int lectureId, final UUID worldId, final UUID dungeonId) {
+  public Dungeon getDungeonByStaticNameFromLecture(
+    final int lectureId,
+    final String staticWorldName,
+    final String staticDungeonName
+  ) {
     return dungeonRepository
-      .findByIdAndLectureIdAndWorldId(dungeonId, lectureId, worldId)
+      .findByStaticNameAndLectureId(staticDungeonName, lectureId)
+      .filter(dungeon -> dungeon.getWorld().getStaticName().equals(staticWorldName))
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format("There is no dungeon with id %s in lecture with id %s.", dungeonId, lectureId)
+          String.format(
+            "There is no dungeon with static name %s in world with static name %s in lecture with id %s.",
+            staticDungeonName,
+            staticWorldName,
+            lectureId
+          )
         )
       );
   }
 
   /**
-   * Get a list of dungeons of a lecture and a world
+   * Get dungeons of a lecture and a world
    *
-   * @throws ResponseStatusException (404) if lecture or world with its id do not exist
+   * @throws ResponseStatusException (404) if world with its static name could not be found in the lecture
    * @param lectureId the id of the lecture the dungeons are part of
-   * @param worldId the id of the world where the dungeons should be listed
-   * @return a list of dungeons as DTO
+   * @param staticWorldName the static name of the world the dungeons are part of
+   * @return the found dungeon object
    */
-  public Set<DungeonDTO> getDungeonsFromLectureAndWorld(final int lectureId, final UUID worldId) {
-    return dungeonMapper.dungeonsToDungeonDTOs(dungeonRepository.findAllByLectureIdAndWorldId(lectureId, worldId));
-  }
-
-  /**
-   * Get a dungeon by its id from a lecture and a world
-   *
-   * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
-   * @param lectureId the id of the lecture the dungeon is part of
-   * @param worldId the id of the world where the dungeon should be listed
-   * @param dungeonId the id of the dungeon searching for
-   * @return the found dungeon as DTO
-   */
-  public DungeonDTO getDungeonFromLectureAndWorld(final int lectureId, final UUID worldId, final UUID dungeonId) {
-    return dungeonMapper.dungeonToDungeonDTO(getDungeonFromLectureOrThrowNotFound(lectureId, worldId, dungeonId));
+  public Set<DungeonDTO> getDungeonsNameFromLecture(final int lectureId, final String staticWorldName) {
+    return dungeonMapper.dungeonsToDungeonDTOs(
+      dungeonRepository
+        .findAllByLectureId(lectureId)
+        .stream()
+        .filter(dungeon -> dungeon.getWorld().getStaticName().equals(staticWorldName))
+        .collect(Collectors.toSet())
+    );
   }
 
   /**
@@ -71,18 +76,18 @@ public class DungeonService {
    *
    * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture the dungeon is part of
-   * @param worldId the id of the world where the dungeon should be listed
-   * @param dungeonId the id of the dungeon that should get updated
+   * @param staticWorldName the static name of the world where the dungeon should be listed
+   * @param staticDungeonName the static name of the dungeon that should get updated
    * @param dungeonDTO the updated parameters
    * @return the updated dungeon as DTO
    */
   public DungeonDTO updateDungeonFromLecture(
     final int lectureId,
-    final UUID worldId,
-    final UUID dungeonId,
+    final String staticWorldName,
+    final String staticDungeonName,
     final DungeonDTO dungeonDTO
   ) {
-    final Dungeon dungeon = getDungeonFromLectureOrThrowNotFound(lectureId, worldId, dungeonId);
+    final Dungeon dungeon = getDungeonByStaticNameFromLecture(lectureId, staticWorldName, staticDungeonName);
     dungeon.setTopicName(dungeonDTO.getTopicName());
     dungeon.setActive(dungeonDTO.isActive());
     final Dungeon updatedDungeon = dungeonRepository.save(dungeon);
