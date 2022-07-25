@@ -113,12 +113,12 @@ public class LectureService {
     worldConfig
       .getDungeons()
       .forEach(dungeonConfig -> dungeons.add(configureDungeon(worldId, dungeonId.incrementAndGet(), dungeonConfig)));
-    for (int minigameId = 1; minigameId < worldConfig.getNumberOfMinigames(); minigameId++) {
-      MinigameTask minigame = new MinigameTask(null, null, minigameId);
+    for (int minigameIndex = 1; minigameIndex < worldConfig.getNumberOfMinigames(); minigameIndex++) {
+      MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);
     }
-    for (int npcId = 1; npcId < worldConfig.getNumberOfNPCs(); npcId++) {
-      NPC npc = new NPC("", npcId);
+    for (int npcIndex = 1; npcIndex < worldConfig.getNumberOfNPCs(); npcIndex++) {
+      NPC npc = new NPC("", npcIndex);
       npcs.add(npc);
     }
     World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, dungeons, worldId);
@@ -128,12 +128,12 @@ public class LectureService {
   private Dungeon configureDungeon(int worldId, int dungeonId, DungeonConfig dungeonConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
-    for (int minigameId = 0; minigameId < dungeonConfig.getNumberOfMinigames(); minigameId++) {
-      MinigameTask minigame = new MinigameTask(null, null, minigameId);
+    for (int minigameIndex = 0; minigameIndex < dungeonConfig.getNumberOfMinigames(); minigameIndex++) {
+      MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);
     }
-    for (int npcId = 0; npcId < dungeonConfig.getNumberOfNPCs(); npcId++) {
-      NPC npc = new NPC("", npcId);
+    for (int npcIndex = 0; npcIndex < dungeonConfig.getNumberOfNPCs(); npcIndex++) {
+      NPC npc = new NPC("", npcIndex);
       npcs.add(npc);
     }
     return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, dungeonId);
