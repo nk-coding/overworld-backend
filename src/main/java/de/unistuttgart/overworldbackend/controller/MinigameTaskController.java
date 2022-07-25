@@ -88,7 +88,14 @@ public class MinigameTaskController {
     @PathVariable UUID taskId,
     @RequestBody MinigameTaskDTO minigameTaskDTO
   ) {
-    log.debug("update task {} of dungeon {} from world {} of lecture {} with {}", taskId, dungeonIndex, worldIndex, lectureId, minigameTaskDTO);
+    log.debug(
+      "update task {} of dungeon {} from world {} of lecture {} with {}",
+      taskId,
+      dungeonIndex,
+      worldIndex,
+      lectureId,
+      minigameTaskDTO
+    );
     return minigameTaskService.updateMinigameTaskFromArea(
       lectureId,
       worldIndex,
