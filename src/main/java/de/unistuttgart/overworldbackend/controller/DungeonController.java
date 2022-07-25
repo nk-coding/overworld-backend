@@ -7,7 +7,7 @@ import de.unistuttgart.overworldbackend.service.DungeonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Set;
-import java.util.UUID;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ public class DungeonController {
   @GetMapping("")
   public Set<DungeonDTO> getDungeons(@PathVariable int lectureId, @PathVariable String staticWorldName) {
     log.debug("get dungeons of world by static name {} of lecture {}", staticWorldName, lectureId);
-    return dungeonService.getDungeonsNameFromLecture(lectureId, staticWorldName);
+    return dungeonService.getDungeonsFromWorld(lectureId, staticWorldName);
   }
 
   @Operation(summary = "Get a dungeon by its static name of a world by its id from a lecture by its id")
