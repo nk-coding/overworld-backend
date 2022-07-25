@@ -155,9 +155,7 @@ class WorldControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updatedWorldDTO);
 
     final MvcResult result = mvc
-      .perform(
-        put(fullURL + "/" + initialWorld.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
-      )
+      .perform(put(fullURL + "/" + initialWorld.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 

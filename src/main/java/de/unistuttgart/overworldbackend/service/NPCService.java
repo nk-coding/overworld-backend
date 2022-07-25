@@ -3,7 +3,6 @@ package de.unistuttgart.overworldbackend.service;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.repositories.NPCRepository;
-
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,16 +34,19 @@ public class NPCService {
    * @return the found npc
    */
   public NPC getNPCFromWorld(final int lectureId, final int worldIndex, int npcIndex) {
-    UUID worldId = worldService.getWorldByIndexFromLecture(lectureId, worldIndex).getId();
-    return npcRepository
-      .findByIndexAndLectureIdAndAreaId(npcIndex, lectureId, worldId)
+    return worldService
+      .getWorldByIndexFromLecture(lectureId, worldIndex)
+      .getNpcs()
+      .stream()
+      .filter(npc -> npc.getIndex() == npcIndex)
+      .findAny()
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
           String.format(
             "There is no npc with index %s world with index %s in lecture with id %s.",
             npcIndex,
-            worldId,
+            worldIndex,
             lectureId
           )
         )
