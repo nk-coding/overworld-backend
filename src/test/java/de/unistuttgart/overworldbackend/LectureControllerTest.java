@@ -92,6 +92,14 @@ class LectureControllerTest {
   }
 
   @Test
+  void getLecture_DoesNotExist_ThrowsNotFound() throws Exception {
+    mvc
+      .perform(get(fullURL + "/1").contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isNotFound())
+      .andReturn();
+  }
+
+  @Test
   void getLectures() throws Exception {
     final MvcResult result = mvc.perform(get(fullURL)).andExpect(status().isOk()).andReturn();
 
