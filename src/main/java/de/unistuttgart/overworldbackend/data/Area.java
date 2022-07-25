@@ -23,6 +23,7 @@ public abstract class Area {
   UUID id;
 
   int index;
+
   @NotNull
   String staticName;
 
@@ -39,7 +40,14 @@ public abstract class Area {
   @ManyToOne
   Lecture lecture;
 
-  public Area(final String staticName, final String topicName, final boolean active, final Set<MinigameTask> minigameTasks, final Set<NPC> npcs, final int index) {
+  public Area(
+    final String staticName,
+    final String topicName,
+    final boolean active,
+    final Set<MinigameTask> minigameTasks,
+    final Set<NPC> npcs,
+    final int index
+  ) {
     this.staticName = staticName;
     this.topicName = topicName;
     this.active = active;

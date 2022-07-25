@@ -20,6 +20,7 @@ public class AreaDTO {
   UUID id;
 
   int index;
+
   @NotNull
   String staticName;
 

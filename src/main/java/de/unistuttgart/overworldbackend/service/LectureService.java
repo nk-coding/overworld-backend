@@ -109,29 +109,29 @@ public class LectureService {
     worldConfig
       .getDungeons()
       .forEach(dungeonConfig -> dungeons.add(configureDungeon(worldId, dungeonId.incrementAndGet(), dungeonConfig)));
-    for (int minigameId = 0; minigameId < worldConfig.getNumberOfMinigames(); minigameId++) {
-      MinigameTask minigame = new MinigameTask("w" + worldId + "g" + minigameId, "empty", null);
+    for (int minigameId = 1; minigameId < worldConfig.getNumberOfMinigames(); minigameId++) {
+      MinigameTask minigame = new MinigameTask(null, null, minigameId);
       minigames.add(minigame);
     }
-    for (int npcId = 0; npcId < worldConfig.getNumberOfNPCs(); npcId++) {
-      NPC npc = new NPC("w" + worldId + "n" + npcId, "");
+    for (int npcId = 1; npcId < worldConfig.getNumberOfNPCs(); npcId++) {
+      NPC npc = new NPC("", npcId);
       npcs.add(npc);
     }
-    World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, dungeons);
+    World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, dungeons, worldId);
     worlds.add(world);
   }
 
   private Dungeon configureDungeon(int worldId, int dungeonId, DungeonConfig dungeonConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
-    for (int k = 0; k < dungeonConfig.getNumberOfMinigames(); k++) {
-      MinigameTask minigame = new MinigameTask("w" + worldId + "d" + dungeonId + "g" + k, "empty", null);
+    for (int minigameId = 0; minigameId < dungeonConfig.getNumberOfMinigames(); minigameId++) {
+      MinigameTask minigame = new MinigameTask(null, null, minigameId);
       minigames.add(minigame);
     }
-    for (int k = 0; k < dungeonConfig.getNumberOfNPCs(); k++) {
-      NPC npc = new NPC("w" + worldId + "d" + dungeonId + "n" + k, "");
+    for (int npcId = 0; npcId < dungeonConfig.getNumberOfNPCs(); npcId++) {
+      NPC npc = new NPC("", npcId);
       npcs.add(npc);
     }
-    return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs);
+    return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, dungeonId);
   }
 }

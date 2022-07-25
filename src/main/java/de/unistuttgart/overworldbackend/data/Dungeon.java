@@ -18,7 +18,14 @@ public class Dungeon extends Area {
   @ManyToOne
   World world;
 
-  public Dungeon(String staticName, String topicName, boolean active, Set<MinigameTask> minigameTasks, Set<NPC> npcs) {
-    super(staticName, topicName, active, minigameTasks, npcs);
+  public Dungeon(
+    final String staticName,
+    final String topicName,
+    final boolean active,
+    final Set<MinigameTask> minigameTasks,
+    final Set<NPC> npcs,
+    final int index
+  ) {
+    super(staticName, topicName, active, minigameTasks, npcs, index);
   }
 }
