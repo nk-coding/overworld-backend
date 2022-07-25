@@ -3,6 +3,7 @@ package de.unistuttgart.overworldbackend.service;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class MinigameTaskService {
   private MinigameTaskRepository minigameTaskRepository;
 
   @Autowired
-  private AreaService areaService;
+  private WorldService worldService;
 
   @Autowired
   private DungeonService dungeonService;
@@ -30,27 +31,49 @@ public class MinigameTaskService {
    *
    * @throws ResponseStatusException (404) if area or task with its id could not be found in the lecture
    * @param lectureId the id of the lecture the minigame task is part of
-   * @param staticName the static name of the area the task is part of
+   * @param worldIndex the index of the world the task is part of
+   * @param dungeonIndex the index of the dungeon the task is part of
    * @param taskId the id of the task searching for
    * @return the found task object
    */
   public MinigameTask getMinigameTaskFromAreaOrThrowNotFound(
     final int lectureId,
-    final String staticName,
+    final int worldIndex,
+    final Optional<Integer> dungeonIndex,
     final UUID taskId
   ) {
-    return areaService
-      .getAreaFromLectureOrThrowNotFound(lectureId, staticName)
-      .getMinigameTasks()
-      .stream()
-      .filter(task -> task.getId().equals(taskId))
-      .findAny()
-      .orElseThrow(() ->
-        new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          String.format("There is no area with id %s in lecture with id %s.", staticName, lectureId)
-        )
-      );
+    if (dungeonIndex.isEmpty()) {
+      return worldService
+        .getWorldByIndexFromLecture(lectureId, worldIndex)
+        .getMinigameTasks()
+        .stream()
+        .filter(minigameTask -> minigameTask.getId().equals(taskId))
+        .findAny()
+        .orElseThrow(() ->
+          new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            String.format("Task not found in lecture %s in world %s.", lectureId, worldIndex)
+          )
+        );
+    } else {
+      return dungeonService
+        .getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex.get())
+        .getMinigameTasks()
+        .stream()
+        .filter(minigameTask -> minigameTask.getId().equals(taskId))
+        .findAny()
+        .orElseThrow(() ->
+          new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            String.format(
+              "Task not found in lecture %s in world %s in dungeon %s.",
+              lectureId,
+              worldIndex,
+              dungeonIndex.get()
+            )
+          )
+        );
+    }
   }
 
   /**
@@ -58,29 +81,40 @@ public class MinigameTaskService {
    *
    * @throws ResponseStatusException (404) if lecture or area with its id do not exist
    * @param lectureId the id of the lecture the minigame tasks should be part of
-   * @param staticName the static name of the area where the minigame tasks should be part of
-   * @return a list of minigame tasks as DTO
-   */
-  public Set<MinigameTaskDTO> getMinigameTasksFromArea(final int lectureId, final String staticName) {
-    final Area area = areaService.getAreaFromLectureOrThrowNotFound(lectureId, staticName);
-    return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(area.getMinigameTasks());
-  }
-
-  /**
-   * Get a list of minigame tasks of a lecture and an dungeon
-   *
-   * @throws ResponseStatusException (404) if lecture or area with its id do not exist
-   * @param lectureId the id of the lecture the minigame tasks should be part of
-   * @param staticWorldName the static name of the world where the minigame tasks should be part of
-   * @param staticDungeonName the static name of the dungeon where the minigame tasks should be part of
+   * @param worldIndex the index of the world where the minigame tasks should be part of
    * @return a list of minigame tasks as DTO
    */
   public Set<MinigameTaskDTO> getMinigameTasksFromArea(
     final int lectureId,
-    final String staticWorldName,
-    final String staticDungeonName
+    final int worldIndex,
+    final Optional<Integer> dungeonIndex
   ) {
-    final Dungeon dungeon = dungeonService.getDungeonByIndexFromLecture(lectureId, staticWorldName, staticDungeonName);
+    if (dungeonIndex.isEmpty()) {
+      return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(
+        worldService.getWorldByIndexFromLecture(lectureId, worldIndex).getMinigameTasks()
+      );
+    } else {
+      return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(
+        dungeonService.getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex.get()).getMinigameTasks()
+      );
+    }
+  }
+
+  /**
+   * Get a list of minigame tasks of a lecture and a dungeon
+   *
+   * @throws ResponseStatusException (404) if lecture or area with its id do not exist
+   * @param lectureId the id of the lecture the minigame tasks should be part of
+   * @param worldIndex the index of the world where the minigame tasks should be part of
+   * @param dungeonIndex the index of the dungeon where the minigame tasks should be part of
+   * @return a list of minigame tasks as DTO
+   */
+  public Set<MinigameTaskDTO> getMinigameTasksFromArea(
+    final int lectureId,
+    final int worldIndex,
+    final int dungeonIndex
+  ) {
+    final Dungeon dungeon = dungeonService.getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex);
     return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(dungeon.getMinigameTasks());
   }
 
@@ -89,12 +123,23 @@ public class MinigameTaskService {
    *
    * @throws ResponseStatusException (404) if lecture, area or task by its id do not exist
    * @param lectureId the id of the lecture the minigame task should be part of
-   * @param staticName the static name of the area where the minigame task should be part of
+   * @param worldIndex the index of the world where the minigame task should be part of
+   * @param dungeonIndex the index of the dungen where the minigame task should be part of
    * @param taskId the id of the minigame task searching for
    * @return the found minigame task as DTO
    */
-  public MinigameTaskDTO getMinigameTaskFromArea(final int lectureId, final String staticName, final UUID taskId) {
-    final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(lectureId, staticName, taskId);
+  public MinigameTaskDTO getMinigameTaskFromArea(
+    final int lectureId,
+    final int worldIndex,
+    final Optional<Integer> dungeonIndex,
+    final UUID taskId
+  ) {
+    final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(
+      lectureId,
+      worldIndex,
+      dungeonIndex,
+      taskId
+    );
     return minigameTaskMapper.minigameTaskToMinigameTaskDTO(minigameTask);
   }
 
@@ -105,18 +150,25 @@ public class MinigameTaskService {
    *
    * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture the minigame task should be part of
-   * @param staticName the static name of the area where the minigame task should be part of
+   * @param worldIndex the index of the world where the minigame task should be part of
+   * @param dungeonIndex the index of the dungeon where the minigame task should be part of
    * @param taskId the id of the minigame task that should get updated
    * @param taskDTO the updated parameters
    * @return the updated area as DTO
    */
   public MinigameTaskDTO updateMinigameTaskFromArea(
     final int lectureId,
-    final String staticName,
+    final int worldIndex,
+    final Optional<Integer> dungeonIndex,
     final UUID taskId,
     final MinigameTaskDTO taskDTO
   ) {
-    final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(lectureId, staticName, taskId);
+    final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(
+      lectureId,
+      worldIndex,
+      dungeonIndex,
+      taskId
+    );
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());
     final MinigameTask updatedMinigameTask = minigameTaskRepository.save(minigameTask);

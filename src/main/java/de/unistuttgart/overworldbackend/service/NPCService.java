@@ -17,9 +17,6 @@ public class NPCService {
   private NPCRepository npcRepository;
 
   @Autowired
-  private AreaService areaService;
-
-  @Autowired
   private WorldService worldService;
 
   @Autowired
