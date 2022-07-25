@@ -50,7 +50,7 @@ public class MinigameTaskController {
   }
 
   @Operation(summary = "Get a task by its id from a dungeon")
-  @GetMapping("/dungeons/{staticDungeonName}/minigame-tasks/{taskId}")
+  @GetMapping("/dungeons/{dungoenIndex}/minigame-tasks/{taskId}")
   public MinigameTaskDTO getMinigameTaskFromDungeon(
     @PathVariable int lectureId,
     @PathVariable int worldIndex,
@@ -80,7 +80,7 @@ public class MinigameTaskController {
   }
 
   @Operation(summary = "Update a task by its id from a dungeon")
-  @PutMapping("/dungeons/{staticDungeonName}/minigame-tasks/{taskId}")
+  @PutMapping("/dungeons/{dungeonIndex}/minigame-tasks/{taskId}")
   public MinigameTaskDTO updateMinigameTasksFromDungeon(
     @PathVariable int lectureId,
     @PathVariable int worldIndex,

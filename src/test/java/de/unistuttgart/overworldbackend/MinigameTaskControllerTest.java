@@ -62,12 +62,12 @@ class MinigameTaskControllerTest {
     final MinigameTask minigameTask1 = new MinigameTask();
     minigameTask1.setConfigurationId(UUID.randomUUID());
     minigameTask1.setGame("Bugfinder");
-    minigameTask1.setLocation("w1-p1");
+    minigameTask1.setIndex(1);
 
     final MinigameTask minigameTask2 = new MinigameTask();
     minigameTask2.setConfigurationId(UUID.randomUUID());
     minigameTask2.setGame("Moorhuhn");
-    minigameTask2.setLocation("w1-p2");
+    minigameTask2.setIndex(2);
 
     final World world = new World();
     world.setStaticName("Winter Wonderland");
@@ -109,7 +109,7 @@ class MinigameTaskControllerTest {
     assertNotNull(initialTask2.getId());
     assertNotNull(initialTaskDTO2.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getStaticName() + "/minigame-tasks";
+    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getIndex() + "/minigame-tasks";
 
     objectMapper = new ObjectMapper();
   }

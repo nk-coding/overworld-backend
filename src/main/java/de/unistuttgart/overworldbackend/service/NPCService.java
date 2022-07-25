@@ -3,7 +3,7 @@ package de.unistuttgart.overworldbackend.service;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.repositories.NPCRepository;
-import java.util.Set;
+
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +37,7 @@ public class NPCService {
   public NPC getNPCFromWorld(final int lectureId, final int worldIndex, int npcIndex) {
     UUID worldId = worldService.getWorldByIndexFromLecture(lectureId, worldIndex).getId();
     return npcRepository
-      .findByNPCIndexAndLectureIdAndAreaId(npcIndex, lectureId, worldId)
+      .findByIndexAndLectureIdAndAreaId(npcIndex, lectureId, worldId)
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
@@ -64,7 +64,7 @@ public class NPCService {
   public NPC getNPCFromDungeon(final int lectureId, final int worldIndex, final int dungeonIndex, int npcIndex) {
     UUID dungeonId = dungeonService.getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex).getId();
     return npcRepository
-      .findByNPCIndexAndLectureIdAndAreaId(npcIndex, lectureId, dungeonId)
+      .findByIndexAndLectureIdAndAreaId(npcIndex, lectureId, dungeonId)
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
