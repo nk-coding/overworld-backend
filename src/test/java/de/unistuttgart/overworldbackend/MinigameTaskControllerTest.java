@@ -109,7 +109,7 @@ class MinigameTaskControllerTest {
     assertNotNull(initialTask2.getId());
     assertNotNull(initialTaskDTO2.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getId() + "/minigame-tasks";
+    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getStaticName() + "/minigame-tasks";
 
     objectMapper = new ObjectMapper();
   }

@@ -21,6 +21,9 @@ public class MinigameTaskService {
   private AreaService areaService;
 
   @Autowired
+  private DungeonService dungeonService;
+
+  @Autowired
   private MinigameTaskMapper minigameTaskMapper;
 
   /**
@@ -28,17 +31,17 @@ public class MinigameTaskService {
    *
    * @throws ResponseStatusException (404) if area or task with its id could not be found in the lecture
    * @param lectureId the id of the lecture the minigame task is part of
-   * @param areaId the id of the area the task is part of
+   * @param staticName the static name of the area the task is part of
    * @param taskId the id of the task searching for
    * @return the found task object
    */
   public MinigameTask getMinigameTaskFromAreaOrThrowNotFound(
     final int lectureId,
-    final UUID areaId,
+    final String staticName,
     final UUID taskId
   ) {
     return areaService
-      .getAreaFromLectureOrThrowNotFound(lectureId, areaId)
+      .getAreaFromLectureOrThrowNotFound(lectureId, staticName)
       .getMinigameTasks()
       .stream()
       .filter(task -> task.getId().equals(taskId))
@@ -46,7 +49,7 @@ public class MinigameTaskService {
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format("There is no area with id %s in lecture with id %s.", areaId, lectureId)
+          String.format("There is no area with id %s in lecture with id %s.", staticName, lectureId)
         )
       );
   }
@@ -56,12 +59,26 @@ public class MinigameTaskService {
    *
    * @throws ResponseStatusException (404) if lecture or area with its id do not exist
    * @param lectureId the id of the lecture the minigame tasks should be part of
-   * @param areaId the id of the area where the minigame tasks should be part of
+   * @param staticName the static name of the area where the minigame tasks should be part of
    * @return a list of minigame tasks as DTO
    */
-  public Set<MinigameTaskDTO> getMinigameTasksFromArea(final int lectureId, final UUID areaId) {
-    final Area area = areaService.getAreaFromLectureOrThrowNotFound(lectureId, areaId);
+  public Set<MinigameTaskDTO> getMinigameTasksFromArea(final int lectureId, final String staticName) {
+    final Area area = areaService.getAreaFromLectureOrThrowNotFound(lectureId, staticName);
     return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(area.getMinigameTasks());
+  }
+
+  /**
+   * Get a list of minigame tasks of a lecture and an dungeon
+   *
+   * @throws ResponseStatusException (404) if lecture or area with its id do not exist
+   * @param lectureId the id of the lecture the minigame tasks should be part of
+   * @param staticWorldName the static name of the world where the minigame tasks should be part of
+   * @param staticDungeonName the static name of the dungeon where the minigame tasks should be part of
+   * @return a list of minigame tasks as DTO
+   */
+  public Set<MinigameTaskDTO> getMinigameTasksFromArea(final int lectureId, final String staticWorldName, final String staticDungeonName) {
+    final Dungeon dungeon = dungeonService.getDungeonByStaticNameFromLecture(lectureId, staticWorldName, staticDungeonName);
+    return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(dungeon.getMinigameTasks());
   }
 
   /**
@@ -69,12 +86,12 @@ public class MinigameTaskService {
    *
    * @throws ResponseStatusException (404) if lecture, area or task by its id do not exist
    * @param lectureId the id of the lecture the minigame task should be part of
-   * @param areaId the id of the area where the minigame task should be part of
+   * @param staticName the static name of the area where the minigame task should be part of
    * @param taskId the id of the minigame task searching for
    * @return the found minigame task as DTO
    */
-  public MinigameTaskDTO getMinigameTaskFromArea(final int lectureId, final UUID areaId, final UUID taskId) {
-    final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(lectureId, areaId, taskId);
+  public MinigameTaskDTO getMinigameTaskFromArea(final int lectureId, final String staticName, final UUID taskId) {
+    final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(lectureId, staticName, taskId);
     return minigameTaskMapper.minigameTaskToMinigameTaskDTO(minigameTask);
   }
 
@@ -85,18 +102,18 @@ public class MinigameTaskService {
    *
    * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
    * @param lectureId the id of the lecture the minigame task should be part of
-   * @param areaId the id of the area where the minigame task should be part of
+   * @param staticName the static name of the area where the minigame task should be part of
    * @param taskId the id of the minigame task that should get updated
    * @param taskDTO the updated parameters
    * @return the updated area as DTO
    */
   public MinigameTaskDTO updateMinigameTaskFromArea(
     final int lectureId,
-    final UUID areaId,
+    final String staticName,
     final UUID taskId,
     final MinigameTaskDTO taskDTO
   ) {
-    final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(lectureId, areaId, taskId);
+    final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(lectureId, staticName, taskId);
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());
     final MinigameTask updatedMinigameTask = minigameTaskRepository.save(minigameTask);

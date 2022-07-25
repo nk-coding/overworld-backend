@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "NPC", description = "Get and update npcs from areas (world or dungeons)")
 @RestController
 @Slf4j
-@RequestMapping("/lectures/{lectureId}/worlds/{worldId}")
+@RequestMapping("/lectures/{lectureId}/worlds/{staticWorldName}")
 public class NPCController {
 
   @Autowired
@@ -24,24 +24,24 @@ public class NPCController {
   @PutMapping("/npcs/{npcId}")
   public NPCDTO updateNPCFromWorld(
     @PathVariable int lectureId,
-    @PathVariable UUID worldId,
+    @PathVariable String staticWorldName,
     @PathVariable UUID npcId,
     @RequestBody NPCDTO npcDTO
   ) {
-    log.debug("update npc {} of world {} of lecture {}", npcId, worldId, lectureId);
-    return npcService.updateNPCFromArea(lectureId, worldId, npcId, npcDTO);
+    log.debug("update npc {} of world {} of lecture {}", npcId, staticWorldName, lectureId);
+    return npcService.updateNPCFromArea(lectureId, staticWorldName, npcId, npcDTO);
   }
 
   @Operation(summary = "Update a npc by its id from a dungeon")
-  @PutMapping("/dungeons/{dungeonId}/npcs/{npcId}")
+  @PutMapping("/dungeons/{staticDungeonName}/npcs/{npcId}")
   public NPCDTO updateNPCFromDungeon(
     @PathVariable int lectureId,
-    @PathVariable UUID worldId,
-    @PathVariable UUID dungeonId,
+    @PathVariable String staticWorldName,
+    @PathVariable String staticDungeonName,
     @PathVariable UUID npcId,
     @RequestBody NPCDTO npcDTO
   ) {
-    log.debug("update npc {} of dungeon {} from world {} of lecture {}", npcId, dungeonId, worldId, lectureId);
-    return npcService.updateNPCFromArea(lectureId, dungeonId, npcId, npcDTO);
+    log.debug("update npc {} of dungeon {} from world {} of lecture {}", npcId, staticDungeonName, staticWorldName, lectureId);
+    return npcService.updateNPCFromArea(lectureId, staticDungeonName, npcId, npcDTO);
   }
 }
