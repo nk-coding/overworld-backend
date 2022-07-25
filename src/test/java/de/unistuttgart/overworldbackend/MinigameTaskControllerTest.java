@@ -42,8 +42,8 @@ class MinigameTaskControllerTest {
   @Autowired
   private MinigameTaskMapper minigameTaskMapper;
 
-   @Autowired
-   private DungeonMapper dungeonMapper;
+  @Autowired
+  private DungeonMapper dungeonMapper;
 
   private String fullURL;
   private ObjectMapper objectMapper;
@@ -88,7 +88,6 @@ class MinigameTaskControllerTest {
     dungeon.setMinigameTasks(Set.of(minigameTask3));
     dungeon.setNpcs(Set.of());
 
-
     final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
@@ -125,12 +124,12 @@ class MinigameTaskControllerTest {
     initialTaskDTO2 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask2);
 
     initialTask3 =
-            initialDungeon
-                    .getMinigameTasks()
-                    .stream()
-                    .filter(task -> task.getId().equals(minigameTask3.getId()))
-                    .findAny()
-                    .get();
+      initialDungeon
+        .getMinigameTasks()
+        .stream()
+        .filter(task -> task.getId().equals(minigameTask3.getId()))
+        .findAny()
+        .get();
     initialTaskDTO3 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
 
     assertNotNull(initialWorld.getId());
@@ -164,12 +163,15 @@ class MinigameTaskControllerTest {
   @Test
   void getMinigameTasksFromDungeon() throws Exception {
     final MvcResult result = mvc
-            .perform(get(fullURL + "/dungeons/" + initialDungeon.getIndex()  + "/minigame-tasks").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(
+        get(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks")
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
 
     final Set<MinigameTaskDTO> minigameTasks = Set.of(
-            objectMapper.readValue(result.getResponse().getContentAsString(), MinigameTaskDTO[].class)
+      objectMapper.readValue(result.getResponse().getContentAsString(), MinigameTaskDTO[].class)
     );
 
     assertSame(initialDungeonDTO.getMinigameTasks().size(), minigameTasks.size());
@@ -192,24 +194,38 @@ class MinigameTaskControllerTest {
   }
 
   @Test
+  void getMinigameTaskFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
+    mvc
+      .perform(get(fullURL + "/minigame-tasks/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isNotFound())
+      .andReturn();
+  }
+
+  @Test
   void getMinigameTaskFromDungeon() throws Exception {
     final MvcResult result = mvc
-            .perform(get(fullURL + "/dungeons/" + initialDungeon.getIndex()  + "/minigame-tasks/"+ initialTask3.getId()).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(
+        get(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getId())
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
 
     final MinigameTaskDTO minigameTaskDTOResult = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            MinigameTaskDTO.class
+      result.getResponse().getContentAsString(),
+      MinigameTaskDTO.class
     );
 
     assertEquals(initialTaskDTO3, minigameTaskDTOResult);
   }
 
   @Test
-  void getMinigameTaskFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
+  void getMinigameTaskFromDungeon_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL  + "/minigame-tasks/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        get(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + UUID.randomUUID())
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -224,7 +240,11 @@ class MinigameTaskControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL  + "/minigame-tasks/" + initialTask1.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/minigame-tasks/" + initialTask1.getId())
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -249,13 +269,17 @@ class MinigameTaskControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
     final MvcResult result = mvc
-            .perform(put(fullURL  + "/dungeons/" + initialDungeon.getIndex()  + "/minigame-tasks/"+ initialTask3.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(
+        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getId())
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
 
     final MinigameTaskDTO updatedMinigameTaskDTOResult = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            MinigameTaskDTO.class
+      result.getResponse().getContentAsString(),
+      MinigameTaskDTO.class
     );
 
     assertEquals(initialTaskDTO3.getId(), updatedMinigameTaskDTOResult.getId());

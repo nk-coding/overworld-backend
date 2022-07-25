@@ -24,7 +24,7 @@ public class MinigameTaskController {
   @GetMapping("/minigame-tasks")
   public Set<MinigameTaskDTO> getMinigameTasksFromWorld(@PathVariable int lectureId, @PathVariable int worldIndex) {
     log.debug("get tasks of world {} of lecture {}", worldIndex, lectureId);
-    return minigameTaskService.getMinigameTasksFromArea(lectureId, worldIndex, Optional.empty());
+    return minigameTaskService.getMinigameTasksFromArea(lectureId, worldIndex);
   }
 
   @Operation(summary = "Get all tasks from a dungeon")
