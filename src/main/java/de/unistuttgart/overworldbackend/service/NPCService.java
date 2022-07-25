@@ -64,16 +64,20 @@ public class NPCService {
    * @return the found npc
    */
   public NPC getNPCFromDungeon(final int lectureId, final int worldIndex, final int dungeonIndex, int npcIndex) {
-    UUID dungeonId = dungeonService.getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex).getId();
-    return npcRepository
-      .findByIndexAndLectureIdAndAreaId(npcIndex, lectureId, dungeonId)
+    return dungeonService
+      .getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex)
+      .getNpcs()
+      .stream()
+      .filter(npc -> npc.getIndex() == npcIndex)
+      .findAny()
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
           String.format(
-            "There is no npc with index %s dungeon with index %s in lecture with id %s.",
+            "There is no npc with index %s dungeon with index %s, world with index %s in lecture with id %s.",
             npcIndex,
-            dungeonId,
+            dungeonIndex,
+            worldIndex,
             lectureId
           )
         )
