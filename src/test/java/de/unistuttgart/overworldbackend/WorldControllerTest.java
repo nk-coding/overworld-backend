@@ -49,6 +49,7 @@ class WorldControllerTest {
     lectureRepository.deleteAll();
 
     final World world = new World();
+    world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
@@ -81,7 +82,7 @@ class WorldControllerTest {
     );
     final WorldDTO worldDTO = worlds
       .stream()
-      .filter(world -> world.getStaticName().equals(initialWorldDTO.getStaticName()))
+      .filter(world -> world.getIndex() == initialWorldDTO.getIndex())
       .findAny()
       .get();
     assertSame(1, worlds.size());
@@ -92,7 +93,7 @@ class WorldControllerTest {
   @Test
   void getWorldFromLecture() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialWorldDTO.getStaticName()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialWorldDTO.getIndex()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -121,7 +122,7 @@ class WorldControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialWorldDTO.getStaticName()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        put(fullURL + "/" + initialWorldDTO.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
@@ -132,6 +133,7 @@ class WorldControllerTest {
     );
 
     assertEquals(initialWorldDTO.getId(), updatedWorldDTOResult.getId());
+    assertEquals(initialWorldDTO.getIndex(), updatedWorldDTOResult.getIndex());
     assertEquals(newTopicName, updatedWorldDTOResult.getTopicName());
     assertEquals(newActiveStatus, updatedWorldDTOResult.isActive());
     assertEquals(initialWorldDTO.getStaticName(), updatedWorldDTOResult.getStaticName());
@@ -154,7 +156,7 @@ class WorldControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialWorld.getStaticName()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        put(fullURL + "/" + initialWorld.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
@@ -165,6 +167,7 @@ class WorldControllerTest {
     );
 
     assertEquals(initialWorldDTO.getId(), updatedWorldDTOResult.getId());
+    assertEquals(initialWorldDTO.getIndex(), updatedWorldDTOResult.getIndex());
     assertEquals(newTopicName, updatedWorldDTOResult.getTopicName());
     assertEquals(newActiveStatus, updatedWorldDTOResult.isActive());
     assertNotEquals(newStaticName, updatedWorldDTOResult.getStaticName());

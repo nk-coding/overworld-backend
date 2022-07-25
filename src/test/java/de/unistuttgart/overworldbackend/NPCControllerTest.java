@@ -57,9 +57,10 @@ class NPCControllerTest {
 
     final NPC npc = new NPC();
     npc.setText("You want to learn PSE?\n" + "This is so cool\n" + "Let's go!");
-    npc.setStartLocation("w0-n0");
+    npc.setIndex(1);
 
     final World world = new World();
+    world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
@@ -82,7 +83,7 @@ class NPCControllerTest {
     assertNotNull(initialNPC.getId());
     assertNotNull(initialNPCDTO.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getStaticName() + "/npcs";
+    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getIndex() + "/npcs";
 
     objectMapper = new ObjectMapper();
   }
@@ -93,7 +94,7 @@ class NPCControllerTest {
     npcDTO.setText("Hey ho");
     final String bodyValue = objectMapper.writeValueAsString(npcDTO);
     mvc
-      .perform(put(fullURL + "/" + UUID.randomUUID()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(put(fullURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -107,7 +108,7 @@ class NPCControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updateNPCDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialNPCDTO.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(put(fullURL + "/" + initialNPCDTO.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -115,6 +116,6 @@ class NPCControllerTest {
 
     assertEquals(initialNPCDTO.getId(), updatedNPCDTOResult.getId());
     assertEquals(newText, updatedNPCDTOResult.getText());
-    assertEquals(initialNPCDTO.getStartLocation(), updatedNPCDTOResult.getStartLocation());
+    assertEquals(initialNPCDTO.getIndex(), updatedNPCDTOResult.getIndex());
   }
 }
