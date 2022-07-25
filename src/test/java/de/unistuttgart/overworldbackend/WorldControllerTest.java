@@ -106,7 +106,7 @@ class WorldControllerTest {
   @Test
   void getWorldFromLecture_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + Integer.MAX_VALUE).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -155,9 +155,7 @@ class WorldControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updatedWorldDTO);
 
     final MvcResult result = mvc
-      .perform(
-        put(fullURL + "/" + initialWorld.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
-      )
+      .perform(put(fullURL + "/" + initialWorld.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
