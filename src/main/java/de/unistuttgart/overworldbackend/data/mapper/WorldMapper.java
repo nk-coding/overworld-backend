@@ -2,9 +2,8 @@ package de.unistuttgart.overworldbackend.data.mapper;
 
 import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
-import org.mapstruct.Mapper;
-
 import java.util.Set;
+import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface WorldMapper {
