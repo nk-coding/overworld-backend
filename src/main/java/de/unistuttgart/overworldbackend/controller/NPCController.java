@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "NPC", description = "Get and update npcs from areas (world or dungeons)")
+@Tag(name = "NPC", description = "Get and update NPCs from areas")
 @RestController
 @Slf4j
 @RequestMapping("/lectures/{lectureId}/worlds/{worldIndex}")
@@ -17,7 +17,7 @@ public class NPCController {
   @Autowired
   private NPCService npcService;
 
-  @Operation(summary = "Update a npc by its id from a world")
+  @Operation(summary = "Update a NPC by its id in a world")
   @PutMapping("/npcs/{npcIndex}")
   public NPCDTO updateNPCFromWorld(
     @PathVariable int lectureId,
@@ -29,7 +29,7 @@ public class NPCController {
     return npcService.updateNPCFromWorld(lectureId, worldIndex, npcIndex, npcDTO);
   }
 
-  @Operation(summary = "Update a npc by its id from a dungeon")
+  @Operation(summary = "Update a NPC by its id in a dungeon")
   @PutMapping("/dungeons/{dungeonIndex}/npcs/{npcIndex}")
   public NPCDTO updateNPCFromDungeon(
     @PathVariable int lectureId,

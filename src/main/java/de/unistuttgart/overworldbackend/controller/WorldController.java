@@ -33,14 +33,14 @@ public class WorldController {
     return worldMapper.worldsToWorldDTOs(worldRepository.findAllByLectureId(lectureId));
   }
 
-  @Operation(summary = "Get a world by its static name from a lecture by its id")
+  @Operation(summary = "Get a world by its index from a lecture")
   @GetMapping("/{worldIndex}")
   public WorldDTO getWorldByStaticName(@PathVariable int lectureId, @PathVariable int worldIndex) {
     log.debug("get world by index {} of lecture {}", worldIndex, lectureId);
     return worldMapper.worldToWorldDTO(worldService.getWorldByIndexFromLecture(lectureId, worldIndex));
   }
 
-  @Operation(summary = "Update a world by static name id from a lecture by its id")
+  @Operation(summary = "Update a world by its index from a lecture")
   @PutMapping("/{worldIndex}")
   public WorldDTO updateWorld(
     @PathVariable int lectureId,

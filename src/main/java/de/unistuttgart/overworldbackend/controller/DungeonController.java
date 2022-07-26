@@ -22,14 +22,14 @@ public class DungeonController {
   @Autowired
   private DungeonMapper dungeonMapper;
 
-  @Operation(summary = "Get all dungeons of a world by its id from a lecture by its id")
+  @Operation(summary = "Get all dungeons of a world")
   @GetMapping("")
   public Set<DungeonDTO> getDungeons(@PathVariable int lectureId, @PathVariable int worldIndex) {
     log.debug("get dungeons of world {} of lecture {}", worldIndex, lectureId);
     return dungeonService.getDungeonsFromWorld(lectureId, worldIndex);
   }
 
-  @Operation(summary = "Get a dungeon by its static name of a world by its id from a lecture by its id")
+  @Operation(summary = "Get a dungeon by its index in a world")
   @GetMapping("/{dungeonIndex}")
   public DungeonDTO getDungeon(
     @PathVariable int lectureId,
@@ -42,7 +42,7 @@ public class DungeonController {
     );
   }
 
-  @Operation(summary = "Update a dungeon by its static name of a world by its id from a lecture by its id")
+  @Operation(summary = "Update a dungeon by its index in a world")
   @PutMapping("/{dungeonIndex}")
   public DungeonDTO updateDungeon(
     @PathVariable int lectureId,
