@@ -112,7 +112,7 @@ public class LectureService {
     AtomicInteger dungeonId = new AtomicInteger(0);
     worldConfig
       .getDungeons()
-      .forEach(dungeonConfig -> dungeons.add(configureDungeon(worldId, dungeonId.incrementAndGet(), dungeonConfig)));
+      .forEach(dungeonConfig -> dungeons.add(configureDungeon(dungeonId.incrementAndGet(), dungeonConfig)));
     for (int minigameIndex = 1; minigameIndex < worldConfig.getNumberOfMinigames(); minigameIndex++) {
       MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);
@@ -125,7 +125,7 @@ public class LectureService {
     worlds.add(world);
   }
 
-  private Dungeon configureDungeon(int worldId, int dungeonId, DungeonConfig dungeonConfig) {
+  private Dungeon configureDungeon(int dungeonId, DungeonConfig dungeonConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
     for (int minigameIndex = 0; minigameIndex < dungeonConfig.getNumberOfMinigames(); minigameIndex++) {

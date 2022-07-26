@@ -256,7 +256,7 @@ class MinigameTaskControllerTest {
     assertEquals(initialTaskDTO1.getId(), updatedMinigameTaskDTOResult.getId());
     assertEquals(newGame, updatedMinigameTaskDTOResult.getGame());
     assertEquals(newConfigurationId, updatedMinigameTaskDTOResult.getConfigurationId());
-    assertEquals(updatedMinigameTaskDTOResult, updatedMinigameTaskDTOResult);
+    assertEquals(updateMinigameTaskDTO, updatedMinigameTaskDTOResult);
   }
 
   @Test
@@ -285,6 +285,5 @@ class MinigameTaskControllerTest {
     assertEquals(initialTaskDTO3.getId(), updatedMinigameTaskDTOResult.getId());
     assertEquals(newGame, updatedMinigameTaskDTOResult.getGame());
     assertEquals(newConfigurationId, updatedMinigameTaskDTOResult.getConfigurationId());
-    assertEquals(updatedMinigameTaskDTOResult, updatedMinigameTaskDTOResult);
   }
 }
