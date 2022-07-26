@@ -24,6 +24,9 @@ public class PlayerStatisticService {
   @Autowired
   private PlayerstatisticMapper playerstatisticMapper;
 
+  @Autowired
+  private WorldService worldService;
+
   /**
    * @throws ResponseStatusException when playerstatistic with lectureId and userId could not be found
    * @param lectureId the id of the lecture
@@ -72,9 +75,13 @@ public class PlayerStatisticService {
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setUserId(player.getUserId());
     playerstatistic.setUsername(player.getUsername());
-    playerstatistic.setCurrentArea(null);
+    playerstatistic.setCurrentArea(getFirstArea(lectureId));
     playerstatistic.setKnowledge(0);
     Playerstatistic savedPlayerstatistic = playerstatisticRepository.save(playerstatistic);
     return playerstatisticMapper.playerstatisticToPlayerstatisticDTO(savedPlayerstatistic);
+  }
+
+  private World getFirstArea(int lectureId) {
+    return worldService.getWorldByIndexFromLecture(lectureId, 1);
   }
 }
