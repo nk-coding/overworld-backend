@@ -1,8 +1,16 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import de.unistuttgart.overworldbackend.data.LectureDTO;
+import de.unistuttgart.overworldbackend.data.LectureInitialData;
+import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
+import de.unistuttgart.overworldbackend.repositories.LectureRepository;
+import de.unistuttgart.overworldbackend.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Lecture", description = "Modify lectures")
@@ -11,33 +19,48 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/lectures")
 public class LectureController {
 
+  @Autowired
+  private LectureRepository lectureRepository;
+
+  @Autowired
+  private LectureService lectureService;
+
+  @Autowired
+  private LectureMapper lectureMapper;
+
   @Operation(summary = "Get all lectures")
   @GetMapping("")
-  public void getLectures() {
+  public List<LectureDTO> getLectures() {
     log.debug("get lectures");
+    return lectureMapper.lecturesToLectureDTOs(lectureRepository.findAll());
   }
 
   @Operation(summary = "Get a lecture by its id")
   @GetMapping("/{id}")
-  public void getLecture(@PathVariable int id) {
+  public LectureDTO getLecture(@PathVariable int id) {
     log.debug("get lecture {}", id);
+    return lectureMapper.lectureToLectureDTO(lectureService.getLecture(id));
   }
 
   @Operation(summary = "Create a lecture")
+  @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
-  public void createLecture() {
+  public LectureDTO createLecture(@RequestBody LectureInitialData lecture) {
     log.debug("create lecture {}");
+    return lectureService.createLecture(lecture);
   }
 
   @Operation(summary = "Update a lecture by its id")
   @PutMapping("/{id}")
-  public void updateLecture(@PathVariable int id) {
-    log.debug("update lecture {}", id);
+  public LectureDTO updateLecture(@PathVariable int id, @RequestBody LectureDTO lectureDTO) {
+    log.debug("update lecture {} with {}", id, lectureDTO);
+    return lectureService.updateLecture(id, lectureDTO);
   }
 
   @Operation(summary = "Delete a lecture by its id")
   @DeleteMapping("/{id}")
-  public void deleteLecture(@PathVariable int id) {
+  public LectureDTO deleteLecture(@PathVariable int id) {
     log.debug("delete lecture {}", id);
+    return lectureService.deleteLecture(id);
   }
 }

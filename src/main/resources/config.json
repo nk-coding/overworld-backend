@@ -1,0 +1,16 @@
+{
+  "worlds": [
+    {
+      "dungeons": [
+        {
+          "staticName": "dungeon1",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        }
+      ],
+      "staticName": "Blooming Savanna",
+      "numberOfMinigames": 12,
+      "numberOfNPCs": 10
+    }
+  ]
+}
