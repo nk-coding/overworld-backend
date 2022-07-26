@@ -6,9 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
-import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
-import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
-import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
+import de.unistuttgart.overworldbackend.data.mapper.*;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
@@ -53,6 +51,12 @@ class MinigameInputControllerTest {
   private PlayerstatisticMapper playerstatisticMapper;
 
   @Autowired
+  private WorldMapper worldMapper;
+
+  @Autowired
+  private DungeonMapper dungeonMapper;
+
+  @Autowired
   private MinigameTaskMapper minigameTaskMapper;
 
   private final String API_URL = "/api/v1/overworld";
@@ -61,6 +65,12 @@ class MinigameInputControllerTest {
 
   private Lecture initialLecture;
   private LectureDTO initialLectureDTO;
+
+  private World initialWorld;
+  private WorldDTO initialWorldDTO;
+
+  private Dungeon initialDungeon;
+  private DungeonDTO initialDungeonDTO;
 
   private Playerstatistic initialPlayerstatistic;
   private PlayerstatisticDTO initialPlayerstatisticDTO;
@@ -72,13 +82,24 @@ class MinigameInputControllerTest {
   public void createBasicData() {
     lectureRepository.deleteAll();
 
+    final MinigameTask dungeonMinigameTask1 = new MinigameTask();
+    dungeonMinigameTask1.setConfigurationId(UUID.randomUUID());
+    dungeonMinigameTask1.setGame("Bugfinder");
+    dungeonMinigameTask1.setIndex(1);
+
+    final MinigameTask dungeonMinigameTask2 = new MinigameTask();
+    dungeonMinigameTask2.setConfigurationId(UUID.randomUUID());
+    dungeonMinigameTask2.setGame("Moorhuhn");
+    dungeonMinigameTask2.setIndex(2);
+
     final Dungeon dungeon = new Dungeon();
     dungeon.setStaticName("Dark Dungeon");
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
-    dungeon.setMinigameTasks(Set.of());
+    dungeon.setMinigameTasks(Set.of(dungeonMinigameTask1, dungeonMinigameTask2));
     dungeon.setNpcs(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
+    dungeons.add(dungeon);
 
     final MinigameTask minigameTask = new MinigameTask();
     minigameTask.setConfigurationId(UUID.randomUUID());
@@ -100,8 +121,13 @@ class MinigameInputControllerTest {
     initialLecture = lectureRepository.save(lecture);
     initialLectureDTO = lectureMapper.lectureToLectureDTO(initialLecture);
 
-    initialMinigameTask =
-      initialLecture.getWorlds().stream().findFirst().get().getMinigameTasks().stream().findFirst().get();
+    initialWorld = initialLecture.getWorlds().stream().findFirst().get();
+    initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
+
+    initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
+    initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
+
+    initialMinigameTask = initialWorld.getMinigameTasks().stream().findFirst().get();
     initialMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialMinigameTask);
 
     final Playerstatistic playerstatistic = new Playerstatistic();
@@ -149,6 +175,9 @@ class MinigameInputControllerTest {
     );
     assertEquals(playerTaskStatisticData.getScore(), playerTaskStatisticDTO.getHighscore());
 
+    final Playerstatistic playerstatistic = playerstatisticRepository.findById(initialPlayerstatisticDTO.getId()).get();
+    assertSame(0, playerstatistic.getCompletedDungeons().size());
+
     // check that action log was created
     final PlayerTaskActionLog actionLog = playerTaskActionLogRepository
       .findAll()
@@ -164,6 +193,27 @@ class MinigameInputControllerTest {
       playerTaskStatisticData.getUserId(),
       actionLog.getPlayerTaskStatistic().getPlayerstatistic().getUserId()
     );
+  }
+
+  @Test
+  void submitAllMinigames_CompletesDungeon() throws Exception {
+    assertSame(0, initialPlayerstatistic.getCompletedDungeons().size());
+    for (MinigameTask minigameTask : initialDungeon.getMinigameTasks()) {
+      final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+      playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
+      playerTaskStatisticData.setGame(minigameTask.getGame());
+      playerTaskStatisticData.setConfigurationId(minigameTask.getConfigurationId());
+      playerTaskStatisticData.setScore(80);
+
+      final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+
+      mvc
+        .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+    }
+
+    final Playerstatistic playerstatistic = playerstatisticRepository.findById(initialPlayerstatisticDTO.getId()).get();
+    assertSame(1, playerstatistic.getCompletedDungeons().size());
   }
 
   @Test

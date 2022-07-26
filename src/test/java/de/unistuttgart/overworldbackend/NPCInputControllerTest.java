@@ -11,10 +11,9 @@ import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.*;
+import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import java.util.*;
 import javax.transaction.Transactional;
-
-import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,9 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @AutoConfigureMockMvc
 @Transactional
@@ -155,7 +154,10 @@ class NPCInputControllerTest {
       .get();
     assertNotNull(actionLog);
     assertEquals(playerNPCStatisticData.getNpcId(), actionLog.getPlayerNPCStatistic().getNpc().getId());
-    assertEquals(ReflectionTestUtils.getField(playerNPCStatisticService,"gainedKnowledgePerNPC"), actionLog.getGainedKnowledge());
+    assertEquals(
+      ReflectionTestUtils.getField(playerNPCStatisticService, "gainedKnowledgePerNPC"),
+      actionLog.getGainedKnowledge()
+    );
   }
 
   @Test
