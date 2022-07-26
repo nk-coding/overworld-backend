@@ -1,10 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import java.util.UUID;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "index", "area_id", "lecture_id" }) })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
