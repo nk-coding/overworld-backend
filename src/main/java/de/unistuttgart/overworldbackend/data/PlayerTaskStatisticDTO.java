@@ -19,12 +19,6 @@ public class PlayerTaskStatisticDTO {
   @Nullable
   UUID id;
 
-  PlayerstatisticDTO playerstatistic;
-
-  MinigameTaskDTO minigameTask;
-
-  LectureDTO lecture;
-
   @Min(0)
   @Max(100)
   long highscore;

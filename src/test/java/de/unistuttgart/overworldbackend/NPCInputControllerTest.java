@@ -101,7 +101,9 @@ class NPCInputControllerTest {
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
-    playerstatistic.setCurrentArea(initialLecture.getWorlds().stream().findFirst().get());
+    AreaLocation areaLocation = new AreaLocation();
+    areaLocation.setWorld(initialLecture.getWorlds().stream().findFirst().get());
+    playerstatistic.setCurrentAreaLocation(areaLocation);
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
@@ -113,8 +115,6 @@ class NPCInputControllerTest {
 
     assertEquals(initialLecture.getId(), initialNpc.getLecture().getId());
     assertEquals(initialLecture.getId(), initialPlayerstatistic.getLecture().getId());
-    assertEquals(initialLecture.getId(), initialPlayerstatisticDTO.getLecture().getId());
-
     fullURL = "/internal";
 
     objectMapper = new ObjectMapper();
@@ -138,8 +138,6 @@ class NPCInputControllerTest {
       result.getResponse().getContentAsString(),
       PlayerNPCStatisticDTO.class
     );
-    assertEquals(initialPlayerstatisticDTO.getLecture(), playerNPCStatisticDTO.getLecture());
-    assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
     assertEquals(playerNPCStatisticData.isCompleted(), playerNPCStatisticDTO.isCompleted());
 
     // check that action log was created

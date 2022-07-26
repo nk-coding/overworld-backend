@@ -76,9 +76,14 @@ class PlayerstatisticControllerTest {
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
-    playerstatistic.setCurrentArea(initialLecture.getWorlds().stream().findFirst().get());
+
+    AreaLocation areaLocation = new AreaLocation();
+    areaLocation.setWorld(initialLecture.getWorlds().stream().findFirst().get());
+    playerstatistic.setCurrentAreaLocation(areaLocation);
+
     playerstatistic.setKnowledge(new Random(10).nextLong());
-    playerstatistic.setUnlockedAreas(Arrays.asList(initialLecture.getWorlds().stream().findFirst().get()));
+
+    playerstatistic.setUnlockedAreas(Arrays.asList(areaLocation));
     playerstatistic.setCompletedDungeons(new ArrayList<>());
     initialPlayerstatistic = playerstatisticRepository.save(playerstatistic);
     initialPlayerstatisticDTO = playerstatisticMapper.playerstatisticToPlayerstatisticDTO(initialPlayerstatistic);
@@ -136,6 +141,6 @@ class PlayerstatisticControllerTest {
     assertEquals(0, createdPlayerstatisticDTOResult.getKnowledge());
     assertEquals(newPlayer.getUserId(), createdPlayerstatisticDTOResult.getUserId());
     assertEquals(newPlayer.getUsername(), createdPlayerstatisticDTOResult.getUsername());
-    assertEquals(initialLectureDTO, createdPlayerstatisticDTOResult.getLecture());
+    assertEquals(new AreaLocationDTO(1, null), createdPlayerstatisticDTOResult.getCurrentAreaLocation());
   }
 }

@@ -18,13 +18,11 @@ public class PlayerstatisticDTO {
   @Nullable
   UUID id;
 
-  List<AreaDTO> unlockedAreas;
+  List<AreaLocationDTO> unlockedAreas;
 
-  List<DungeonDTO> completedDungeons;
+  List<AreaLocationDTO> completedDungeons;
 
-  AreaDTO currentArea;
-
-  LectureDTO lecture;
+  AreaLocationDTO currentAreaLocation;
 
   String userId;
   String username;

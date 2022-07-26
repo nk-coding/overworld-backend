@@ -6,7 +6,7 @@ import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.ObjectFactory;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface PlayerstatisticMapper {
   PlayerstatisticDTO playerstatisticToPlayerstatisticDTO(final Playerstatistic playerstatistic);
 

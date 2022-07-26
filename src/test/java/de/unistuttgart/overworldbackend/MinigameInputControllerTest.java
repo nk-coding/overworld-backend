@@ -108,7 +108,9 @@ class MinigameInputControllerTest {
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
-    playerstatistic.setCurrentArea(initialLecture.getWorlds().stream().findFirst().get());
+    AreaLocation areaLocation = new AreaLocation();
+    areaLocation.setWorld(initialLecture.getWorlds().stream().findFirst().get());
+    playerstatistic.setCurrentAreaLocation(areaLocation);
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
@@ -120,7 +122,6 @@ class MinigameInputControllerTest {
 
     assertEquals(initialLecture.getId(), initialMinigameTask.getLecture().getId());
     assertEquals(initialLecture.getId(), initialPlayerstatistic.getLecture().getId());
-    assertEquals(initialLecture.getId(), initialPlayerstatisticDTO.getLecture().getId());
 
     fullURL = "/internal";
 
@@ -146,8 +147,6 @@ class MinigameInputControllerTest {
       result.getResponse().getContentAsString(),
       PlayerTaskStatisticDTO.class
     );
-    assertEquals(initialPlayerstatisticDTO.getLecture(), playerTaskStatisticDTO.getLecture());
-    assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());
     assertEquals(playerTaskStatisticData.getScore(), playerTaskStatisticDTO.getHighscore());
 
     // check that action log was created

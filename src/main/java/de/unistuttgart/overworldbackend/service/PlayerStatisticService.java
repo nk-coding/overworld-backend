@@ -1,12 +1,9 @@
 package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.*;
-import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
-import de.unistuttgart.overworldbackend.data.config.WorldConfig;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerstatisticRepository;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -75,13 +72,17 @@ public class PlayerStatisticService {
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setUserId(player.getUserId());
     playerstatistic.setUsername(player.getUsername());
-    playerstatistic.setCurrentArea(getFirstArea(lectureId));
+
+    AreaLocation areaLocation = new AreaLocation();
+    areaLocation.setWorld(getFirstWorld(lectureId));
+    playerstatistic.setCurrentAreaLocation(areaLocation);
+
     playerstatistic.setKnowledge(0);
     Playerstatistic savedPlayerstatistic = playerstatisticRepository.save(playerstatistic);
     return playerstatisticMapper.playerstatisticToPlayerstatisticDTO(savedPlayerstatistic);
   }
 
-  private World getFirstArea(int lectureId) {
+  private World getFirstWorld(int lectureId) {
     return worldService.getWorldByIndexFromLecture(lectureId, 1);
   }
 }
