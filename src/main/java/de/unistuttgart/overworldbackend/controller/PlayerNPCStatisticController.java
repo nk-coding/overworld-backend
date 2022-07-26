@@ -21,9 +21,6 @@ import org.springframework.web.bind.annotation.*;
 public class PlayerNPCStatisticController {
 
   @Autowired
-  private PlayerNPCStatisticRepository playerNPCStatisticRepository;
-
-  @Autowired
   private PlayerNPCStatisticService playerNPCStatisticService;
 
   @Operation(summary = "Get all NPC Statistics of Player")

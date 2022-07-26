@@ -63,8 +63,8 @@ public class PlayerNPCStatisticService {
     final Optional<PlayerNPCStatistic> statistic = playerNPCStatisticRepository.findById(statisticId);
     if (
       statistic.isEmpty() ||
-      statistic.get().getLecture().getId() != lectureId ||
-      statistic.get().getPlayerstatistic().getUserId().equals(playerId)
+              statistic.get().getLecture().getId() != lectureId||
+              !playerId.equals(statistic.get().getPlayerstatistic().getUserId())
     ) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,

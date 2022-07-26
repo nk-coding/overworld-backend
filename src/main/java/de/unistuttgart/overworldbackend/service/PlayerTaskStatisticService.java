@@ -66,7 +66,7 @@ public class PlayerTaskStatisticService {
     if (
       statistic.isEmpty() ||
       statistic.get().getLecture().getId() != lectureId ||
-      statistic.get().getPlayerstatistic().getUserId().equals(playerId)
+      !statistic.get().getPlayerstatistic().getUserId().equals(playerId)
     ) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Statistic not found");
     }
