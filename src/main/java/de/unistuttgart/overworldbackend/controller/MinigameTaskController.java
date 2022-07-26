@@ -38,59 +38,59 @@ public class MinigameTaskController {
     return minigameTaskService.getMinigameTasksFromArea(lectureId, worldIndex, dungeonIndex);
   }
 
-  @Operation(summary = "Get a task by its id from a world")
-  @GetMapping("/minigame-tasks/{taskId}")
+  @Operation(summary = "Get a task by its index from a world")
+  @GetMapping("/minigame-tasks/{taskIndex}")
   public MinigameTaskDTO getMinigameTaskFromWorld(
     @PathVariable int lectureId,
     @PathVariable int worldIndex,
-    @PathVariable UUID taskId
+    @PathVariable int taskIndex
   ) {
-    log.debug("get tasks {} of world {} of lecture {}", taskId, worldIndex, lectureId);
-    return minigameTaskService.getMinigameTaskFromArea(lectureId, worldIndex, Optional.empty(), taskId);
+    log.debug("get task {} of world {} of lecture {}", taskIndex, worldIndex, lectureId);
+    return minigameTaskService.getMinigameTaskFromArea(lectureId, worldIndex, Optional.empty(), taskIndex);
   }
 
-  @Operation(summary = "Get a task by its id from a dungeon")
-  @GetMapping("/dungeons/{dungoenIndex}/minigame-tasks/{taskId}")
+  @Operation(summary = "Get a task by its index from a dungeon")
+  @GetMapping("/dungeons/{dungoenIndex}/minigame-tasks/{taskIndex}")
   public MinigameTaskDTO getMinigameTaskFromDungeon(
     @PathVariable int lectureId,
     @PathVariable int worldIndex,
     @PathVariable int dungoenIndex,
-    @PathVariable UUID taskId
+    @PathVariable int taskIndex
   ) {
-    log.debug("get task {} of dungeon {} from world {} of lecture {}", taskId, dungoenIndex, worldIndex, lectureId);
-    return minigameTaskService.getMinigameTaskFromArea(lectureId, worldIndex, Optional.of(dungoenIndex), taskId);
+    log.debug("get task {} of dungeon {} from world {} of lecture {}", taskIndex, dungoenIndex, worldIndex, lectureId);
+    return minigameTaskService.getMinigameTaskFromArea(lectureId, worldIndex, Optional.of(dungoenIndex), taskIndex);
   }
 
-  @Operation(summary = "Update a task by its id from a world")
-  @PutMapping("/minigame-tasks/{taskId}")
+  @Operation(summary = "Update a task by its index from a world")
+  @PutMapping("/minigame-tasks/{taskIndex}")
   public MinigameTaskDTO updateMinigameTasksFromWorld(
     @PathVariable int lectureId,
     @PathVariable int worldIndex,
-    @PathVariable UUID taskId,
+    @PathVariable int taskIndex,
     @RequestBody MinigameTaskDTO minigameTaskDTO
   ) {
-    log.debug("update task {} of world {} of lecture {} with {}", taskId, worldIndex, lectureId, minigameTaskDTO);
+    log.debug("update task {} of world {} of lecture {} with {}", taskIndex, worldIndex, lectureId, minigameTaskDTO);
     return minigameTaskService.updateMinigameTaskFromArea(
       lectureId,
       worldIndex,
       Optional.empty(),
-      taskId,
+      taskIndex,
       minigameTaskDTO
     );
   }
 
-  @Operation(summary = "Update a task by its id from a dungeon")
-  @PutMapping("/dungeons/{dungeonIndex}/minigame-tasks/{taskId}")
+  @Operation(summary = "Update a task by index id from a dungeon")
+  @PutMapping("/dungeons/{dungeonIndex}/minigame-tasks/{taskIndex}")
   public MinigameTaskDTO updateMinigameTasksFromDungeon(
     @PathVariable int lectureId,
     @PathVariable int worldIndex,
     @PathVariable int dungeonIndex,
-    @PathVariable UUID taskId,
+    @PathVariable int taskIndex,
     @RequestBody MinigameTaskDTO minigameTaskDTO
   ) {
     log.debug(
       "update task {} of dungeon {} from world {} of lecture {} with {}",
-      taskId,
+      taskIndex,
       dungeonIndex,
       worldIndex,
       lectureId,
@@ -100,7 +100,7 @@ public class MinigameTaskController {
       lectureId,
       worldIndex,
       Optional.of(dungeonIndex),
-      taskId,
+      taskIndex,
       minigameTaskDTO
     );
   }

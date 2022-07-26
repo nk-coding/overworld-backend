@@ -17,7 +17,7 @@ public class NPCController {
   @Autowired
   private NPCService npcService;
 
-  @Operation(summary = "Update a NPC by its id in a world")
+  @Operation(summary = "Update a NPC by its index in a world")
   @PutMapping("/npcs/{npcIndex}")
   public NPCDTO updateNPCFromWorld(
     @PathVariable int lectureId,
@@ -29,7 +29,7 @@ public class NPCController {
     return npcService.updateNPCFromWorld(lectureId, worldIndex, npcIndex, npcDTO);
   }
 
-  @Operation(summary = "Update a NPC by its id in a dungeon")
+  @Operation(summary = "Update a NPC by its index in a dungeon")
   @PutMapping("/dungeons/{dungeonIndex}/npcs/{npcIndex}")
   public NPCDTO updateNPCFromDungeon(
     @PathVariable int lectureId,

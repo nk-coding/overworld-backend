@@ -35,26 +35,26 @@ public class MinigameTaskService {
    * @param lectureId the id of the lecture the minigame task is part of
    * @param worldIndex the index of the world the task is part of
    * @param dungeonIndex the index of the dungeon the task is part of
-   * @param taskId the id of the task searching for
+   * @param taskIndex the index of the task searching for
    * @return the found task object
    */
   public MinigameTask getMinigameTaskFromAreaOrThrowNotFound(
     final int lectureId,
     final int worldIndex,
     final Optional<Integer> dungeonIndex,
-    final UUID taskId
+    final int taskIndex
   ) {
     if (dungeonIndex.isEmpty()) {
       return worldService
         .getWorldByIndexFromLecture(lectureId, worldIndex)
         .getMinigameTasks()
         .parallelStream()
-        .filter(minigameTask -> minigameTask.getId().equals(taskId))
+        .filter(minigameTask -> minigameTask.getIndex() == taskIndex)
         .findAny()
         .orElseThrow(() ->
           new ResponseStatusException(
             HttpStatus.NOT_FOUND,
-            String.format("Task not found in lecture %s in world %s.", lectureId, worldIndex)
+            String.format("Task not found with intex %s in lecture %s in world %s.", taskIndex, lectureId, worldIndex)
           )
         );
     } else {
@@ -62,13 +62,14 @@ public class MinigameTaskService {
         .getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex.get())
         .getMinigameTasks()
         .parallelStream()
-        .filter(minigameTask -> minigameTask.getId().equals(taskId))
+        .filter(minigameTask -> minigameTask.getIndex() == taskIndex)
         .findAny()
         .orElseThrow(() ->
           new ResponseStatusException(
             HttpStatus.NOT_FOUND,
             String.format(
-              "Task not found in lecture %s in world %s in dungeon %s.",
+              "Task not found with index %s in lecture %s in world %s in dungeon %s.",
+              taskIndex,
               lectureId,
               worldIndex,
               dungeonIndex.get()
@@ -111,32 +112,32 @@ public class MinigameTaskService {
   }
 
   /**
-   * Get a minigame task by its id from a lecture and an area
+   * Get a minigame task by its index from a lecture and an area
    *
    * @throws ResponseStatusException (404) if lecture, area or task by its id do not exist
    * @param lectureId the id of the lecture the minigame task should be part of
    * @param worldIndex the index of the world where the minigame task should be part of
    * @param dungeonIndex the index of the dungen where the minigame task should be part of
-   * @param taskId the id of the minigame task searching for
+   * @param taskIndex the index of the minigame task searching for
    * @return the found minigame task as DTO
    */
   public MinigameTaskDTO getMinigameTaskFromArea(
     final int lectureId,
     final int worldIndex,
     final Optional<Integer> dungeonIndex,
-    final UUID taskId
+    final int taskIndex
   ) {
     final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(
       lectureId,
       worldIndex,
       dungeonIndex,
-      taskId
+      taskIndex
     );
     return minigameTaskMapper.minigameTaskToMinigameTaskDTO(minigameTask);
   }
 
   /**
-   * Update a minigame task by its id from a lecture and an area.
+   * Update a minigame task by index id from a lecture and an area.
    *
    * Only the game and configuration id is updatable.
    *
@@ -144,7 +145,7 @@ public class MinigameTaskService {
    * @param lectureId the id of the lecture the minigame task should be part of
    * @param worldIndex the index of the world where the minigame task should be part of
    * @param dungeonIndex the index of the dungeon where the minigame task should be part of
-   * @param taskId the id of the minigame task that should get updated
+   * @param taskIndex the index of the minigame task that should get updated
    * @param taskDTO the updated parameters
    * @return the updated area as DTO
    */
@@ -152,14 +153,14 @@ public class MinigameTaskService {
     final int lectureId,
     final int worldIndex,
     final Optional<Integer> dungeonIndex,
-    final UUID taskId,
+    final int taskIndex,
     final MinigameTaskDTO taskDTO
   ) {
     final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(
       lectureId,
       worldIndex,
       dungeonIndex,
-      taskId
+      taskIndex
     );
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());

@@ -181,7 +181,7 @@ class MinigameTaskControllerTest {
   @Test
   void getMinigameTaskFromWorld() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/minigame-tasks/" + initialTask1.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/minigame-tasks/" + initialTask1.getIndex()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -196,7 +196,7 @@ class MinigameTaskControllerTest {
   @Test
   void getMinigameTaskFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/minigame-tasks/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/minigame-tasks/" + Integer.MAX_VALUE).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -205,7 +205,7 @@ class MinigameTaskControllerTest {
   void getMinigameTaskFromDungeon() throws Exception {
     final MvcResult result = mvc
       .perform(
-        get(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getId())
+        get(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
           .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
@@ -223,7 +223,7 @@ class MinigameTaskControllerTest {
   void getMinigameTaskFromDungeon_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
       .perform(
-        get(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + UUID.randomUUID())
+        get(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + Integer.MAX_VALUE)
           .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isNotFound())
@@ -241,7 +241,7 @@ class MinigameTaskControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/minigame-tasks/" + initialTask1.getId())
+        put(fullURL + "/minigame-tasks/" + initialTask1.getIndex())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -270,7 +270,7 @@ class MinigameTaskControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getId())
+        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
