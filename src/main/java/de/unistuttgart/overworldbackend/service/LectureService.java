@@ -84,7 +84,7 @@ public class LectureService {
    */
   public LectureDTO createLecture(final LectureInitialData lectureInit) {
     List<World> worlds = new ArrayList<>();
-    AtomicInteger worldId = new AtomicInteger(0);
+    AtomicInteger worldId = new AtomicInteger(1);
     configLecture.getWorlds().forEach(worldConfig -> configureWorld(worlds, worldId.getAndIncrement(), worldConfig));
 
     Lecture lecture = new Lecture(lectureInit.getLectureName(), lectureInit.getDescription(), worlds);
@@ -109,10 +109,10 @@ public class LectureService {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
     List<Dungeon> dungeons = new ArrayList<>();
-    AtomicInteger dungeonId = new AtomicInteger(0);
+    AtomicInteger dungeonId = new AtomicInteger(1);
     worldConfig
       .getDungeons()
-      .forEach(dungeonConfig -> dungeons.add(configureDungeon(dungeonId.incrementAndGet(), dungeonConfig)));
+      .forEach(dungeonConfig -> dungeons.add(configureDungeon(dungeonId.getAndIncrement(), dungeonConfig)));
     for (int minigameIndex = 1; minigameIndex < worldConfig.getNumberOfMinigames(); minigameIndex++) {
       MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);

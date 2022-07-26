@@ -24,6 +24,9 @@ public class PlayerStatisticService {
   @Autowired
   private WorldService worldService;
 
+  @Autowired
+  private DungeonService dungeonService;
+
   /**
    * @throws ResponseStatusException when playerstatistic with lectureId and userId could not be found
    * @param lectureId the id of the lecture
@@ -48,10 +51,11 @@ public class PlayerStatisticService {
   /**
    * Create a playerstatistic with initial data in a lecture.
    *
-   * @throws ResponseStatusException when lecture with its id does not exist or a player with the playerId already has a playerstatistic
+   * @throws ResponseStatusException (404) when lecture with its id does not exist
+   *                                 (400) when a player with the playerId already has a playerstatistic
    * @param lectureId the id of the lecture where the playerstatistic will be created
    * @param player the player with its userId and username
-   * @return the created lecture as DTO with all its generated worlds, dungeons, minigame tasks and npcs
+   * @return the created playerstatistic as DTO
    */
   public PlayerstatisticDTO createPlayerStatisticInLecture(final int lectureId, final Player player) {
     Optional<Playerstatistic> existingPlayerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
@@ -82,7 +86,58 @@ public class PlayerStatisticService {
     return playerstatisticMapper.playerstatisticToPlayerstatisticDTO(savedPlayerstatistic);
   }
 
+  /**
+   * Update a playerstatistic.
+   *
+   * Only the currentArea is updatable.
+   *
+   * @throws ResponseStatusException (404) when playerstatistic with its playerId in the lecture does not exist
+   *                                 (400) when combination of world and dungeon in currentLocation does not exist
+   * @param lectureId the id of the lecture where the playerstatistic will be created
+   * @param playerId the playerId of the player
+   * @param playerstatisticDTO the updated parameters
+   * @return the updated playerstatistic
+   */
+  public PlayerstatisticDTO updatePlayerStatisticInLecture(
+    final int lectureId,
+    final String playerId,
+    final PlayerstatisticDTO playerstatisticDTO
+  ) {
+    Playerstatistic playerstatistic = getPlayerStatisticFromLecture(lectureId, playerId);
+
+    if (playerstatisticDTO.getCurrentAreaLocation() == null) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        String.format("Current area location is not specified")
+      );
+    }
+
+    AreaLocation areaLocation = areaLocationDTOToAreaLocation(lectureId, playerstatisticDTO.getCurrentAreaLocation());
+    playerstatistic.setCurrentAreaLocation(areaLocation);
+    return playerstatisticMapper.playerstatisticToPlayerstatisticDTO((playerstatisticRepository.save(playerstatistic)));
+  }
+
   private World getFirstWorld(int lectureId) {
     return worldService.getWorldByIndexFromLecture(lectureId, 1);
+  }
+
+  /**
+   * @throws ResponseStatusException (404) if world or dungeon with its indexes does not exist
+   * @param lectureId the id of the lecture
+   * @param areaLocationDTO the updated parameters
+   * @return the area location object
+   */
+  private AreaLocation areaLocationDTOToAreaLocation(int lectureId, AreaLocationDTO areaLocationDTO) {
+    try {
+      World world = worldService.getWorldByIndexFromLecture(lectureId, areaLocationDTO.getWorldIndex());
+      Dungeon dungeon = null;
+      if (areaLocationDTO.getDungeonIndex() != null) {
+        dungeon =
+          dungeonService.getDungeonByIndexFromLecture(lectureId, world.getIndex(), areaLocationDTO.getDungeonIndex());
+      }
+      return new AreaLocation(world, dungeon);
+    } catch (ResponseStatusException exception) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Combination of world and dungeon does not exist");
+    }
   }
 }
