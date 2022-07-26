@@ -68,7 +68,6 @@ class LectureControllerTest {
     initialLectureDTO = lectureMapper.lectureToLectureDTO(initialLecture);
 
     assertNotNull(initialLecture.getLectureName());
-    assertNotNull(initialLectureDTO.getId());
 
     fullURL = "/lectures";
 

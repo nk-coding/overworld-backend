@@ -40,7 +40,7 @@ public abstract class Area {
   @ManyToOne
   Lecture lecture;
 
-  public Area(
+  protected Area(
     final String staticName,
     final String topicName,
     final boolean active,
