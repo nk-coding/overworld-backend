@@ -1,5 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,6 +27,7 @@ public class NPC {
   String startLocation;
   String text;
 
+  @JsonBackReference
   @ManyToOne
   Lecture lecture;
 

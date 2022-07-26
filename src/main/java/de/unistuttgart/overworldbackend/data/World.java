@@ -24,7 +24,7 @@ public class World extends Area {
     String topicName,
     boolean active,
     Set<MinigameTask> minigameTasks,
-    Set<NPC> npcs,
+    List<NPC> npcs,
     List<Dungeon> dungeons
   ) {
     super(staticName, topicName, active, minigameTasks, npcs);

@@ -103,7 +103,7 @@ public class LectureService {
 
   private void configureWorld(List<World> worlds, int worldId, WorldConfig worldConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
-    Set<NPC> npcs = new HashSet<>();
+    List<NPC> npcs = new ArrayList<>();
     List<Dungeon> dungeons = new ArrayList<>();
     AtomicInteger dungeonId = new AtomicInteger(0);
     worldConfig
@@ -123,7 +123,7 @@ public class LectureService {
 
   private Dungeon configureDungeon(int worldId, int dungoenId, DungeonConfig dungeonConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
-    Set<NPC> npcs = new HashSet<>();
+    List<NPC> npcs = new ArrayList<>();
     for (int k = 0; k < dungeonConfig.getNumberOfMinigames(); k++) {
       MinigameTask minigame = new MinigameTask("w" + worldId + "d" + dungoenId + "g" + k, "empty", null);
       minigames.add(minigame);

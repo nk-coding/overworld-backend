@@ -75,7 +75,7 @@ class MinigameTaskControllerTest {
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of(minigameTask1, minigameTask2));
-    world.setNpcs(Set.of());
+    world.setNpcs(Arrays.asList());
     world.setDungeons(Arrays.asList());
 
     final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));

@@ -1,7 +1,9 @@
 package de.unistuttgart.overworldbackend.controller;
 
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.repositories.PlayerNPCStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
+import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import de.unistuttgart.overworldbackend.service.PlayerTaskStatisticService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,33 +17,33 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Player Task Statistik", description = "Get and update dungeons from worlds")
 @RestController
 @Slf4j
-@RequestMapping("/lectures/{lectureId}/playerstatistics/{playerId}/player-task-statistics")
-public class PlayerTaskStatisticController {
+@RequestMapping("/lectures/{lectureId}/playerstatistics/{playerId}/player-npc-statistics")
+public class PlayerNPCStatisticController {
 
   @Autowired
-  private PlayerTaskStatisticRepository playerTaskStatisticRepository;
+  private PlayerNPCStatisticRepository playerNPCStatisticRepository;
 
   @Autowired
-  private PlayerTaskStatisticService playerTaskStatisticService;
+  private PlayerNPCStatisticService playerNPCStatisticService;
 
-  @Operation(summary = "Get all Statistics of Player")
+  @Operation(summary = "Get all NPC Statistics of Player")
   @GetMapping("")
-  public List<PlayerTaskStatisticDTO> getPlayerTaskStatistics(
+  public List<PlayerNPCStatisticDTO> getPlayerNPCStatistics(
     @PathVariable int lectureId,
     @PathVariable String playerId
   ) {
     log.debug("get Statistics of Player {} in the Lecture {}", playerId, lectureId);
-    return playerTaskStatisticService.getAllStatisticsOfPlayer(lectureId, playerId);
+    return playerNPCStatisticService.getAllStatisticsOfPlayer(lectureId, playerId);
   }
 
   @Operation(summary = "Get Statistic of a Player by id")
   @GetMapping("/{statisticId}")
-  public PlayerTaskStatisticDTO getPlayerTaskStatistic(
+  public PlayerNPCStatisticDTO getPlayerNPCStatistic(
     @PathVariable int lectureId,
     @PathVariable String playerId,
     @PathVariable UUID statisticId
   ) {
     log.debug("get statistic {}", statisticId);
-    return playerTaskStatisticService.getStatisticOfPlayer(lectureId, playerId, statisticId);
+    return playerNPCStatisticService.getStatisticOfPlayer(lectureId, playerId, statisticId);
   }
 }

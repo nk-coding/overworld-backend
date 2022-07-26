@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import javax.persistence.*;
@@ -33,12 +34,12 @@ public class Area {
   Set<MinigameTask> minigameTasks;
 
   @OneToMany(cascade = CascadeType.ALL)
-  Set<NPC> npcs;
+  List<NPC> npcs;
 
   @ManyToOne
   Lecture lecture;
 
-  public Area(String staticName, String topicName, boolean active, Set<MinigameTask> minigameTasks, Set<NPC> npcs) {
+  public Area(String staticName, String topicName, boolean active, Set<MinigameTask> minigameTasks, List<NPC> npcs) {
     this.staticName = staticName;
     this.topicName = topicName;
     this.active = active;

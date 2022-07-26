@@ -54,7 +54,7 @@ public class PlayerTaskStatisticService {
   }
 
   /**
-   * Gets the playerStatistic of the lecture of the plyer of the statisticId
+   * Gets the playerStatistic of the lecture of the player of the statisticId
    * @param lectureId lecture which the statistic belongs to
    * @param playerId player which the statistic belongs to
    * @param statisticId id of the statistic, which is returned
@@ -133,7 +133,12 @@ public class PlayerTaskStatisticService {
     );
   }
 
-  private void logData(PlayerTaskStatisticData data, Lecture lecture, PlayerTaskStatistic currentPlayerTaskStatistic, long gainedKnowledge) {
+  private void logData(
+    PlayerTaskStatisticData data,
+    Lecture lecture,
+    PlayerTaskStatistic currentPlayerTaskStatistic,
+    long gainedKnowledge
+  ) {
     PlayerTaskActionLog actionLog = new PlayerTaskActionLog();
     actionLog.setPlayerTaskStatistic(currentPlayerTaskStatistic);
     actionLog.setLecture(lecture);

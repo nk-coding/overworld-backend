@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -18,7 +19,7 @@ public class Dungeon extends Area {
   @ManyToOne
   World world;
 
-  public Dungeon(String staticName, String topicName, boolean active, Set<MinigameTask> minigameTasks, Set<NPC> npcs) {
+  public Dungeon(String staticName, String topicName, boolean active, Set<MinigameTask> minigameTasks, List<NPC> npcs) {
     super(staticName, topicName, active, minigameTasks, npcs);
   }
 }

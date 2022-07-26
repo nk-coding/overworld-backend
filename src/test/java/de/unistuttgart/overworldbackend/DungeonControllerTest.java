@@ -61,14 +61,14 @@ class DungeonControllerTest {
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
-    dungeon.setNpcs(Set.of());
+    dungeon.setNpcs(Arrays.asList());
 
     final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of());
-    world.setNpcs(Set.of());
+    world.setNpcs(Arrays.asList());
     world.setDungeons(Arrays.asList(dungeon));
 
     final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));

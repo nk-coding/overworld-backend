@@ -8,11 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
+import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
-import de.unistuttgart.overworldbackend.repositories.LectureRepository;
-import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerstatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.*;
 import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +27,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @Transactional
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class MinigameInputControllerTest {
+class NPCInputControllerTest {
 
   @Autowired
   private MockMvc mvc;
@@ -41,10 +39,7 @@ class MinigameInputControllerTest {
   private PlayerstatisticRepository playerstatisticRepository;
 
   @Autowired
-  private MinigameTaskRepository minigameTaskRepository;
-
-  @Autowired
-  private PlayerTaskActionLogRepository playerTaskActionLogRepository;
+  private PlayerNPCActionLogRepository playerNPCActionLogRepository;
 
   @Autowired
   private LectureMapper lectureMapper;
@@ -53,9 +48,8 @@ class MinigameInputControllerTest {
   private PlayerstatisticMapper playerstatisticMapper;
 
   @Autowired
-  private MinigameTaskMapper minigameTaskMapper;
+  private NPCMapper npcMapper;
 
-  private final String API_URL = "/api/v1/overworld";
   private String fullURL;
   private ObjectMapper objectMapper;
 
@@ -65,8 +59,9 @@ class MinigameInputControllerTest {
   private Playerstatistic initialPlayerstatistic;
   private PlayerstatisticDTO initialPlayerstatisticDTO;
 
-  private MinigameTask initialMinigameTask;
-  private MinigameTaskDTO initialMinigameTaskDTO;
+  private NPC initialNpc;
+
+  private NPCDTO initialNpcDTO;
 
   @BeforeEach
   public void createBasicData() {
@@ -80,17 +75,16 @@ class MinigameInputControllerTest {
     dungeon.setNpcs(Arrays.asList());
     final List<Dungeon> dungeons = new ArrayList<>();
 
-    final MinigameTask minigameTask = new MinigameTask();
-    minigameTask.setConfigurationId(UUID.randomUUID());
-    minigameTask.setGame("Bugfinder");
-    minigameTask.setLocation("w1-p2");
+    final NPC npc = new NPC();
+    npc.setText("NPCText");
+    npc.setStartLocation("startLoc");
 
     final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
-    world.setMinigameTasks(Set.of(minigameTask));
-    world.setNpcs(Arrays.asList());
+    world.setMinigameTasks(Set.of());
+    world.setNpcs(Arrays.asList(npc));
     world.setDungeons(dungeons);
     List<World> worlds = new ArrayList<>();
     worlds.add(world);
@@ -100,9 +94,8 @@ class MinigameInputControllerTest {
     initialLecture = lectureRepository.save(lecture);
     initialLectureDTO = lectureMapper.lectureToLectureDTO(initialLecture);
 
-    initialMinigameTask =
-      initialLecture.getWorlds().stream().findFirst().get().getMinigameTasks().stream().findFirst().get();
-    initialMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialMinigameTask);
+    initialNpc = initialLecture.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
+    initialNpcDTO = npcMapper.npcToNPCDTO(initialNpc);
 
     final Playerstatistic playerstatistic = new Playerstatistic();
     playerstatistic.setUserId("45h23o2j432");
@@ -118,7 +111,7 @@ class MinigameInputControllerTest {
     assertNotNull(initialLecture.getLectureName());
     assertNotNull(initialLectureDTO.getId());
 
-    assertEquals(initialLecture.getId(), initialMinigameTask.getLecture().getId());
+    assertEquals(initialLecture.getId(), initialNpc.getLecture().getId());
     assertEquals(initialLecture.getId(), initialPlayerstatistic.getLecture().getId());
     assertEquals(initialLecture.getId(), initialPlayerstatisticDTO.getLecture().getId());
 
@@ -129,68 +122,58 @@ class MinigameInputControllerTest {
 
   @Test
   void submitGameData() throws Exception {
-    PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
-    playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
-    playerTaskStatisticData.setGame(initialMinigameTask.getGame());
-    playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
-    playerTaskStatisticData.setScore(80);
+    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    playerNPCStatisticData.setUserId(initialPlayerstatistic.getUserId());
+    playerNPCStatisticData.setNpcId(initialNpcDTO.getId());
+    playerNPCStatisticData.setCompleted(true);
 
-    final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+    final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     final MvcResult result = mvc
-      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
-    final PlayerTaskStatisticDTO playerTaskStatisticDTO = objectMapper.readValue(
+    final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
       result.getResponse().getContentAsString(),
-      PlayerTaskStatisticDTO.class
+      PlayerNPCStatisticDTO.class
     );
-    assertEquals(initialPlayerstatisticDTO.getLecture(), playerTaskStatisticDTO.getLecture());
-    assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());
-    assertEquals(playerTaskStatisticData.getScore(), playerTaskStatisticDTO.getHighscore());
+    assertEquals(initialPlayerstatisticDTO.getLecture(), playerNPCStatisticDTO.getLecture());
+    assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
+    assertEquals(playerNPCStatisticData.isCompleted(), playerNPCStatisticDTO.isCompleted());
 
     // check that action log was created
-    PlayerTaskActionLog actionLog = playerTaskActionLogRepository
+    PlayerNPCActionLog actionLog = playerNPCActionLogRepository
       .findAll()
       .stream()
-      .filter(log -> log.getPlayerTaskStatistic().getPlayerstatistic().getId().equals(initialPlayerstatistic.getId()))
+      .filter(log -> log.getPlayerNPCStatistic().getPlayerstatistic().getId().equals(initialPlayerstatistic.getId()))
       .findAny()
       .get();
     assertNotNull(actionLog);
-    assertEquals(playerTaskStatisticData.getGame(), actionLog.getGame());
-    assertEquals(playerTaskStatisticData.getConfigurationId(), actionLog.getConfigurationId());
-    assertEquals(playerTaskStatisticData.getScore(), actionLog.getScore());
-    assertEquals(
-      playerTaskStatisticData.getUserId(),
-      actionLog.getPlayerTaskStatistic().getPlayerstatistic().getUserId()
-    );
+    assertEquals(playerNPCStatisticData.getNpcId(), actionLog.getPlayerNPCStatistic().getNpc().getId());
+    assertEquals(100, actionLog.getGainedKnowledge());
   }
 
   @Test
   void submitGameData_PlayerDoesNotExist_ThrowNotFound() throws Exception {
-    PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
-    playerTaskStatisticData.setUserId(UUID.randomUUID().toString());
-    playerTaskStatisticData.setGame(initialMinigameTask.getGame());
-    playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
-    playerTaskStatisticData.setScore(80);
+    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    playerNPCStatisticData.setUserId(UUID.randomUUID().toString());
+    playerNPCStatisticData.setNpcId(initialNpc.getId());
 
-    final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+    final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     mvc
-      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound());
   }
 
   @Test
   void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
-    PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
-    playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
-    playerTaskStatisticData.setGame(UUID.randomUUID().toString());
-    playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
-    playerTaskStatisticData.setScore(80);
+    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    playerNPCStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
+    playerNPCStatisticData.setNpcId(UUID.randomUUID());
 
-    final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+    final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     mvc
       .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
