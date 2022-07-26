@@ -6,10 +6,7 @@ import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerstatisticRepository;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -123,6 +120,8 @@ public class PlayerTaskStatisticService {
 
     logData(data, lecture, currentPlayerTaskStatistic, gainedKnowledge);
 
+    calculateCompletedDungeons(playerstatistic.get());
+
     //TODO:calculate completed dungeons and unlocked areas
 
     playerstatistic.get().addKnowledge(gainedKnowledge);
@@ -131,6 +130,36 @@ public class PlayerTaskStatisticService {
     return playerTaskStatisticMapper.playerTaskStatisticToPlayerTaskStatisticDTO(
       playerTaskStatisticRepository.save(currentPlayerTaskStatistic)
     );
+  }
+
+  private void calculateCompletedDungeons(Playerstatistic playerstatistic) {
+    List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findPlayerTaskStatisticByPlayerstatisticId(
+      playerstatistic.getId()
+    );
+    List<World> worlds = playerstatistic.getLecture().getWorlds();
+    List<Dungeon> completedDungeons = new ArrayList<>();
+    for (World world : worlds) {
+      for (Dungeon dungeon : world.getDungeons()) {
+        boolean completed = true;
+        for (MinigameTask minigameTask : dungeon.getMinigameTasks()) {
+          Optional<PlayerTaskStatistic> currentStatistic = playerTaskStatistics
+            .stream()
+            .filter(currentMinigameTask -> currentMinigameTask.equals(minigameTask))
+            .findAny();
+          if (currentStatistic.isEmpty() || !currentStatistic.get().isCompleted()) {
+            completed = false;
+          }
+        }
+        if (completed) {
+          completedDungeons.add(dungeon);
+        }
+      }
+    }
+    List<AreaLocation> completedDungeonLocations = new ArrayList<>();
+    for (Dungeon dungeon : completedDungeons) {
+      completedDungeonLocations.add(new AreaLocation(dungeon.getWorld(), dungeon));
+    }
+    playerstatistic.setCompletedDungeons(completedDungeonLocations);
   }
 
   private void logData(

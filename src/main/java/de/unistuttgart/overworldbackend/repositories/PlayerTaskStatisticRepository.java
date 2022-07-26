@@ -16,4 +16,6 @@ public interface PlayerTaskStatisticRepository extends JpaRepository<PlayerTaskS
     int lectureId,
     UUID playerstatisticId
   );
+
+  List<PlayerTaskStatistic> findPlayerTaskStatisticByPlayerstatisticId(UUID playerstatisticId);
 }
