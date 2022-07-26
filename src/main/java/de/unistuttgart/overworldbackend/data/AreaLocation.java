@@ -26,11 +26,11 @@ public class AreaLocation {
   @ManyToOne
   Dungeon dungeon;
 
-  public AreaLocation(World world) {
+  public AreaLocation(final World world) {
     this.world = world;
   }
 
-  public AreaLocation(World world, Dungeon dungeon) {
+  public AreaLocation(final World world, final Dungeon dungeon) {
     this.world = world;
     this.dungeon = dungeon;
   }

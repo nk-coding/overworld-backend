@@ -92,7 +92,7 @@ class NPCInputControllerTest {
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of(npc));
     world.setDungeons(dungeons);
-    List<World> worlds = new ArrayList<>();
+    final List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
     final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
@@ -107,7 +107,7 @@ class NPCInputControllerTest {
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
-    AreaLocation areaLocation = new AreaLocation();
+    final AreaLocation areaLocation = new AreaLocation();
     areaLocation.setWorld(initialLecture.getWorlds().stream().findFirst().get());
     playerstatistic.setCurrentAreaLocation(areaLocation);
     playerstatistic.setKnowledge(new Random(10).nextLong());
@@ -160,7 +160,7 @@ class NPCInputControllerTest {
 
   @Test
   void submitGameData_PlayerDoesNotExist_ThrowNotFound() throws Exception {
-    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
     playerNPCStatisticData.setUserId(UUID.randomUUID().toString());
     playerNPCStatisticData.setNpcId(initialNpc.getId());
 
@@ -173,7 +173,7 @@ class NPCInputControllerTest {
 
   @Test
   void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
-    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
     playerNPCStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
     playerNPCStatisticData.setNpcId(UUID.randomUUID());
 

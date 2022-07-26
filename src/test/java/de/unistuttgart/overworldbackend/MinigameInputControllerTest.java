@@ -92,7 +92,7 @@ class MinigameInputControllerTest {
     world.setMinigameTasks(Set.of(minigameTask));
     world.setNpcs(Set.of());
     world.setDungeons(dungeons);
-    List<World> worlds = new ArrayList<>();
+    final List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
     final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
@@ -108,7 +108,7 @@ class MinigameInputControllerTest {
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
-    AreaLocation areaLocation = new AreaLocation();
+    final AreaLocation areaLocation = new AreaLocation();
     areaLocation.setWorld(initialLecture.getWorlds().stream().findFirst().get());
     playerstatistic.setCurrentAreaLocation(areaLocation);
     playerstatistic.setKnowledge(new Random(10).nextLong());
@@ -130,7 +130,7 @@ class MinigameInputControllerTest {
 
   @Test
   void submitGameData() throws Exception {
-    PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
     playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
     playerTaskStatisticData.setGame(initialMinigameTask.getGame());
     playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
@@ -150,7 +150,7 @@ class MinigameInputControllerTest {
     assertEquals(playerTaskStatisticData.getScore(), playerTaskStatisticDTO.getHighscore());
 
     // check that action log was created
-    PlayerTaskActionLog actionLog = playerTaskActionLogRepository
+    final PlayerTaskActionLog actionLog = playerTaskActionLogRepository
       .findAll()
       .stream()
       .filter(log -> log.getPlayerTaskStatistic().getPlayerstatistic().getId().equals(initialPlayerstatistic.getId()))
@@ -168,7 +168,7 @@ class MinigameInputControllerTest {
 
   @Test
   void submitGameData_PlayerDoesNotExist_ThrowNotFound() throws Exception {
-    PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
     playerTaskStatisticData.setUserId(UUID.randomUUID().toString());
     playerTaskStatisticData.setGame(initialMinigameTask.getGame());
     playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
@@ -183,7 +183,7 @@ class MinigameInputControllerTest {
 
   @Test
   void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
-    PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
     playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
     playerTaskStatisticData.setGame(UUID.randomUUID().toString());
     playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());

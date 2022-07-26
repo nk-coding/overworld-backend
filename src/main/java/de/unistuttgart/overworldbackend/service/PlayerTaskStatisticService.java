@@ -41,8 +41,8 @@ public class PlayerTaskStatisticService {
    * @param playerId player which the statistics belong to
    * @return List of playerTaskStatistiks of the player of the lecture
    */
-  public List<PlayerTaskStatisticDTO> getAllStatisticsOfPlayer(int lectureId, String playerId) {
-    List<PlayerTaskStatistic> statisticList = playerTaskStatisticRepository
+  public List<PlayerTaskStatisticDTO> getAllStatisticsOfPlayer(final int lectureId, final String playerId) {
+    final List<PlayerTaskStatistic> statisticList = playerTaskStatisticRepository
       .findPlayerTaskStatisticByLectureId(lectureId)
       .stream()
       .filter(playerTaskStatistic -> playerTaskStatistic.getPlayerstatistic().getUserId().equals(playerId))
@@ -57,7 +57,11 @@ public class PlayerTaskStatisticService {
    * @param statisticId id of the statistic, which is returned
    * @return playerTaskStatistic with the given statisticId
    */
-  public PlayerTaskStatisticDTO getStatisticOfPlayer(int lectureId, String playerId, UUID statisticId) {
+  public PlayerTaskStatisticDTO getStatisticOfPlayer(
+    final int lectureId,
+    final String playerId,
+    final UUID statisticId
+  ) {
     Optional<PlayerTaskStatistic> statistic = playerTaskStatisticRepository.findById(statisticId);
     if (
       statistic.isEmpty() ||
@@ -77,30 +81,30 @@ public class PlayerTaskStatisticService {
    * @param data Data of a game run
    * @return updated playerTaskStatistic
    */
-  public PlayerTaskStatisticDTO submitData(PlayerTaskStatisticData data) {
-    Optional<MinigameTask> minigameTask = minigameTaskRepository.findByGameAndConfigurationId(
+  public PlayerTaskStatisticDTO submitData(final PlayerTaskStatisticData data) {
+    final Optional<MinigameTask> minigameTask = minigameTaskRepository.findByGameAndConfigurationId(
       data.getGame(),
       data.getConfigurationId()
     );
     if (minigameTask.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Minigame not found");
     }
-    Lecture lecture = minigameTask.get().getLecture();
-    Optional<Playerstatistic> playerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
+    final Lecture lecture = minigameTask.get().getLecture();
+    final Optional<Playerstatistic> playerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
       lecture.getId(),
       data.getUserId()
     );
     if (playerstatistic.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player not found");
     }
-    Optional<PlayerTaskStatistic> playerTaskStatistic = playerTaskStatisticRepository.findPlayerTaskStatisticByMinigameTaskIdAndLectureIdAndPlayerstatisticId(
+    final Optional<PlayerTaskStatistic> playerTaskStatistic = playerTaskStatisticRepository.findPlayerTaskStatisticByMinigameTaskIdAndLectureIdAndPlayerstatisticId(
       minigameTask.get().getId(),
       lecture.getId(),
       playerstatistic.get().getId()
     );
-    PlayerTaskStatistic currentPlayerTaskStatistic;
+    final PlayerTaskStatistic currentPlayerTaskStatistic;
     if (playerTaskStatistic.isEmpty()) {
-      PlayerTaskStatistic newPlayerTaskStatistic = new PlayerTaskStatistic();
+      final PlayerTaskStatistic newPlayerTaskStatistic = new PlayerTaskStatistic();
       newPlayerTaskStatistic.setPlayerstatistic(playerstatistic.get());
       newPlayerTaskStatistic.setMinigameTask(minigameTask.get());
       newPlayerTaskStatistic.setLecture(lecture);
@@ -132,17 +136,17 @@ public class PlayerTaskStatisticService {
     );
   }
 
-  private void calculateCompletedDungeons(Playerstatistic playerstatistic) {
-    List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findPlayerTaskStatisticByPlayerstatisticId(
+  private void calculateCompletedDungeons(final Playerstatistic playerstatistic) {
+    final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findPlayerTaskStatisticByPlayerstatisticId(
       playerstatistic.getId()
     );
-    List<World> worlds = playerstatistic.getLecture().getWorlds();
-    List<Dungeon> completedDungeons = new ArrayList<>();
-    for (World world : worlds) {
-      for (Dungeon dungeon : world.getDungeons()) {
+    final List<World> worlds = playerstatistic.getLecture().getWorlds();
+    final List<Dungeon> completedDungeons = new ArrayList<>();
+    for (final World world : worlds) {
+      for (final Dungeon dungeon : world.getDungeons()) {
         boolean completed = true;
-        for (MinigameTask minigameTask : dungeon.getMinigameTasks()) {
-          Optional<PlayerTaskStatistic> currentStatistic = playerTaskStatistics
+        for (final MinigameTask minigameTask : dungeon.getMinigameTasks()) {
+          final Optional<PlayerTaskStatistic> currentStatistic = playerTaskStatistics
             .stream()
             .filter(currentMinigameTask -> currentMinigameTask.equals(minigameTask))
             .findAny();
@@ -155,20 +159,20 @@ public class PlayerTaskStatisticService {
         }
       }
     }
-    List<AreaLocation> completedDungeonLocations = new ArrayList<>();
-    for (Dungeon dungeon : completedDungeons) {
+    final List<AreaLocation> completedDungeonLocations = new ArrayList<>();
+    for (final Dungeon dungeon : completedDungeons) {
       completedDungeonLocations.add(new AreaLocation(dungeon.getWorld(), dungeon));
     }
     playerstatistic.setCompletedDungeons(completedDungeonLocations);
   }
 
   private void logData(
-    PlayerTaskStatisticData data,
-    Lecture lecture,
-    PlayerTaskStatistic currentPlayerTaskStatistic,
-    long gainedKnowledge
+    final PlayerTaskStatisticData data,
+    final Lecture lecture,
+    final PlayerTaskStatistic currentPlayerTaskStatistic,
+    final long gainedKnowledge
   ) {
-    PlayerTaskActionLog actionLog = new PlayerTaskActionLog();
+    final PlayerTaskActionLog actionLog = new PlayerTaskActionLog();
     actionLog.setPlayerTaskStatistic(currentPlayerTaskStatistic);
     actionLog.setLecture(lecture);
     actionLog.setDate(new Date());
@@ -180,7 +184,7 @@ public class PlayerTaskStatisticService {
     playerTaskActionLogRepository.save(actionLog);
   }
 
-  private long calculateKnowledge(long score, long highscore) {
+  private long calculateKnowledge(final long score, final long highscore) {
     return (long) (
       maxKnowledge *
       Math.max(0, score - highscore) /
@@ -191,7 +195,7 @@ public class PlayerTaskStatisticService {
     );
   }
 
-  private boolean checkCompleted(long score) {
+  private boolean checkCompleted(final long score) {
     return score >= completedScore;
   }
 }

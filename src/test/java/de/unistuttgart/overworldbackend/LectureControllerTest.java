@@ -60,7 +60,7 @@ class LectureControllerTest {
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of());
     world.setDungeons(dungeons);
-    List<World> worlds = new ArrayList<>();
+    final List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
     final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
@@ -114,7 +114,7 @@ class LectureControllerTest {
 
   @Test
   void updateLecture() throws Exception {
-    LectureDTO lectureToUpdate = new LectureDTO();
+    final LectureDTO lectureToUpdate = new LectureDTO();
     lectureToUpdate.setLectureName("Software-engineering");
     lectureToUpdate.setDescription("Basic lecture of software engineering students");
 

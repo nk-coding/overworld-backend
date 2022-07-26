@@ -58,7 +58,7 @@ public class PlayerStatisticService {
    * @return the created playerstatistic as DTO
    */
   public PlayerstatisticDTO createPlayerStatisticInLecture(final int lectureId, final Player player) {
-    Optional<Playerstatistic> existingPlayerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
+    final Optional<Playerstatistic> existingPlayerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
       lectureId,
       player.getUserId()
     );
@@ -68,22 +68,20 @@ public class PlayerStatisticService {
         String.format("There is already a playerstatistic for userId %s in lecture %s", player.getUserId(), lectureId)
       );
     }
-    Lecture lecture = lectureService.getLecture(lectureId);
+    final Lecture lecture = lectureService.getLecture(lectureId);
 
-    Playerstatistic playerstatistic = new Playerstatistic();
+    final Playerstatistic playerstatistic = new Playerstatistic();
     playerstatistic.setLecture(lecture);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setUserId(player.getUserId());
     playerstatistic.setUsername(player.getUsername());
 
-    AreaLocation areaLocation = new AreaLocation();
-    areaLocation.setWorld(getFirstWorld(lectureId));
+    final AreaLocation areaLocation = new AreaLocation(getFirstWorld(lectureId));
     playerstatistic.setCurrentAreaLocation(areaLocation);
 
     playerstatistic.setKnowledge(0);
-    Playerstatistic savedPlayerstatistic = playerstatisticRepository.save(playerstatistic);
-    return playerstatisticMapper.playerstatisticToPlayerstatisticDTO(savedPlayerstatistic);
+    return playerstatisticMapper.playerstatisticToPlayerstatisticDTO(playerstatisticRepository.save(playerstatistic));
   }
 
   /**
@@ -103,7 +101,7 @@ public class PlayerStatisticService {
     final String playerId,
     final PlayerstatisticDTO playerstatisticDTO
   ) {
-    Playerstatistic playerstatistic = getPlayerStatisticFromLecture(lectureId, playerId);
+    final Playerstatistic playerstatistic = getPlayerStatisticFromLecture(lectureId, playerId);
 
     if (playerstatisticDTO.getCurrentAreaLocation() == null) {
       throw new ResponseStatusException(
@@ -112,12 +110,15 @@ public class PlayerStatisticService {
       );
     }
 
-    AreaLocation areaLocation = areaLocationDTOToAreaLocation(lectureId, playerstatisticDTO.getCurrentAreaLocation());
+    final AreaLocation areaLocation = areaLocationDTOToAreaLocation(
+      lectureId,
+      playerstatisticDTO.getCurrentAreaLocation()
+    );
     playerstatistic.setCurrentAreaLocation(areaLocation);
     return playerstatisticMapper.playerstatisticToPlayerstatisticDTO((playerstatisticRepository.save(playerstatistic)));
   }
 
-  private World getFirstWorld(int lectureId) {
+  private World getFirstWorld(final int lectureId) {
     return worldService.getWorldByIndexFromLecture(lectureId, 1);
   }
 
@@ -127,16 +128,16 @@ public class PlayerStatisticService {
    * @param areaLocationDTO the updated parameters
    * @return the area location object
    */
-  private AreaLocation areaLocationDTOToAreaLocation(int lectureId, AreaLocationDTO areaLocationDTO) {
+  private AreaLocation areaLocationDTOToAreaLocation(final int lectureId, final AreaLocationDTO areaLocationDTO) {
     try {
-      World world = worldService.getWorldByIndexFromLecture(lectureId, areaLocationDTO.getWorldIndex());
+      final World world = worldService.getWorldByIndexFromLecture(lectureId, areaLocationDTO.getWorldIndex());
       Dungeon dungeon = null;
       if (areaLocationDTO.getDungeonIndex() != null) {
         dungeon =
           dungeonService.getDungeonByIndexFromLecture(lectureId, world.getIndex(), areaLocationDTO.getDungeonIndex());
       }
       return new AreaLocation(world, dungeon);
-    } catch (ResponseStatusException exception) {
+    } catch (final ResponseStatusException exception) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Combination of world and dungeon does not exist");
     }
   }

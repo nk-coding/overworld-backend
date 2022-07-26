@@ -108,7 +108,7 @@ class PlayerstatisticControllerTest {
     playerstatistic.setLecture(initialLecture);
     playerstatistic.setCurrentAreaLocation(areaLocation);
     playerstatistic.setKnowledge(new Random(10).nextLong());
-    ArrayList<AreaLocation> unlockedAreas = new ArrayList<>();
+    final ArrayList<AreaLocation> unlockedAreas = new ArrayList<>();
     unlockedAreas.add(areaLocation);
     playerstatistic.setUnlockedAreas(unlockedAreas);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
