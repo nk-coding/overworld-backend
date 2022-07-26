@@ -1,8 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -30,7 +28,7 @@ public class Lecture {
   @OneToMany(cascade = CascadeType.ALL)
   List<World> worlds;
 
-  public Lecture(String lectureName, String description, List<World> worlds) {
+  public Lecture(final String lectureName, final String description, final List<World> worlds) {
     this.lectureName = lectureName;
     this.description = description;
     this.worlds = worlds;
@@ -42,7 +40,7 @@ public class Lecture {
       world.setLecture(this);
       world.getMinigameTasks().forEach(minigameTask -> minigameTask.setLecture(this));
       world.getNpcs().forEach(npc -> npc.setLecture(this));
-      for (Dungeon dungeon : world.getDungeons()) {
+      for (final Dungeon dungeon : world.getDungeons()) {
         dungeon.setWorld(world);
         dungeon.setLecture(this);
         dungeon.getMinigameTasks().forEach(minigameTask -> minigameTask.setLecture(this));

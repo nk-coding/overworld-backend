@@ -35,7 +35,6 @@ class LectureControllerTest {
   @Autowired
   private LectureMapper lectureMapper;
 
-  private final String API_URL = "/api/v1/overworld";
   private String fullURL;
   private ObjectMapper objectMapper;
 
@@ -51,7 +50,7 @@ class LectureControllerTest {
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
-    dungeon.setNpcs(Arrays.asList());
+    dungeon.setNpcs(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
 
     final World world = new World();
@@ -59,7 +58,7 @@ class LectureControllerTest {
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of());
-    world.setNpcs(Arrays.asList());
+    world.setNpcs(Set.of());
     world.setDungeons(dungeons);
     List<World> worlds = new ArrayList<>();
     worlds.add(world);
@@ -69,7 +68,6 @@ class LectureControllerTest {
     initialLectureDTO = lectureMapper.lectureToLectureDTO(initialLecture);
 
     assertNotNull(initialLecture.getLectureName());
-    assertNotNull(initialLectureDTO.getId());
 
     fullURL = "/lectures";
 
@@ -90,6 +88,14 @@ class LectureControllerTest {
 
     assertEquals(initialLectureDTO, lectureDTOResult);
     assertEquals(initialLectureDTO.getId(), lectureDTOResult.getId());
+  }
+
+  @Test
+  void getLecture_DoesNotExist_ThrowsNotFound() throws Exception {
+    mvc
+      .perform(get(fullURL + "/1").contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isNotFound())
+      .andReturn();
   }
 
   @Test
@@ -152,7 +158,7 @@ class LectureControllerTest {
 
     assertEquals(initialLectureDTO, lectureDTOResult);
     assertEquals(initialLectureDTO.getId(), lectureDTOResult.getId());
-    assertSame(0, lectureRepository.findAll().size());
+    assertTrue(lectureRepository.findAll().isEmpty());
   }
 
   @Test

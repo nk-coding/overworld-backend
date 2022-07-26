@@ -4,11 +4,10 @@ import java.util.List;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.apache.commons.lang3.builder.EqualsExclude;
-import org.apache.commons.lang3.builder.HashCodeExclude;
-import org.apache.commons.lang3.builder.ToStringExclude;
 
 @Entity
 @Data
@@ -19,7 +18,14 @@ public class Dungeon extends Area {
   @ManyToOne
   World world;
 
-  public Dungeon(String staticName, String topicName, boolean active, Set<MinigameTask> minigameTasks, List<NPC> npcs) {
-    super(staticName, topicName, active, minigameTasks, npcs);
+  public Dungeon(
+    final String staticName,
+    final String topicName,
+    final boolean active,
+    final Set<MinigameTask> minigameTasks,
+    final Set<NPC> npcs,
+    final int index
+  ) {
+    super(staticName, topicName, active, minigameTasks, npcs, index);
   }
 }

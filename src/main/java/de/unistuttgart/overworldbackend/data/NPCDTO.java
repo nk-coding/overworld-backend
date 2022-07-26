@@ -17,6 +17,6 @@ public class NPCDTO {
   @Nullable
   UUID id;
 
-  String startLocation;
+  int index;
   String text;
 }

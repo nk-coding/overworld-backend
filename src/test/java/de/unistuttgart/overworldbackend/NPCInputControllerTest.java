@@ -72,19 +72,19 @@ class NPCInputControllerTest {
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
-    dungeon.setNpcs(Arrays.asList());
+    dungeon.setNpcs(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
 
     final NPC npc = new NPC();
     npc.setText("NPCText");
-    npc.setStartLocation("startLoc");
+    npc.setIndex(1);
 
     final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of());
-    world.setNpcs(Arrays.asList(npc));
+    world.setNpcs(Set.of(npc));
     world.setDungeons(dungeons);
     List<World> worlds = new ArrayList<>();
     worlds.add(world);

@@ -53,7 +53,7 @@ public class LectureController {
   @Operation(summary = "Update a lecture by its id")
   @PutMapping("/{id}")
   public LectureDTO updateLecture(@PathVariable int id, @RequestBody LectureDTO lectureDTO) {
-    log.debug("update lecture {}", id);
+    log.debug("update lecture {} with {}", id, lectureDTO);
     return lectureService.updateLecture(id, lectureDTO);
   }
 

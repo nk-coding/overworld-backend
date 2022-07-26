@@ -19,6 +19,8 @@ public class AreaDTO {
   @Nullable
   UUID id;
 
+  int index;
+
   @NotNull
   String staticName;
 

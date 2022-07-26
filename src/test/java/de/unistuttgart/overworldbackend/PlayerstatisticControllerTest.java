@@ -62,7 +62,7 @@ class PlayerstatisticControllerTest {
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of());
-    world.setNpcs(Arrays.asList());
+    world.setNpcs(Set.of());
     world.setDungeons(new ArrayList<>());
     List<World> worlds = new ArrayList<>();
     worlds.add(world);

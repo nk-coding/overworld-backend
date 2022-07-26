@@ -2,7 +2,9 @@ package de.unistuttgart.overworldbackend.data;
 
 import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,14 +22,15 @@ public class World extends Area {
   List<Dungeon> dungeons;
 
   public World(
-    String staticName,
-    String topicName,
-    boolean active,
-    Set<MinigameTask> minigameTasks,
-    List<NPC> npcs,
-    List<Dungeon> dungeons
+    final String staticName,
+    final String topicName,
+    final boolean active,
+    final Set<MinigameTask> minigameTasks,
+    final Set<NPC> npcs,
+    final List<Dungeon> dungeons,
+    final int index
   ) {
-    super(staticName, topicName, active, minigameTasks, npcs);
+    super(staticName, topicName, active, minigameTasks, npcs, index);
     this.dungeons = dungeons;
   }
 }

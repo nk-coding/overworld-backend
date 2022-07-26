@@ -12,6 +12,7 @@ import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,6 @@ class DungeonControllerTest {
   @Autowired
   private DungeonMapper dungeonMapper;
 
-  private final String API_URL = "/api/v1/overworld";
   private String fullURL;
   private ObjectMapper objectMapper;
 
@@ -57,18 +57,20 @@ class DungeonControllerTest {
     lectureRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
+    dungeon.setIndex(1);
     dungeon.setStaticName("Dark Dungeon");
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
-    dungeon.setNpcs(Arrays.asList());
+    dungeon.setNpcs(Set.of());
 
     final World world = new World();
+    world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of());
-    world.setNpcs(Arrays.asList());
+    world.setNpcs(Set.of());
     world.setDungeons(Arrays.asList(dungeon));
 
     final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
@@ -86,7 +88,7 @@ class DungeonControllerTest {
     assertNotNull(initialDungeon.getId());
     assertNotNull(initialDungeonDTO.getId());
 
-    fullURL = "/lectures/" + initialLecture.getId() + "/worlds/" + initialWorld.getId() + "/dungeons";
+    fullURL = String.format("/lectures/%d/worlds/%d/dungeons", initialLecture.getId(), initialWorld.getIndex());
 
     objectMapper = new ObjectMapper();
   }
@@ -110,7 +112,7 @@ class DungeonControllerTest {
   @Test
   void getDungeonFromWorld() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialDungeon.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialDungeon.getIndex()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -123,7 +125,7 @@ class DungeonControllerTest {
   @Test
   void getDungeonFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + Integer.MAX_VALUE).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -138,7 +140,9 @@ class DungeonControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updateDungeonDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialDungeon.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialDungeon.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -148,6 +152,7 @@ class DungeonControllerTest {
     );
 
     assertEquals(initialDungeonDTO.getId(), updatedDungeonDTOResult.getId());
+    assertEquals(initialDungeonDTO.getIndex(), updatedDungeonDTOResult.getIndex());
     assertEquals(newTopicName, updatedDungeonDTOResult.getTopicName());
     assertEquals(newActiveStatus, updatedDungeonDTOResult.isActive());
     assertEquals(initialDungeonDTO.getStaticName(), updatedDungeonDTOResult.getStaticName());
@@ -168,7 +173,9 @@ class DungeonControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updatedDungeonDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialDungeon.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialDungeon.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -178,6 +185,7 @@ class DungeonControllerTest {
     );
 
     assertEquals(initialDungeonDTO.getId(), updatedDungeonDTOResult.getId());
+    assertEquals(initialDungeonDTO.getIndex(), updatedDungeonDTOResult.getIndex());
     assertEquals(newTopicName, updatedDungeonDTOResult.getTopicName());
     assertEquals(newActiveStatus, updatedDungeonDTOResult.isActive());
     assertNotEquals(newStaticName, updatedDungeonDTOResult.getStaticName());

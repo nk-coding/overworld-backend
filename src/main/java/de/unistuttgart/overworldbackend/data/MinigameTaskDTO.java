@@ -1,9 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
 import java.util.UUID;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +17,7 @@ public class MinigameTaskDTO {
   @Nullable
   UUID id;
 
-  String location;
+  int index;
   String game;
   UUID configurationId;
 }

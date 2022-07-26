@@ -77,20 +77,20 @@ class MinigameInputControllerTest {
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
-    dungeon.setNpcs(Arrays.asList());
+    dungeon.setNpcs(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
 
     final MinigameTask minigameTask = new MinigameTask();
     minigameTask.setConfigurationId(UUID.randomUUID());
     minigameTask.setGame("Bugfinder");
-    minigameTask.setLocation("w1-p2");
+    minigameTask.setIndex(1);
 
     final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of(minigameTask));
-    world.setNpcs(Arrays.asList());
+    world.setNpcs(Set.of());
     world.setDungeons(dungeons);
     List<World> worlds = new ArrayList<>();
     worlds.add(world);

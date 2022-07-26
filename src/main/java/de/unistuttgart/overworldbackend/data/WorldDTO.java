@@ -1,7 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
 import java.util.List;
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
