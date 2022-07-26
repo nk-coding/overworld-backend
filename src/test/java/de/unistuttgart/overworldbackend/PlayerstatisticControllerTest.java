@@ -58,6 +58,7 @@ class PlayerstatisticControllerTest {
     lectureRepository.deleteAll();
 
     final World world = new World();
+    world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
