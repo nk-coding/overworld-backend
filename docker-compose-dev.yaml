@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+
+  overworld-db-dev:
+      container_name: overworld-db-dev
+      image: postgres:14-alpine
+      restart: always
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+
+  overworld-dev:
+    container_name: overworld-dev
+    image: ghcr.io/gamify-it/overworld:main
+    restart: always
+    expose:
+      - "80"
+
+  overworld-reverse-proxy:
+    container_name: overworld-reverse-proxy
+    image: nginx
+    restart: always
+    volumes:
+      - ./.nginx/compose/dev-nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8000:8000"
