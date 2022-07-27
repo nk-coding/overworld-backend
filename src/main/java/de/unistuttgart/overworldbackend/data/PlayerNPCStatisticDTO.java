@@ -18,4 +18,5 @@ public class PlayerNPCStatisticDTO {
   UUID id;
 
   boolean completed;
+  NPCDTO npc;
 }

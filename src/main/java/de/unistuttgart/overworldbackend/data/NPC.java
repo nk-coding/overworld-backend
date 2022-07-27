@@ -32,6 +32,9 @@ public class NPC {
   @ManyToOne
   Area area;
 
+  @ManyToOne(cascade = CascadeType.ALL)
+  AreaLocation areaLocation;
+
   public NPC(final String text, final int index) {
     this.text = text;
     this.index = index;

@@ -116,6 +116,10 @@ class PlayerNPCStatisticControllerTest {
 
     assertEquals(initialLecture.getId(), initialNpc.getLecture().getId());
     assertEquals(initialLecture.getId(), initialPlayerstatistic.getLecture().getId());
+
+    assertEquals(initialLecture, initialNpc.getLecture());
+    assertEquals(initialLecture.getWorlds().stream().findFirst().get(), initialNpc.getArea());
+
     fullURL =
       String.format(
         "/lectures/%d/playerstatistics/" + initialPlayerstatistic.getUserId() + "/player-npc-statistics",
@@ -139,7 +143,7 @@ class PlayerNPCStatisticControllerTest {
     final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
       objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
     );
-    assertEquals(playerNPCStatisticDTOs.get(0), statistic);
+    assertEquals(statistic, playerNPCStatisticDTOs.get(0));
   }
 
   @Test
@@ -157,7 +161,8 @@ class PlayerNPCStatisticControllerTest {
       result.getResponse().getContentAsString(),
       PlayerNPCStatisticDTO.class
     );
-    assertEquals(playerNPCStatisticDTO, statistic);
+    assertEquals(statistic, playerNPCStatisticDTO);
+    assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
   }
 
   @Test

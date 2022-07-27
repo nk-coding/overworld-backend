@@ -184,7 +184,8 @@ class PlayerTaskStatisticControllerTest {
       result.getResponse().getContentAsString(),
       PlayerTaskStatisticDTO.class
     );
-    assertEquals(playerTaskStatisticDTO, statistic);
+    assertEquals(statistic, playerTaskStatisticDTO);
+    assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());
   }
 
   @Test

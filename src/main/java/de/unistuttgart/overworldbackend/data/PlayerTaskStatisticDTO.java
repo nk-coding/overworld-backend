@@ -24,4 +24,6 @@ public class PlayerTaskStatisticDTO {
   long highscore;
 
   boolean completed;
+
+  MinigameTaskDTO minigameTask;
 }

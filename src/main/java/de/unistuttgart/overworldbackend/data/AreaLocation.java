@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "world_id", "dungeon_id" }) })
+//@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "world_id", "dungeon_id" }) })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

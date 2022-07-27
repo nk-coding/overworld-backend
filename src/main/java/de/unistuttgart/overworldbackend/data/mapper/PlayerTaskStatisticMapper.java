@@ -4,7 +4,7 @@ import de.unistuttgart.overworldbackend.data.*;
 import java.util.List;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { MinigameTaskMapper.class })
 public interface PlayerTaskStatisticMapper {
   PlayerTaskStatistic playerTaskStatisticDTOToPlayerTaskStatistic(final PlayerTaskStatisticDTO playerTaskStatisticDTO);
 
