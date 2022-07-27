@@ -1,14 +1,116 @@
 {
   "worlds": [
     {
+      "dungeons": [],
+      "staticName": "Dummy to start world index at 1",
+      "numberOfMinigames": 0,
+      "numberOfNPCs": 0
+    },
+    {
       "dungeons": [
         {
           "staticName": "dungeon1",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon2",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon3",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon4",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
         }
       ],
       "staticName": "Blooming Savanna",
+      "numberOfMinigames": 12,
+      "numberOfNPCs": 10
+    },
+    {
+      "dungeons": [
+        {
+          "staticName": "dungeon1",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon2",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon3",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon4",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        }
+      ],
+      "staticName": "Sunny Beach",
+      "numberOfMinigames": 12,
+      "numberOfNPCs": 10
+    },
+    {
+      "dungeons": [
+        {
+          "staticName": "dungeon1",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon2",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon3",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon4",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        }
+      ],
+      "staticName": "Magic Forest",
+      "numberOfMinigames": 12,
+      "numberOfNPCs": 10
+    },
+    {
+      "dungeons": [
+        {
+          "staticName": "dungeon1",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon2",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon3",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        },
+        {
+          "staticName": "dungeon4",
+          "numberOfMinigames": 12,
+          "numberOfNPCs": 10
+        }
+      ],
+      "staticName": "Winter Wonder Land",
       "numberOfMinigames": 12,
       "numberOfNPCs": 10
     }
