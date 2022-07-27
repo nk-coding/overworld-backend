@@ -5,7 +5,7 @@ import de.unistuttgart.overworldbackend.data.DungeonDTO;
 import java.util.Set;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface DungeonMapper {
   DungeonDTO dungeonToDungeonDTO(final Dungeon dungeon);
 

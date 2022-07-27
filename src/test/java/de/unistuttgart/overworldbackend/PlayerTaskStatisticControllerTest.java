@@ -186,6 +186,8 @@ class PlayerTaskStatisticControllerTest {
     );
     assertEquals(statistic, playerTaskStatisticDTO);
     assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());
+    assertNotNull(playerTaskStatisticDTO.getMinigameTask().getAreaLocation());
+    assertEquals(initialMinigameTaskDTO.getAreaLocation(), playerTaskStatisticDTO.getMinigameTask().getAreaLocation());
   }
 
   @Test

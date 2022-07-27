@@ -163,6 +163,8 @@ class PlayerNPCStatisticControllerTest {
     );
     assertEquals(statistic, playerNPCStatisticDTO);
     assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
+    assertNotNull(playerNPCStatisticDTO.getNpc().getAreaLocation());
+    assertEquals(initialNpcDTO.getAreaLocation(), playerNPCStatisticDTO.getNpc().getAreaLocation());
   }
 
   @Test
