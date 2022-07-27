@@ -17,7 +17,7 @@ public class NPCDTO {
   @Nullable
   UUID id;
 
-  AreaLocationDTO areaLocation;
+  AreaLocationDTO area;
   int index;
   String text;
 }

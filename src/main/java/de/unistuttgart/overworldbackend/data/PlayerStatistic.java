@@ -22,13 +22,13 @@ public class PlayerStatistic {
   UUID id;
 
   @ManyToMany(cascade = CascadeType.ALL)
-  List<AreaLocation> unlockedAreas;
+  List<Area> unlockedAreas;
 
   @ManyToMany(cascade = CascadeType.ALL)
-  List<AreaLocation> completedDungeons;
+  List<Area> completedDungeons;
 
   @ManyToOne(cascade = CascadeType.ALL)
-  AreaLocation currentAreaLocation;
+  Area currentArea;
 
   @ManyToOne
   Lecture lecture;

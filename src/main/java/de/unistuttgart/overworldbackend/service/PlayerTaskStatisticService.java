@@ -156,7 +156,6 @@ public class PlayerTaskStatisticService {
                 .anyMatch(PlayerTaskStatistic::isCompleted)
             )
         )
-        .map(dungeon -> new AreaLocation(dungeon.getWorld(), dungeon))
         .collect(Collectors.toCollection(ArrayList::new))
     );
   }

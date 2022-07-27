@@ -30,9 +30,6 @@ public class MinigameTask {
   @ManyToOne
   Area area;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  AreaLocation areaLocation;
-
   public MinigameTask(final String game, final UUID configurationId, final int index) {
     this.game = game;
     this.configurationId = configurationId;
