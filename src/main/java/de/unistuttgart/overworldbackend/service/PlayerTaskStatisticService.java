@@ -180,8 +180,8 @@ public class PlayerTaskStatisticService {
 
   private long calculateKnowledge(final long score, final long highscore) {
     return (long) (
-      (double) MAX_KNOWLEDGE *
-      Math.max(0, score - highscore) /
+      MAX_KNOWLEDGE *
+      (double) Math.max(0, score - highscore) /
       100 +
       MAX_KNOWLEDGE *
       Math.max(0, score - Math.max(0, score - highscore)) *
