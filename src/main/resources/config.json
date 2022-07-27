@@ -1,12 +1,6 @@
 {
   "worlds": [
     {
-      "dungeons": [],
-      "staticName": "Dummy to start world index at 1",
-      "numberOfMinigames": 0,
-      "numberOfNPCs": 0
-    },
-    {
       "dungeons": [
         {
           "staticName": "dungeon1",
