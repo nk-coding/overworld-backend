@@ -7,16 +7,16 @@ import java.util.List;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public abstract class AreaLocationMapper {
+public interface AreaLocationMapper {
 
-  public AreaLocationDTO areaLocationToAreaLocationDTO(final AreaLocation areaLocation) {
+  default AreaLocationDTO areaLocationToAreaLocationDTO(final AreaLocation areaLocation) {
     return new AreaLocationDTO(
       areaLocation.getWorld().getIndex(),
       areaLocation.getDungeon() != null ? areaLocation.getDungeon().getIndex() : null
     );
   }
 
-  public List<AreaLocationDTO> areaLocationsToAreaLocationDTOs(final List<AreaLocation> areaLocations) {
+  default List<AreaLocationDTO> areaLocationsToAreaLocationDTOs(final List<AreaLocation> areaLocations) {
     return areaLocations.parallelStream().map(this::areaLocationToAreaLocationDTO).toList();
   }
 }

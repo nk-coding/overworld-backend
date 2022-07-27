@@ -115,7 +115,6 @@ class NPCInputControllerTest {
     initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
     assertNotNull(initialLecture.getLectureName());
-    assertNotNull(initialLectureDTO.getId());
 
     assertEquals(initialLecture.getId(), initialNpc.getLecture().getId());
     assertEquals(initialLecture.getId(), initialPlayerStatistic.getLecture().getId());

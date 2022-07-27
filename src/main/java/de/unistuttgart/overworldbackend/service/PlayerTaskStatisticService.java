@@ -47,7 +47,7 @@ public class PlayerTaskStatisticService {
       .findByLectureId(lectureId)
       .parallelStream()
       .filter(playerTaskStatistic -> playerTaskStatistic.getPlayerStatistic().getUserId().equals(playerId))
-      .collect(Collectors.toList());
+      .toList();
     return playerTaskStatisticMapper.playerTaskStatisticsToPlayerTaskStatisticDTO(statisticList);
   }
 
@@ -124,7 +124,7 @@ public class PlayerTaskStatisticService {
 
     calculateCompletedDungeons(playerStatistic);
 
-    //TODO:calculate completed dungeons and unlocked areas
+    //TODO:calculate unlocked areas
 
     playerStatistic.addKnowledge(gainedKnowledge);
     playerstatisticRepository.save(playerStatistic);
@@ -183,7 +183,7 @@ public class PlayerTaskStatisticService {
       MAX_KNOWLEDGE *
       Math.max(0, score - highscore) /
       100 +
-      MAX_KNOWLEDGE *
+      (double) MAX_KNOWLEDGE *
       Math.max(0, score - Math.max(0, score - highscore)) *
       RETRY_KNOWLEDGE
     );

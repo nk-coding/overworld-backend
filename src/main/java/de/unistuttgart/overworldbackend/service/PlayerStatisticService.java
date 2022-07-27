@@ -106,7 +106,7 @@ public class PlayerStatisticService {
     if (playerstatisticDTO.getCurrentAreaLocation() == null) {
       throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST,
-        String.format("Current area location is not specified")
+        "Current area location is not specified"
       );
     }
 

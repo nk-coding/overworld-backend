@@ -44,7 +44,7 @@ public class PlayerNPCStatisticService {
       .findByLectureId(lectureId)
       .stream()
       .filter(playerNPCStatistic -> playerNPCStatistic.getPlayerStatistic().getUserId().equals(playerId))
-      .collect(Collectors.toList());
+      .toList();
     return playerNPCStatisticMapper.playerNPCStatisticsToPlayerNPCStatisticDTO(statisticList);
   }
 
