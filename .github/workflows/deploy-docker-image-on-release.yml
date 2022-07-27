@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "main"
-      - "feature/playerstatistics"
     tags:
       - "v*"
   pull_request:
