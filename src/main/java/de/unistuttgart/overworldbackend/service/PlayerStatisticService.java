@@ -69,17 +69,15 @@ public class PlayerStatisticService {
       );
     }
     final Lecture lecture = lectureService.getLecture(lectureId);
+    final AreaLocation firstWorld = new AreaLocation(getFirstWorld(lectureId));
 
     final Playerstatistic playerstatistic = new Playerstatistic();
     playerstatistic.setLecture(lecture);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    playerstatistic.setUnlockedAreas(new ArrayList<>());
+    playerstatistic.setUnlockedAreas(Arrays.asList(firstWorld));
     playerstatistic.setUserId(player.getUserId());
     playerstatistic.setUsername(player.getUsername());
-
-    final AreaLocation areaLocation = new AreaLocation(getFirstWorld(lectureId));
-    playerstatistic.setCurrentAreaLocation(areaLocation);
-
+    playerstatistic.setCurrentAreaLocation(firstWorld);
     playerstatistic.setKnowledge(0);
     return playerstatisticMapper.playerstatisticToPlayerstatisticDTO(playerstatisticRepository.save(playerstatistic));
   }

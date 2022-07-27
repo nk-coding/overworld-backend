@@ -169,6 +169,7 @@ class PlayerstatisticControllerTest {
     assertEquals(newPlayer.getUserId(), createdPlayerstatisticDTOResult.getUserId());
     assertEquals(newPlayer.getUsername(), createdPlayerstatisticDTOResult.getUsername());
     assertEquals(new AreaLocationDTO(1, null), createdPlayerstatisticDTOResult.getCurrentAreaLocation());
+    assertEquals(Arrays.asList(new AreaLocationDTO(1, null)), createdPlayerstatisticDTOResult.getUnlockedAreas());
   }
 
   @Test
