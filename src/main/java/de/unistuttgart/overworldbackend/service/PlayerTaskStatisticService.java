@@ -153,13 +153,7 @@ public class PlayerTaskStatisticService {
               playerTaskStatistics
                 .parallelStream()
                 .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
-                .anyMatch(PlayerTaskStatistic::isCompleted) &&
-              playerTaskStatistics
-                .parallelStream()
-                .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
-                .findAny()
-                .get()
-                .isCompleted()
+                .anyMatch(PlayerTaskStatistic::isCompleted)
             )
         )
         .map(dungeon -> new AreaLocation(dungeon.getWorld(), dungeon))
