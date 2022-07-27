@@ -30,7 +30,7 @@ java -jar crossword-service-0.0.1-SNAPSHOT.jar
 
 To build the container and run the backend, frontend and a reverse proxy use
 ```
-docker-compose up
+docker-compose up --build
 ```
 
 To run the backend locally without docker use
