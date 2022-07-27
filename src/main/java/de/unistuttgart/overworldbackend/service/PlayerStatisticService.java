@@ -104,10 +104,7 @@ public class PlayerStatisticService {
     final PlayerStatistic playerstatistic = getPlayerStatisticFromLecture(lectureId, playerId);
 
     if (playerstatisticDTO.getCurrentAreaLocation() == null) {
-      throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "Current area location is not specified"
-      );
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current area location is not specified");
     }
 
     playerstatistic.setCurrentAreaLocation(

@@ -8,7 +8,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface AreaLocationMapper {
-
   default AreaLocationDTO areaLocationToAreaLocationDTO(final AreaLocation areaLocation) {
     return new AreaLocationDTO(
       areaLocation.getWorld().getIndex(),
