@@ -4,7 +4,7 @@ import de.unistuttgart.overworldbackend.data.NPC;
 import de.unistuttgart.overworldbackend.data.NPCDTO;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface NPCMapper {
   NPCDTO npcToNPCDTO(final NPC npc);
 

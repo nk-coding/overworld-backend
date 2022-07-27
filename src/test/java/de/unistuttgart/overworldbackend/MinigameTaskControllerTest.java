@@ -82,6 +82,7 @@ class MinigameTaskControllerTest {
     minigameTask2.setIndex(3);
 
     final Dungeon dungeon = new Dungeon();
+    dungeon.setIndex(1);
     dungeon.setStaticName("Dungeon 1");
     dungeon.setTopicName("Testtopic");
     dungeon.setActive(true);
@@ -89,6 +90,7 @@ class MinigameTaskControllerTest {
     dungeon.setNpcs(Set.of());
 
     final World world = new World();
+    world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);

@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,13 +13,19 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MinigameTaskDTO {
+public class PlayerStatisticDTO {
 
   @Nullable
   UUID id;
 
-  AreaLocationDTO areaLocation;
-  int index;
-  String game;
-  UUID configurationId;
+  List<AreaLocationDTO> unlockedAreas;
+
+  List<AreaLocationDTO> completedDungeons;
+
+  AreaLocationDTO currentAreaLocation;
+
+  String userId;
+  String username;
+
+  long knowledge;
 }

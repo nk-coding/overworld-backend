@@ -1,24 +1,21 @@
 package de.unistuttgart.overworldbackend.data;
 
-import java.util.UUID;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.lang.Nullable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MinigameTaskDTO {
+public class Player {
 
-  @Nullable
-  UUID id;
+  @NotNull
+  String userId;
 
-  AreaLocationDTO areaLocation;
-  int index;
-  String game;
-  UUID configurationId;
+  @NotNull
+  String username;
 }

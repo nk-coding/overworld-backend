@@ -5,7 +5,7 @@ import de.unistuttgart.overworldbackend.data.LectureDTO;
 import java.util.List;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface LectureMapper {
   LectureDTO lectureToLectureDTO(final Lecture lecture);
 

@@ -5,7 +5,7 @@ import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import java.util.Set;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface MinigameTaskMapper {
   MinigameTaskDTO minigameTaskToMinigameTaskDTO(final MinigameTask minigameTask);
 

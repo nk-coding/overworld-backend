@@ -1,5 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.AccessLevel;
@@ -23,11 +25,15 @@ public class NPC {
   int index;
   String text;
 
+  @JsonBackReference
   @ManyToOne
   Lecture lecture;
 
   @ManyToOne
   Area area;
+
+  @ManyToOne(cascade = CascadeType.ALL)
+  AreaLocation areaLocation;
 
   public NPC(final String text, final int index) {
     this.text = text;

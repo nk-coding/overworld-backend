@@ -12,13 +12,11 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MinigameTaskDTO {
+public class PlayerNPCStatisticDTO {
 
   @Nullable
   UUID id;
 
-  AreaLocationDTO areaLocation;
-  int index;
-  String game;
-  UUID configurationId;
+  boolean completed;
+  NPCDTO npc;
 }
