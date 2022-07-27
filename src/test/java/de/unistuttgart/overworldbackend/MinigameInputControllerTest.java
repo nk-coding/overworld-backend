@@ -9,8 +9,8 @@ import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.*;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerstatisticRepository;
 import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ class MinigameInputControllerTest {
   private LectureRepository lectureRepository;
 
   @Autowired
-  private PlayerstatisticRepository playerstatisticRepository;
+  private PlayerStatisticRepository playerstatisticRepository;
 
   @Autowired
   private MinigameTaskRepository minigameTaskRepository;
@@ -48,7 +48,7 @@ class MinigameInputControllerTest {
   private LectureMapper lectureMapper;
 
   @Autowired
-  private PlayerstatisticMapper playerstatisticMapper;
+  private PlayerStatisticMapper playerstatisticMapper;
 
   @Autowired
   private WorldMapper worldMapper;
@@ -72,8 +72,8 @@ class MinigameInputControllerTest {
   private Dungeon initialDungeon;
   private DungeonDTO initialDungeonDTO;
 
-  private Playerstatistic initialPlayerstatistic;
-  private PlayerstatisticDTO initialPlayerstatisticDTO;
+  private PlayerStatistic initialPlayerStatistic;
+  private PlayerStatisticDTO initialPlayerStatisticDTO;
 
   private MinigameTask initialMinigameTask;
   private MinigameTaskDTO initialMinigameTaskDTO;
@@ -130,7 +130,7 @@ class MinigameInputControllerTest {
     initialMinigameTask = initialWorld.getMinigameTasks().stream().findFirst().get();
     initialMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialMinigameTask);
 
-    final Playerstatistic playerstatistic = new Playerstatistic();
+    final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
@@ -140,14 +140,14 @@ class MinigameInputControllerTest {
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    initialPlayerstatistic = playerstatisticRepository.save(playerstatistic);
-    initialPlayerstatisticDTO = playerstatisticMapper.playerstatisticToPlayerstatisticDTO(initialPlayerstatistic);
+    initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
+    initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
     assertNotNull(initialLecture.getLectureName());
     assertNotNull(initialLectureDTO.getId());
 
     assertEquals(initialLecture.getId(), initialMinigameTask.getLecture().getId());
-    assertEquals(initialLecture.getId(), initialPlayerstatistic.getLecture().getId());
+    assertEquals(initialLecture.getId(), initialPlayerStatistic.getLecture().getId());
 
     fullURL = "/internal";
 
@@ -157,7 +157,7 @@ class MinigameInputControllerTest {
   @Test
   void submitGameData() throws Exception {
     final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
-    playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
+    playerTaskStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
     playerTaskStatisticData.setGame(initialMinigameTask.getGame());
     playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
     playerTaskStatisticData.setScore(80);
@@ -174,15 +174,15 @@ class MinigameInputControllerTest {
       PlayerTaskStatisticDTO.class
     );
     assertEquals(playerTaskStatisticData.getScore(), playerTaskStatisticDTO.getHighscore());
-
-    final Playerstatistic playerstatistic = playerstatisticRepository.findById(initialPlayerstatisticDTO.getId()).get();
+    assertEquals(2, initialDungeon.getMinigameTasks().size());
+    final PlayerStatistic playerstatistic = playerstatisticRepository.findById(initialPlayerStatisticDTO.getId()).get();
     assertSame(0, playerstatistic.getCompletedDungeons().size());
 
     // check that action log was created
     final PlayerTaskActionLog actionLog = playerTaskActionLogRepository
       .findAll()
       .stream()
-      .filter(log -> log.getPlayerTaskStatistic().getPlayerstatistic().getId().equals(initialPlayerstatistic.getId()))
+      .filter(log -> log.getPlayerTaskStatistic().getPlayerStatistic().getId().equals(initialPlayerStatistic.getId()))
       .findAny()
       .get();
     assertNotNull(actionLog);
@@ -191,16 +191,16 @@ class MinigameInputControllerTest {
     assertEquals(playerTaskStatisticData.getScore(), actionLog.getScore());
     assertEquals(
       playerTaskStatisticData.getUserId(),
-      actionLog.getPlayerTaskStatistic().getPlayerstatistic().getUserId()
+      actionLog.getPlayerTaskStatistic().getPlayerStatistic().getUserId()
     );
   }
 
   @Test
   void submitAllMinigames_CompletesDungeon() throws Exception {
-    assertSame(0, initialPlayerstatistic.getCompletedDungeons().size());
+    assertSame(0, initialPlayerStatistic.getCompletedDungeons().size());
     for (MinigameTask minigameTask : initialDungeon.getMinigameTasks()) {
       final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
-      playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
+      playerTaskStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
       playerTaskStatisticData.setGame(minigameTask.getGame());
       playerTaskStatisticData.setConfigurationId(minigameTask.getConfigurationId());
       playerTaskStatisticData.setScore(80);
@@ -212,7 +212,7 @@ class MinigameInputControllerTest {
         .andExpect(status().isOk());
     }
 
-    final Playerstatistic playerstatistic = playerstatisticRepository.findById(initialPlayerstatisticDTO.getId()).get();
+    final PlayerStatistic playerstatistic = playerstatisticRepository.findById(initialPlayerStatisticDTO.getId()).get();
     assertSame(1, playerstatistic.getCompletedDungeons().size());
   }
 
@@ -234,7 +234,7 @@ class MinigameInputControllerTest {
   @Test
   void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
     final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
-    playerTaskStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
+    playerTaskStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
     playerTaskStatisticData.setGame(UUID.randomUUID().toString());
     playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
     playerTaskStatisticData.setScore(80);

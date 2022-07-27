@@ -16,7 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class PlayerNPCStatisticService {
 
-  private long gainedKnowledgePerNPC = 100;
+  private static final long GAINED_KNOWLEDGE_PER_NPC = 100;
 
   @Autowired
   PlayerNPCStatisticMapper playerNPCStatisticMapper;
@@ -28,7 +28,7 @@ public class PlayerNPCStatisticService {
   NPCRepository npcRepository;
 
   @Autowired
-  PlayerstatisticRepository playerstatisticRepository;
+  PlayerStatisticRepository playerstatisticRepository;
 
   @Autowired
   PlayerNPCActionLogRepository playerNPCActionLogRepository;
@@ -41,94 +41,91 @@ public class PlayerNPCStatisticService {
    */
   public List<PlayerNPCStatisticDTO> getAllStatisticsOfPlayer(final int lectureId, final String playerId) {
     List<PlayerNPCStatistic> statisticList = playerNPCStatisticRepository
-      .findPlayerNPCStatisticByLectureId(lectureId)
+      .findByLectureId(lectureId)
       .stream()
-      .filter(playerNPCStatistic -> playerNPCStatistic.getPlayerstatistic().getUserId().equals(playerId))
+      .filter(playerNPCStatistic -> playerNPCStatistic.getPlayerStatistic().getUserId().equals(playerId))
       .collect(Collectors.toList());
     return playerNPCStatisticMapper.playerNPCStatisticsToPlayerNPCStatisticDTO(statisticList);
   }
 
   /**
-   * Gets the playerStatistic of the lecture of the player of the statisticId
+   * Gets the NPC statistic of the player within the lecture with the statisticId
    * @param lectureId lecture which the statistic belongs to
    * @param playerId player which the statistic belongs to
    * @param statisticId id of the statistic, which is returned
-   * @return playerTaskStatistic with the given statisticId
+   * @return playerNPCStatistic with the given statisticId
    */
   public PlayerNPCStatisticDTO getStatisticOfPlayer(
     final int lectureId,
     final String playerId,
     final UUID statisticId
   ) {
-    final Optional<PlayerNPCStatistic> statistic = playerNPCStatisticRepository.findById(statisticId);
-    if (
-      statistic.isEmpty() ||
-      statistic.get().getLecture().getId() != lectureId ||
-      !playerId.equals(statistic.get().getPlayerstatistic().getUserId())
-    ) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        String.format(
-          "Statistic with the id %s of the player %s in the lecture %s not found.",
-          statisticId,
-          playerId,
-          lectureId
+    return playerNPCStatisticMapper.playerNPCStatisticToPlayerNPCStatisticDTO(
+      playerNPCStatisticRepository
+        .findById(statisticId)
+        .filter(statistic ->
+          statistic.getLecture().getId() == lectureId && statistic.getPlayerStatistic().getUserId().equals(playerId)
         )
-      );
-    }
-    return playerNPCStatisticMapper.playerNPCStatisticToPlayerNPCStatisticDTO(statistic.get());
+        .orElseThrow(() ->
+          new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            String.format(
+              "Statistic with the id %s of the player %s in the lecture %s not found.",
+              statisticId,
+              playerId,
+              lectureId
+            )
+          )
+        )
+    );
   }
 
   /**
-   * Returns the update PlayerTaskStatistic with the given data
-   * This method gets a data object with a Player, a Game, a Configuration and a score.
-   * The given data gets logged as a PlayerTaskActionLog.
-   * It calculates the progess of the player with the given score and updates the value in the correct Playerstatistic object.
-   * @param data Data of a game run
-   * @return updated playerTaskStatistic
+   * Returns the update PlayerTaskStatistic with the given data object.
+   * @param data Data of a NPC pass
+   * @return updated playerNPCStatistic
    */
   public PlayerNPCStatisticDTO submitData(final PlayerNPCStatisticData data) {
-    final Optional<NPC> npc = npcRepository.findById(data.getNpcId());
-    if (npc.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("NPC %s not found", data.getNpcId()));
-    }
-    final Lecture lecture = npc.get().getLecture();
-    final Optional<Playerstatistic> playerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
+    final NPC npc = npcRepository
+      .findById(data.getNpcId())
+      .orElseThrow(() ->
+        new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("NPC %s not found", data.getNpcId()))
+      );
+    final Lecture lecture = npc.getLecture();
+    final PlayerStatistic playerStatistic = playerstatisticRepository
+      .findByLectureIdAndUserId(lecture.getId(), data.getUserId())
+      .orElseThrow(() ->
+        new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Player %s not found", data.getUserId()))
+      );
+    final Optional<PlayerNPCStatistic> playerNPCStatistic = playerNPCStatisticRepository.findByNpcIdAndLectureIdAndPlayerStatisticId(
+      npc.getId(),
       lecture.getId(),
-      data.getUserId()
-    );
-    if (playerstatistic.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Player %s not found", data.getUserId()));
-    }
-    final Optional<PlayerNPCStatistic> playerNPCStatistic = playerNPCStatisticRepository.findPlayerNPCStatisticByNpcIdAndLectureIdAndPlayerstatisticId(
-      npc.get().getId(),
-      lecture.getId(),
-      playerstatistic.get().getId()
+      playerStatistic.getId()
     );
     long gainedKnowledge = 0;
     final PlayerNPCStatistic currentPlayerNPCStatistic;
     if (playerNPCStatistic.isEmpty()) {
-      gainedKnowledge = gainedKnowledgePerNPC;
+      gainedKnowledge = GAINED_KNOWLEDGE_PER_NPC;
       final PlayerNPCStatistic newPlayerNPCStatistic = new PlayerNPCStatistic();
-      newPlayerNPCStatistic.setPlayerstatistic(playerstatistic.get());
-      newPlayerNPCStatistic.setNpc(npc.get());
+      newPlayerNPCStatistic.setPlayerStatistic(playerStatistic);
+      newPlayerNPCStatistic.setNpc(npc);
       newPlayerNPCStatistic.setLecture(lecture);
       newPlayerNPCStatistic.setCompleted(data.isCompleted());
       currentPlayerNPCStatistic = playerNPCStatisticRepository.save(newPlayerNPCStatistic);
     } else {
       currentPlayerNPCStatistic = playerNPCStatistic.get();
       if (!playerNPCStatistic.get().isCompleted() && data.isCompleted()) {
-        gainedKnowledge = gainedKnowledgePerNPC;
+        gainedKnowledge = GAINED_KNOWLEDGE_PER_NPC;
         currentPlayerNPCStatistic.setCompleted(data.isCompleted());
       }
     }
 
     logData(lecture, currentPlayerNPCStatistic, gainedKnowledge);
 
-    // TODO: calculate completed dungeons and unlocked areas
+    // TODO: calculate unlocked areas
 
-    playerstatistic.get().addKnowledge(gainedKnowledge);
-    playerstatisticRepository.save(playerstatistic.get());
+    playerStatistic.addKnowledge(gainedKnowledge);
+    playerstatisticRepository.save(playerStatistic);
 
     return playerNPCStatisticMapper.playerNPCStatisticToPlayerNPCStatisticDTO(
       playerNPCStatisticRepository.save(currentPlayerNPCStatistic)
@@ -143,7 +140,6 @@ public class PlayerNPCStatisticService {
     final PlayerNPCActionLog actionLog = new PlayerNPCActionLog();
     actionLog.setPlayerNPCStatistic(currentPlayerNPCStatistic);
     actionLog.setLecture(lecture);
-    actionLog.setDate(new Date());
     actionLog.setGainedKnowledge(gainedKnowledge);
     playerNPCActionLogRepository.save(actionLog);
   }

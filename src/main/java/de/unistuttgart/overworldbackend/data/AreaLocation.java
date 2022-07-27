@@ -1,16 +1,14 @@
 package de.unistuttgart.overworldbackend.data;
 
-import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
+import org.hibernate.annotations.Cascade;
 
 @Entity
-//@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "world_id", "dungeon_id" }) })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

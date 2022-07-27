@@ -7,9 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
-import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
-import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
+import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.*;
 import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import java.util.*;
@@ -38,7 +37,7 @@ class NPCInputControllerTest {
   private LectureRepository lectureRepository;
 
   @Autowired
-  private PlayerstatisticRepository playerstatisticRepository;
+  private PlayerStatisticRepository playerstatisticRepository;
 
   @Autowired
   private PlayerNPCActionLogRepository playerNPCActionLogRepository;
@@ -50,7 +49,7 @@ class NPCInputControllerTest {
   private LectureMapper lectureMapper;
 
   @Autowired
-  private PlayerstatisticMapper playerstatisticMapper;
+  private PlayerStatisticMapper playerstatisticMapper;
 
   @Autowired
   private NPCMapper npcMapper;
@@ -61,8 +60,8 @@ class NPCInputControllerTest {
   private Lecture initialLecture;
   private LectureDTO initialLectureDTO;
 
-  private Playerstatistic initialPlayerstatistic;
-  private PlayerstatisticDTO initialPlayerstatisticDTO;
+  private PlayerStatistic initialPlayerStatistic;
+  private PlayerStatisticDTO initialPlayerStatisticDTO;
 
   private NPC initialNpc;
 
@@ -102,7 +101,7 @@ class NPCInputControllerTest {
     initialNpc = initialLecture.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
     initialNpcDTO = npcMapper.npcToNPCDTO(initialNpc);
 
-    final Playerstatistic playerstatistic = new Playerstatistic();
+    final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
@@ -112,14 +111,14 @@ class NPCInputControllerTest {
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    initialPlayerstatistic = playerstatisticRepository.save(playerstatistic);
-    initialPlayerstatisticDTO = playerstatisticMapper.playerstatisticToPlayerstatisticDTO(initialPlayerstatistic);
+    initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
+    initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
     assertNotNull(initialLecture.getLectureName());
     assertNotNull(initialLectureDTO.getId());
 
     assertEquals(initialLecture.getId(), initialNpc.getLecture().getId());
-    assertEquals(initialLecture.getId(), initialPlayerstatistic.getLecture().getId());
+    assertEquals(initialLecture.getId(), initialPlayerStatistic.getLecture().getId());
     fullURL = "/internal";
 
     objectMapper = new ObjectMapper();
@@ -128,7 +127,7 @@ class NPCInputControllerTest {
   @Test
   void submitGameData() throws Exception {
     PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
-    playerNPCStatisticData.setUserId(initialPlayerstatistic.getUserId());
+    playerNPCStatisticData.setUserId(initialPlayerStatistic.getUserId());
     playerNPCStatisticData.setNpcId(initialNpcDTO.getId());
     playerNPCStatisticData.setCompleted(true);
 
@@ -149,13 +148,13 @@ class NPCInputControllerTest {
     PlayerNPCActionLog actionLog = playerNPCActionLogRepository
       .findAll()
       .stream()
-      .filter(log -> log.getPlayerNPCStatistic().getPlayerstatistic().getId().equals(initialPlayerstatistic.getId()))
+      .filter(log -> log.getPlayerNPCStatistic().getPlayerStatistic().getId().equals(initialPlayerStatistic.getId()))
       .findAny()
       .get();
     assertNotNull(actionLog);
     assertEquals(playerNPCStatisticData.getNpcId(), actionLog.getPlayerNPCStatistic().getNpc().getId());
     assertEquals(
-      ReflectionTestUtils.getField(playerNPCStatisticService, "gainedKnowledgePerNPC"),
+      ReflectionTestUtils.getField(playerNPCStatisticService, "GAINED_KNOWLEDGE_PER_NPC"),
       actionLog.getGainedKnowledge()
     );
   }
@@ -176,7 +175,7 @@ class NPCInputControllerTest {
   @Test
   void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
     final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
-    playerNPCStatisticData.setUserId(initialPlayerstatisticDTO.getUserId());
+    playerNPCStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
     playerNPCStatisticData.setNpcId(UUID.randomUUID());
 
     final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);

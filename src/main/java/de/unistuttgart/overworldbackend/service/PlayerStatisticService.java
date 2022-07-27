@@ -1,8 +1,8 @@
 package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.*;
-import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
-import de.unistuttgart.overworldbackend.repositories.PlayerstatisticRepository;
+import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,10 +16,10 @@ public class PlayerStatisticService {
   private LectureService lectureService;
 
   @Autowired
-  private PlayerstatisticRepository playerstatisticRepository;
+  private PlayerStatisticRepository playerstatisticRepository;
 
   @Autowired
-  private PlayerstatisticMapper playerstatisticMapper;
+  private PlayerStatisticMapper playerstatisticMapper;
 
   @Autowired
   private WorldService worldService;
@@ -28,12 +28,14 @@ public class PlayerStatisticService {
   private DungeonService dungeonService;
 
   /**
-   * @throws ResponseStatusException when playerstatistic with lectureId and userId could not be found
+   * get statistics from a player lecture
+   *
+   * @throws ResponseStatusException (404) when playerstatistic with lectureId and userId could not be found
    * @param lectureId the id of the lecture
    * @param userId the playerId of the player searching for
    * @return the found playerstatistic
    */
-  public Playerstatistic getPlayerStatisticFromLecture(final int lectureId, final String userId) {
+  public PlayerStatistic getPlayerStatisticFromLecture(final int lectureId, final String userId) {
     return playerstatisticRepository
       .findByLectureIdAndUserId(lectureId, userId)
       .orElseThrow(() ->
@@ -57,8 +59,8 @@ public class PlayerStatisticService {
    * @param player the player with its userId and username
    * @return the created playerstatistic as DTO
    */
-  public PlayerstatisticDTO createPlayerStatisticInLecture(final int lectureId, final Player player) {
-    final Optional<Playerstatistic> existingPlayerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
+  public PlayerStatisticDTO createPlayerStatisticInLecture(final int lectureId, final Player player) {
+    final Optional<PlayerStatistic> existingPlayerstatistic = playerstatisticRepository.findByLectureIdAndUserId(
       lectureId,
       player.getUserId()
     );
@@ -71,7 +73,7 @@ public class PlayerStatisticService {
     final Lecture lecture = lectureService.getLecture(lectureId);
     final AreaLocation firstWorld = new AreaLocation(getFirstWorld(lectureId));
 
-    final Playerstatistic playerstatistic = new Playerstatistic();
+    final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setLecture(lecture);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
     playerstatistic.setUnlockedAreas(Arrays.asList(firstWorld));
@@ -79,7 +81,7 @@ public class PlayerStatisticService {
     playerstatistic.setUsername(player.getUsername());
     playerstatistic.setCurrentAreaLocation(firstWorld);
     playerstatistic.setKnowledge(0);
-    return playerstatisticMapper.playerstatisticToPlayerstatisticDTO(playerstatisticRepository.save(playerstatistic));
+    return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(playerstatisticRepository.save(playerstatistic));
   }
 
   /**
@@ -94,12 +96,12 @@ public class PlayerStatisticService {
    * @param playerstatisticDTO the updated parameters
    * @return the updated playerstatistic
    */
-  public PlayerstatisticDTO updatePlayerStatisticInLecture(
+  public PlayerStatisticDTO updatePlayerStatisticInLecture(
     final int lectureId,
     final String playerId,
-    final PlayerstatisticDTO playerstatisticDTO
+    final PlayerStatisticDTO playerstatisticDTO
   ) {
-    final Playerstatistic playerstatistic = getPlayerStatisticFromLecture(lectureId, playerId);
+    final PlayerStatistic playerstatistic = getPlayerStatisticFromLecture(lectureId, playerId);
 
     if (playerstatisticDTO.getCurrentAreaLocation() == null) {
       throw new ResponseStatusException(
@@ -108,12 +110,10 @@ public class PlayerStatisticService {
       );
     }
 
-    final AreaLocation areaLocation = areaLocationDTOToAreaLocation(
-      lectureId,
-      playerstatisticDTO.getCurrentAreaLocation()
+    playerstatistic.setCurrentAreaLocation(
+      areaLocationDTOToAreaLocation(lectureId, playerstatisticDTO.getCurrentAreaLocation())
     );
-    playerstatistic.setCurrentAreaLocation(areaLocation);
-    return playerstatisticMapper.playerstatisticToPlayerstatisticDTO((playerstatisticRepository.save(playerstatistic)));
+    return playerstatisticMapper.playerStatisticToPlayerstatisticDTO((playerstatisticRepository.save(playerstatistic)));
   }
 
   private World getFirstWorld(final int lectureId) {
@@ -123,20 +123,18 @@ public class PlayerStatisticService {
   /**
    * @throws ResponseStatusException (404) if world or dungeon with its indexes does not exist
    * @param lectureId the id of the lecture
-   * @param areaLocationDTO the updated parameters
+   * @param areaLocationDTO the DTO to convert
    * @return the area location object
    */
   private AreaLocation areaLocationDTOToAreaLocation(final int lectureId, final AreaLocationDTO areaLocationDTO) {
     try {
       final World world = worldService.getWorldByIndexFromLecture(lectureId, areaLocationDTO.getWorldIndex());
-      Dungeon dungeon = null;
-      if (areaLocationDTO.getDungeonIndex() != null) {
-        dungeon =
-          dungeonService.getDungeonByIndexFromLecture(lectureId, world.getIndex(), areaLocationDTO.getDungeonIndex());
-      }
+      Dungeon dungeon = areaLocationDTO.getDungeonIndex() != null
+        ? dungeonService.getDungeonByIndexFromLecture(lectureId, world.getIndex(), areaLocationDTO.getDungeonIndex())
+        : null;
       return new AreaLocation(world, dungeon);
     } catch (final ResponseStatusException exception) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Combination of world and dungeon does not exist");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Combination of world and dungeon does not exist");
     }
   }
 }

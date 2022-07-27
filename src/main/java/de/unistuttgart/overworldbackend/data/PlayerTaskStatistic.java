@@ -5,12 +5,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
@@ -24,7 +26,7 @@ public class PlayerTaskStatistic {
   UUID id;
 
   @ManyToOne
-  Playerstatistic playerstatistic;
+  PlayerStatistic playerStatistic;
 
   @ManyToOne
   MinigameTask minigameTask;
@@ -32,6 +34,8 @@ public class PlayerTaskStatistic {
   @ManyToOne
   Lecture lecture;
 
+  @Min(0)
+  @Max(100)
   long highscore = 0;
 
   boolean completed = false;

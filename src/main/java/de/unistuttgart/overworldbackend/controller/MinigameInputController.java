@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Submit game data", description = "Submit a game statistic")
+@Tag(name = "Statistics", description = "Submit game statistics")
 @RestController
 @Slf4j
 @RequestMapping("/internal")
@@ -20,10 +20,10 @@ public class MinigameInputController {
   PlayerTaskStatisticService playerTaskStatisticService;
 
   @Valid
-  @Operation(summary = "Input Data from a minigame")
+  @Operation(summary = "Submit statistics from a minigame run")
   @PostMapping("/submit-game-pass")
   public PlayerTaskStatisticDTO inputData(@RequestBody PlayerTaskStatisticData data) {
-    log.debug("submitted data {}", data);
+    log.debug("submitted data from game run {}", data);
     return playerTaskStatisticService.submitData(data);
   }
 }

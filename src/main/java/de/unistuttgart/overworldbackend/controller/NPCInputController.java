@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Submit game data", description = "Submit a NPC statistic")
+@Tag(name = "Statistics", description = "Submit NPC statistics")
 @RestController
 @Slf4j
 @RequestMapping("/internal")
@@ -20,10 +20,10 @@ public class NPCInputController {
   PlayerNPCStatisticService playerNPCStatisticService;
 
   @Valid
-  @Operation(summary = "Input Data from a npc")
+  @Operation(summary = "Submit statistics for a NPC for a player")
   @PostMapping("/submit-npc-pass")
   public PlayerNPCStatisticDTO inputData(@RequestBody PlayerNPCStatisticData data) {
-    log.debug("submitted data {}", data);
+    log.debug("submitted data from npc pass {}", data);
     return playerNPCStatisticService.submitData(data);
   }
 }

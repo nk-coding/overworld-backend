@@ -23,7 +23,7 @@ public class PlayerNPCStatistic {
   UUID id;
 
   @ManyToOne
-  Playerstatistic playerstatistic;
+  PlayerStatistic playerStatistic;
 
   @ManyToOne
   NPC npc;

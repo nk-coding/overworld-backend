@@ -8,11 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
-import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
+import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerstatisticRepository;
-import de.unistuttgart.overworldbackend.service.PlayerStatisticService;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +28,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @Transactional
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PlayerstatisticControllerTest {
+class PlayerStatisticControllerTest {
 
   @Autowired
   private MockMvc mvc;
@@ -38,7 +37,7 @@ class PlayerstatisticControllerTest {
   private LectureRepository lectureRepository;
 
   @Autowired
-  private PlayerstatisticRepository playerstatisticRepository;
+  private PlayerStatisticRepository playerstatisticRepository;
 
   @Autowired
   private LectureMapper lectureMapper;
@@ -50,7 +49,7 @@ class PlayerstatisticControllerTest {
   private DungeonMapper dungeonMapper;
 
   @Autowired
-  private PlayerstatisticMapper playerstatisticMapper;
+  private PlayerStatisticMapper playerstatisticMapper;
 
   private String fullURL;
   private ObjectMapper objectMapper;
@@ -63,8 +62,8 @@ class PlayerstatisticControllerTest {
   private Dungeon initialDungeon;
   private DungeonDTO initialDungeonDTO;
 
-  private Playerstatistic initialPlayerstatistic;
-  private PlayerstatisticDTO initialPlayerstatisticDTO;
+  private PlayerStatistic initialPlayerStatistic;
+  private PlayerStatisticDTO initialPlayerStatisticDTO;
 
   @BeforeEach
   public void createBasicData() {
@@ -86,7 +85,7 @@ class PlayerstatisticControllerTest {
     world.setActive(true);
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of());
-    world.setDungeons(Arrays.asList(dungeon));
+    world.setDungeons(List.of(dungeon));
     List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
@@ -101,7 +100,7 @@ class PlayerstatisticControllerTest {
     initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
 
     final AreaLocation areaLocation = new AreaLocation(initialWorld);
-    final Playerstatistic playerstatistic = new Playerstatistic();
+    final PlayerStatistic playerstatistic = new PlayerStatistic();
 
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
@@ -112,14 +111,13 @@ class PlayerstatisticControllerTest {
     unlockedAreas.add(areaLocation);
     playerstatistic.setUnlockedAreas(unlockedAreas);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    initialPlayerstatistic = playerstatisticRepository.save(playerstatistic);
-    initialPlayerstatisticDTO = playerstatisticMapper.playerstatisticToPlayerstatisticDTO(initialPlayerstatistic);
+    initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
+    initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
     assertNotNull(initialLecture.getLectureName());
-    assertNotNull(initialLectureDTO.getId());
 
-    assertNotNull(initialPlayerstatistic.getId());
-    assertNotNull(initialPlayerstatisticDTO.getId());
+    assertNotNull(initialPlayerStatistic.getId());
+    assertNotNull(initialPlayerStatisticDTO.getId());
 
     fullURL = "/lectures/" + initialLectureDTO.getId() + "/playerstatistics";
 
@@ -127,23 +125,23 @@ class PlayerstatisticControllerTest {
   }
 
   @Test
-  void getPlayerstatistic() throws Exception {
+  void getPlayerStatistic() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialPlayerstatisticDTO.getUserId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialPlayerStatisticDTO.getUserId()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
-    final PlayerstatisticDTO playerstatisticDTOResult = objectMapper.readValue(
+    final PlayerStatisticDTO playerStatisticDTOResult = objectMapper.readValue(
       result.getResponse().getContentAsString(),
-      PlayerstatisticDTO.class
+      PlayerStatisticDTO.class
     );
 
-    assertEquals(initialPlayerstatisticDTO, playerstatisticDTOResult);
-    assertEquals(initialPlayerstatisticDTO.getId(), playerstatisticDTOResult.getId());
+    assertEquals(initialPlayerStatisticDTO, playerStatisticDTOResult);
+    assertEquals(initialPlayerStatisticDTO.getId(), playerStatisticDTOResult.getId());
   }
 
   @Test
-  void getPlayerstatistic_DoesNotExist_ThrowsNotFound() throws Exception {
+  void getPlayerStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
       .perform(get(fullURL + "/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
@@ -151,7 +149,7 @@ class PlayerstatisticControllerTest {
   }
 
   @Test
-  void createPlayerstatistic() throws Exception {
+  void createPlayerStatistic() throws Exception {
     final Player newPlayer = new Player("n423l34213", "newPlayer");
     final String bodyValue = objectMapper.writeValueAsString(newPlayer);
 
@@ -160,64 +158,64 @@ class PlayerstatisticControllerTest {
       .andExpect(status().isCreated())
       .andReturn();
 
-    final PlayerstatisticDTO createdPlayerstatisticDTOResult = objectMapper.readValue(
+    final PlayerStatisticDTO createdPlayerStatisticDTOResult = objectMapper.readValue(
       result.getResponse().getContentAsString(),
-      PlayerstatisticDTO.class
+      PlayerStatisticDTO.class
     );
 
-    assertEquals(0, createdPlayerstatisticDTOResult.getKnowledge());
-    assertEquals(newPlayer.getUserId(), createdPlayerstatisticDTOResult.getUserId());
-    assertEquals(newPlayer.getUsername(), createdPlayerstatisticDTOResult.getUsername());
-    assertEquals(new AreaLocationDTO(1, null), createdPlayerstatisticDTOResult.getCurrentAreaLocation());
-    assertEquals(Arrays.asList(new AreaLocationDTO(1, null)), createdPlayerstatisticDTOResult.getUnlockedAreas());
+    assertEquals(0, createdPlayerStatisticDTOResult.getKnowledge());
+    assertEquals(newPlayer.getUserId(), createdPlayerStatisticDTOResult.getUserId());
+    assertEquals(newPlayer.getUsername(), createdPlayerStatisticDTOResult.getUsername());
+    assertEquals(new AreaLocationDTO(1, null), createdPlayerStatisticDTOResult.getCurrentAreaLocation());
+    assertEquals(Arrays.asList(new AreaLocationDTO(1, null)), createdPlayerStatisticDTOResult.getUnlockedAreas());
   }
 
   @Test
-  void updatePlayerstatistic() throws Exception {
-    final PlayerstatisticDTO updatedPlayerstatistic = playerstatisticMapper.playerstatisticToPlayerstatisticDTO(
-      initialPlayerstatistic
+  void updatePlayerStatistic() throws Exception {
+    final PlayerStatisticDTO updatedPlayerStatistic = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(
+      initialPlayerStatistic
     );
     final AreaLocationDTO newAreaLocation = new AreaLocationDTO(initialWorld.getIndex(), initialDungeon.getIndex());
-    updatedPlayerstatistic.setCurrentAreaLocation(newAreaLocation);
+    updatedPlayerStatistic.setCurrentAreaLocation(newAreaLocation);
 
-    final String bodyValue = objectMapper.writeValueAsString(updatedPlayerstatistic);
+    final String bodyValue = objectMapper.writeValueAsString(updatedPlayerStatistic);
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialPlayerstatisticDTO.getUserId())
+        put(fullURL + "/" + initialPlayerStatisticDTO.getUserId())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
 
-    final PlayerstatisticDTO updatedPlayerstatisticDTOResult = objectMapper.readValue(
+    final PlayerStatisticDTO updatedPlayerStatisticDTOResult = objectMapper.readValue(
       result.getResponse().getContentAsString(),
-      PlayerstatisticDTO.class
+      PlayerStatisticDTO.class
     );
 
-    assertEquals(newAreaLocation, updatedPlayerstatisticDTOResult.getCurrentAreaLocation());
-    assertEquals(initialPlayerstatistic.getId(), updatedPlayerstatisticDTOResult.getId());
-    assertEquals(initialPlayerstatistic.getUserId(), updatedPlayerstatisticDTOResult.getUserId());
-    assertEquals(initialPlayerstatistic.getUsername(), updatedPlayerstatisticDTOResult.getUsername());
+    assertEquals(newAreaLocation, updatedPlayerStatisticDTOResult.getCurrentAreaLocation());
+    assertEquals(initialPlayerStatistic.getId(), updatedPlayerStatisticDTOResult.getId());
+    assertEquals(initialPlayerStatistic.getUserId(), updatedPlayerStatisticDTOResult.getUserId());
+    assertEquals(initialPlayerStatistic.getUsername(), updatedPlayerStatisticDTOResult.getUsername());
   }
 
   @Test
-  void updatePlayerstatistic_AreaLocationDoesNotExist_ThrowsBadRequest() throws Exception {
-    final PlayerstatisticDTO updatedPlayerstatistic = playerstatisticMapper.playerstatisticToPlayerstatisticDTO(
-      initialPlayerstatistic
+  void updatePlayerStatistic_AreaLocationDoesNotExist_ThrowsNotFound() throws Exception {
+    final PlayerStatisticDTO updatedPlayerStatistic = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(
+      initialPlayerStatistic
     );
     final AreaLocationDTO newAreaLocation = new AreaLocationDTO(Integer.MAX_VALUE, Integer.MAX_VALUE);
-    updatedPlayerstatistic.setCurrentAreaLocation(newAreaLocation);
+    updatedPlayerStatistic.setCurrentAreaLocation(newAreaLocation);
 
-    final String bodyValue = objectMapper.writeValueAsString(updatedPlayerstatistic);
+    final String bodyValue = objectMapper.writeValueAsString(updatedPlayerStatistic);
 
     mvc
       .perform(
-        put(fullURL + "/" + initialPlayerstatisticDTO.getUserId())
+        put(fullURL + "/" + initialPlayerStatisticDTO.getUserId())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
-      .andExpect(status().isBadRequest());
+      .andExpect(status().isNotFound());
   }
 }

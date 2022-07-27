@@ -7,9 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
-import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
-import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
+import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.*;
 import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import java.util.*;
@@ -37,7 +36,7 @@ class PlayerNPCStatisticControllerTest {
   private LectureRepository lectureRepository;
 
   @Autowired
-  private PlayerstatisticRepository playerstatisticRepository;
+  private PlayerStatisticRepository playerstatisticRepository;
 
   @Autowired
   private PlayerNPCStatisticService playerNPCStatisticService;
@@ -46,7 +45,7 @@ class PlayerNPCStatisticControllerTest {
   private LectureMapper lectureMapper;
 
   @Autowired
-  private PlayerstatisticMapper playerstatisticMapper;
+  private PlayerStatisticMapper playerstatisticMapper;
 
   @Autowired
   private NPCMapper npcMapper;
@@ -57,8 +56,8 @@ class PlayerNPCStatisticControllerTest {
   private Lecture initialLecture;
   private LectureDTO initialLectureDTO;
 
-  private Playerstatistic initialPlayerstatistic;
-  private PlayerstatisticDTO initialPlayerstatisticDTO;
+  private PlayerStatistic initialPlayerStatistic;
+  private PlayerStatisticDTO initialPlayerStatisticDTO;
 
   private NPC initialNpc;
 
@@ -98,7 +97,7 @@ class PlayerNPCStatisticControllerTest {
     initialNpc = initialLecture.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
     initialNpcDTO = npcMapper.npcToNPCDTO(initialNpc);
 
-    final Playerstatistic playerstatistic = new Playerstatistic();
+    final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
@@ -108,21 +107,21 @@ class PlayerNPCStatisticControllerTest {
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    initialPlayerstatistic = playerstatisticRepository.save(playerstatistic);
-    initialPlayerstatisticDTO = playerstatisticMapper.playerstatisticToPlayerstatisticDTO(initialPlayerstatistic);
+    initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
+    initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
     assertNotNull(initialLecture.getLectureName());
     assertNotNull(initialLectureDTO.getId());
 
     assertEquals(initialLecture.getId(), initialNpc.getLecture().getId());
-    assertEquals(initialLecture.getId(), initialPlayerstatistic.getLecture().getId());
+    assertEquals(initialLecture.getId(), initialPlayerStatistic.getLecture().getId());
 
     assertEquals(initialLecture, initialNpc.getLecture());
     assertEquals(initialLecture.getWorlds().stream().findFirst().get(), initialNpc.getArea());
 
     fullURL =
       String.format(
-        "/lectures/%d/playerstatistics/" + initialPlayerstatistic.getUserId() + "/player-npc-statistics",
+        "/lectures/%d/playerstatistics/" + initialPlayerStatistic.getUserId() + "/player-npc-statistics",
         initialLecture.getId()
       );
 
@@ -132,7 +131,7 @@ class PlayerNPCStatisticControllerTest {
   @Test
   void getNPCStatistics() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerstatistic.getUserId())
+      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc
@@ -149,7 +148,7 @@ class PlayerNPCStatisticControllerTest {
   @Test
   void getNPCStatistic() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerstatistic.getUserId())
+      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc
@@ -170,7 +169,7 @@ class PlayerNPCStatisticControllerTest {
   @Test
   void getNPCStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerstatistic.getUserId())
+      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc

@@ -8,11 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
-import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
-import de.unistuttgart.overworldbackend.data.mapper.PlayerstatisticMapper;
+import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.LectureRepository;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerstatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.service.PlayerTaskStatisticService;
 import java.util.*;
 import javax.transaction.Transactional;
@@ -39,7 +38,7 @@ class PlayerTaskStatisticControllerTest {
   private LectureRepository lectureRepository;
 
   @Autowired
-  private PlayerstatisticRepository playerstatisticRepository;
+  private PlayerStatisticRepository playerStatisticRepository;
 
   @Autowired
   private PlayerTaskStatisticService playerTaskStatisticService;
@@ -48,7 +47,7 @@ class PlayerTaskStatisticControllerTest {
   private LectureMapper lectureMapper;
 
   @Autowired
-  private PlayerstatisticMapper playerstatisticMapper;
+  private PlayerStatisticMapper playerstatisticMapper;
 
   @Autowired
   private MinigameTaskMapper minigameTaskMapper;
@@ -59,8 +58,8 @@ class PlayerTaskStatisticControllerTest {
   private Lecture initialLecture;
   private LectureDTO initialLectureDTO;
 
-  private Playerstatistic initialPlayerstatistic;
-  private PlayerstatisticDTO initialPlayerstatisticDTO;
+  private PlayerStatistic initialPlayerStatistic;
+  private PlayerStatisticDTO initialPlayerStatisticDTO;
 
   private MinigameTask initialMinigameTask;
 
@@ -115,7 +114,7 @@ class PlayerTaskStatisticControllerTest {
       initialLecture.getWorlds().stream().findFirst().get().getMinigameTasks().stream().findFirst().get();
     initialMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialMinigameTask);
 
-    final Playerstatistic playerstatistic = new Playerstatistic();
+    final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
@@ -125,17 +124,17 @@ class PlayerTaskStatisticControllerTest {
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    initialPlayerstatistic = playerstatisticRepository.save(playerstatistic);
-    initialPlayerstatisticDTO = playerstatisticMapper.playerstatisticToPlayerstatisticDTO(initialPlayerstatistic);
+    initialPlayerStatistic = playerStatisticRepository.save(playerstatistic);
+    initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
     assertNotNull(initialLecture.getLectureName());
     assertNotNull(initialLectureDTO.getId());
 
     assertEquals(initialLecture.getId(), initialMinigameTask.getLecture().getId());
-    assertEquals(initialLecture.getId(), initialPlayerstatistic.getLecture().getId());
+    assertEquals(initialLecture.getId(), initialPlayerStatistic.getLecture().getId());
     fullURL =
       String.format(
-        "/lectures/%d/playerstatistics/" + initialPlayerstatistic.getUserId() + "/player-task-statistics",
+        "/lectures/%d/playerstatistics/" + initialPlayerStatistic.getUserId() + "/player-task-statistics",
         initialLecture.getId()
       );
 
@@ -149,7 +148,7 @@ class PlayerTaskStatisticControllerTest {
         initialMinigameTask.getGame(),
         initialMinigameTask.getConfigurationId(),
         80,
-        initialPlayerstatisticDTO.getUserId()
+        initialPlayerStatisticDTO.getUserId()
       )
     );
 
@@ -171,7 +170,7 @@ class PlayerTaskStatisticControllerTest {
         initialMinigameTask.getGame(),
         initialMinigameTask.getConfigurationId(),
         80,
-        initialPlayerstatisticDTO.getUserId()
+        initialPlayerStatisticDTO.getUserId()
       )
     );
 

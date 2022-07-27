@@ -13,7 +13,7 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PlayerstatisticDTO {
+public class PlayerStatisticDTO {
 
   @Nullable
   UUID id;

@@ -15,16 +15,16 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Playerstatistic {
+public class PlayerStatistic {
 
   @Id
   @GeneratedValue(generator = "uuid")
   UUID id;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   List<AreaLocation> unlockedAreas;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   List<AreaLocation> completedDungeons;
 
   @ManyToOne(cascade = CascadeType.ALL)

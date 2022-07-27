@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Data
@@ -29,6 +30,7 @@ public class PlayerNPCActionLog {
   @ManyToOne
   Lecture lecture;
 
+  @CreationTimestamp
   Date date;
 
   long gainedKnowledge;
