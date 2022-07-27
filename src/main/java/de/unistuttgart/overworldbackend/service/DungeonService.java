@@ -31,8 +31,10 @@ public class DungeonService {
    */
   public Dungeon getDungeonByIndexFromLecture(final int lectureId, final int worldIndex, final int dungeonIndex) {
     return dungeonRepository
-      .findByIndexAndLectureId(dungeonIndex, lectureId)
+      .findAllByIndexAndLectureId(dungeonIndex, lectureId)
+      .parallelStream()
       .filter(dungeon -> dungeon.getWorld().getIndex() == worldIndex)
+      .findAny()
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
