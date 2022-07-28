@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Statistics", description = "Get minigame statistics for a player")
+@Tag(name = "Player statistic", description = "Get minigame statistics for a player")
 @RestController
 @Slf4j
 @RequestMapping("/lectures/{lectureId}/playerstatistics/{playerId}/player-task-statistics")
