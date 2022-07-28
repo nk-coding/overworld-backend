@@ -78,6 +78,9 @@ class PlayerStatisticControllerTest {
     dungeon.setMinigameTasks(Set.of());
     dungeon.setNpcs(Set.of());
 
+    List<Dungeon> dungeons = new ArrayList<>();
+    dungeons.add(dungeon);
+
     final World world = new World();
     world.setIndex(1);
     world.setStaticName("Winter Wonderland");
@@ -85,7 +88,7 @@ class PlayerStatisticControllerTest {
     world.setActive(true);
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of());
-    world.setDungeons(List.of(dungeon));
+    world.setDungeons(dungeons);
     List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
@@ -99,16 +102,15 @@ class PlayerStatisticControllerTest {
     initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
     initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
 
-    final AreaLocation areaLocation = new AreaLocation(initialWorld);
     final PlayerStatistic playerstatistic = new PlayerStatistic();
 
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
-    playerstatistic.setCurrentAreaLocation(areaLocation);
+    playerstatistic.setCurrentArea(initialWorld);
     playerstatistic.setKnowledge(new Random(10).nextLong());
-    final ArrayList<AreaLocation> unlockedAreas = new ArrayList<>();
-    unlockedAreas.add(areaLocation);
+    final ArrayList<Area> unlockedAreas = new ArrayList<>();
+    unlockedAreas.add(initialWorld);
     playerstatistic.setUnlockedAreas(unlockedAreas);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
     initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
@@ -166,7 +168,7 @@ class PlayerStatisticControllerTest {
     assertEquals(0, createdPlayerStatisticDTOResult.getKnowledge());
     assertEquals(newPlayer.getUserId(), createdPlayerStatisticDTOResult.getUserId());
     assertEquals(newPlayer.getUsername(), createdPlayerStatisticDTOResult.getUsername());
-    assertEquals(new AreaLocationDTO(1, null), createdPlayerStatisticDTOResult.getCurrentAreaLocation());
+    assertEquals(new AreaLocationDTO(1, null), createdPlayerStatisticDTOResult.getCurrentArea());
     assertEquals(Arrays.asList(new AreaLocationDTO(1, null)), createdPlayerStatisticDTOResult.getUnlockedAreas());
   }
 
@@ -176,7 +178,7 @@ class PlayerStatisticControllerTest {
       initialPlayerStatistic
     );
     final AreaLocationDTO newAreaLocation = new AreaLocationDTO(initialWorld.getIndex(), initialDungeon.getIndex());
-    updatedPlayerStatistic.setCurrentAreaLocation(newAreaLocation);
+    updatedPlayerStatistic.setCurrentArea(newAreaLocation);
 
     final String bodyValue = objectMapper.writeValueAsString(updatedPlayerStatistic);
 
@@ -194,19 +196,19 @@ class PlayerStatisticControllerTest {
       PlayerStatisticDTO.class
     );
 
-    assertEquals(newAreaLocation, updatedPlayerStatisticDTOResult.getCurrentAreaLocation());
+    assertEquals(newAreaLocation, updatedPlayerStatisticDTOResult.getCurrentArea());
     assertEquals(initialPlayerStatistic.getId(), updatedPlayerStatisticDTOResult.getId());
     assertEquals(initialPlayerStatistic.getUserId(), updatedPlayerStatisticDTOResult.getUserId());
     assertEquals(initialPlayerStatistic.getUsername(), updatedPlayerStatisticDTOResult.getUsername());
   }
 
   @Test
-  void updatePlayerStatistic_AreaLocationDoesNotExist_ThrowsNotFound() throws Exception {
+  void updatePlayerStatistic_AreaLocationDoesNotExist_ThrowsBadRequest() throws Exception {
     final PlayerStatisticDTO updatedPlayerStatistic = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(
       initialPlayerStatistic
     );
     final AreaLocationDTO newAreaLocation = new AreaLocationDTO(Integer.MAX_VALUE, Integer.MAX_VALUE);
-    updatedPlayerStatistic.setCurrentAreaLocation(newAreaLocation);
+    updatedPlayerStatistic.setCurrentArea(newAreaLocation);
 
     final String bodyValue = objectMapper.writeValueAsString(updatedPlayerStatistic);
 
@@ -216,6 +218,6 @@ class PlayerStatisticControllerTest {
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
-      .andExpect(status().isNotFound());
+      .andExpect(status().isBadRequest());
   }
 }

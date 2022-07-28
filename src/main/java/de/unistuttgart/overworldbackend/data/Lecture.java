@@ -43,14 +43,12 @@ public class Lecture {
         .forEach(minigameTask -> {
           minigameTask.setLecture(this);
           minigameTask.setArea(world);
-          minigameTask.setAreaLocation(new AreaLocation(world, null));
         });
       world
         .getNpcs()
         .forEach(npc -> {
           npc.setLecture(this);
           npc.setArea(world);
-          npc.setAreaLocation(new AreaLocation(world, null));
         });
       for (final Dungeon dungeon : world.getDungeons()) {
         dungeon.setWorld(world);
@@ -60,14 +58,12 @@ public class Lecture {
           .forEach(minigameTask -> {
             minigameTask.setLecture(this);
             minigameTask.setArea(dungeon);
-            minigameTask.setAreaLocation(new AreaLocation(world, dungeon));
           });
         dungeon
           .getNpcs()
           .forEach(npc -> {
             npc.setLecture(this);
             npc.setArea(dungeon);
-            npc.setAreaLocation(new AreaLocation(world, dungeon));
           });
       }
     });

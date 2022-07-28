@@ -87,11 +87,18 @@ class PlayerTaskStatisticControllerTest {
     minigameTask2.setGame("Crosswordpuzzle");
     minigameTask2.setIndex(3);
 
+    final Set<MinigameTask> worldMinigameTasks = new HashSet<>();
+    worldMinigameTasks.add(minigameTask1);
+    worldMinigameTasks.add(minigameTask2);
+
+    final Set<MinigameTask> dungeonMinigameTasks = new HashSet<>();
+    dungeonMinigameTasks.add(minigameTask3);
+
     final Dungeon dungeon = new Dungeon();
     dungeon.setStaticName("Dark Dungeon");
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
-    dungeon.setMinigameTasks(Set.of(minigameTask3));
+    dungeon.setMinigameTasks(dungeonMinigameTasks);
     dungeon.setNpcs(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
 
@@ -99,7 +106,7 @@ class PlayerTaskStatisticControllerTest {
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
-    world.setMinigameTasks(Set.of(minigameTask1, minigameTask2));
+    world.setMinigameTasks(worldMinigameTasks);
     world.setNpcs(Set.of());
     world.setDungeons(dungeons);
     List<World> worlds = new ArrayList<>();
@@ -118,9 +125,7 @@ class PlayerTaskStatisticControllerTest {
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
-    AreaLocation areaLocation = new AreaLocation();
-    areaLocation.setWorld(initialLecture.getWorlds().stream().findFirst().get());
-    playerstatistic.setCurrentAreaLocation(areaLocation);
+    playerstatistic.setCurrentArea(initialLecture.getWorlds().stream().findFirst().get());
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
@@ -184,8 +189,8 @@ class PlayerTaskStatisticControllerTest {
     );
     assertEquals(statistic, playerTaskStatisticDTO);
     assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());
-    assertNotNull(playerTaskStatisticDTO.getMinigameTask().getAreaLocation());
-    assertEquals(initialMinigameTaskDTO.getAreaLocation(), playerTaskStatisticDTO.getMinigameTask().getAreaLocation());
+    assertNotNull(playerTaskStatisticDTO.getMinigameTask().getArea());
+    assertEquals(initialMinigameTaskDTO.getArea(), playerTaskStatisticDTO.getMinigameTask().getArea());
   }
 
   @Test

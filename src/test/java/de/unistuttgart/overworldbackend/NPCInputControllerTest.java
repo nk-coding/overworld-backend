@@ -83,12 +83,15 @@ class NPCInputControllerTest {
     npc.setText("NPCText");
     npc.setIndex(1);
 
+    final Set<NPC> npcs = new HashSet<>();
+    npcs.add(npc);
+
     final World world = new World();
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of());
-    world.setNpcs(Set.of(npc));
+    world.setNpcs(npcs);
     world.setDungeons(dungeons);
     final List<World> worlds = new ArrayList<>();
     worlds.add(world);
@@ -105,9 +108,7 @@ class NPCInputControllerTest {
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
     playerstatistic.setLecture(initialLecture);
-    final AreaLocation areaLocation = new AreaLocation();
-    areaLocation.setWorld(initialLecture.getWorlds().stream().findFirst().get());
-    playerstatistic.setCurrentAreaLocation(areaLocation);
+    playerstatistic.setCurrentArea(initialLecture.getWorlds().stream().findFirst().get());
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());

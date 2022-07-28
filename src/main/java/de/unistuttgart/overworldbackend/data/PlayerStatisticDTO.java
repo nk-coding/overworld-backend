@@ -22,7 +22,7 @@ public class PlayerStatisticDTO {
 
   List<AreaLocationDTO> completedDungeons;
 
-  AreaLocationDTO currentAreaLocation;
+  AreaLocationDTO currentArea;
 
   String userId;
   String username;
