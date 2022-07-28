@@ -9,11 +9,9 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface AreaLocationMapper {
   default AreaLocationDTO areaToAreaLocationDTO(final Area area) {
-    if (area instanceof Dungeon) {
-      Dungeon dungeon = (Dungeon) area;
-      return new AreaLocationDTO(dungeon.getWorld().getIndex(), dungeon.getIndex());
-    }
-    return new AreaLocationDTO(area.getIndex(), null);
+    return area instanceof Dungeon dungeon
+      ? new AreaLocationDTO(dungeon.getWorld().getIndex(), dungeon.getIndex())
+      : new AreaLocationDTO(area.getIndex(), null);
   }
 
   default List<AreaLocationDTO> areaToAreaLocationDTOs(final List<Area> areaLocations) {
