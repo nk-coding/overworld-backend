@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Statistics", description = "Submit game statistics")
+@Tag(name = "Submit statistic", description = "Submit statistics")
 @RestController
 @Slf4j
 @RequestMapping("/internal")
