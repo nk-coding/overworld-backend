@@ -14,55 +14,55 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Lecture {
+public class Course {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   int id;
 
   @NotNull
-  String lectureName;
+  String courseName;
 
   String description;
 
   @OneToMany(cascade = CascadeType.ALL)
   List<World> worlds;
 
-  public Lecture(final String lectureName, final String description, final List<World> worlds) {
-    this.lectureName = lectureName;
+  public Course(final String courseName, final String description, final List<World> worlds) {
+    this.courseName = courseName;
     this.description = description;
     this.worlds = worlds;
   }
 
   @PrePersist
-  private void updateLectureIds() {
+  private void updateCourseIds() {
     worlds.forEach(world -> {
-      world.setLecture(this);
+      world.setCourse(this);
       world
         .getMinigameTasks()
         .forEach(minigameTask -> {
-          minigameTask.setLecture(this);
+          minigameTask.setCourse(this);
           minigameTask.setArea(world);
         });
       world
         .getNpcs()
         .forEach(npc -> {
-          npc.setLecture(this);
+          npc.setCourse(this);
           npc.setArea(world);
         });
       for (final Dungeon dungeon : world.getDungeons()) {
         dungeon.setWorld(world);
-        dungeon.setLecture(this);
+        dungeon.setCourse(this);
         dungeon
           .getMinigameTasks()
           .forEach(minigameTask -> {
-            minigameTask.setLecture(this);
+            minigameTask.setCourse(this);
             minigameTask.setArea(dungeon);
           });
         dungeon
           .getNpcs()
           .forEach(npc -> {
-            npc.setLecture(this);
+            npc.setCourse(this);
             npc.setArea(dungeon);
           });
       }

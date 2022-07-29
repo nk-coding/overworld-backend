@@ -28,7 +28,7 @@ public class PlayerNPCActionLog {
   PlayerNPCStatistic playerNPCStatistic;
 
   @ManyToOne
-  Lecture lecture;
+  Course course;
 
   @CreationTimestamp
   Date date;

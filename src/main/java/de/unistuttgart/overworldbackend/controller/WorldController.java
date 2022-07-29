@@ -11,10 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "World", description = "Get and update worlds from a lecture")
+@Tag(name = "World", description = "Get and update worlds from a course")
 @RestController
 @Slf4j
-@RequestMapping("/lectures/{lectureId}/worlds")
+@RequestMapping("/courses/{courseId}/worlds")
 public class WorldController {
 
   @Autowired
@@ -26,28 +26,28 @@ public class WorldController {
   @Autowired
   private WorldService worldService;
 
-  @Operation(summary = "Get all worlds from a lecture by its id")
+  @Operation(summary = "Get all worlds from a course by its id")
   @GetMapping("")
-  public Set<WorldDTO> getWorlds(@PathVariable int lectureId) {
-    log.debug("get worlds of lecture {}", lectureId);
-    return worldMapper.worldsToWorldDTOs(worldRepository.findAllByLectureId(lectureId));
+  public Set<WorldDTO> getWorlds(@PathVariable int courseId) {
+    log.debug("get worlds of course {}", courseId);
+    return worldMapper.worldsToWorldDTOs(worldRepository.findAllByCourseId(courseId));
   }
 
-  @Operation(summary = "Get a world by its index from a lecture")
+  @Operation(summary = "Get a world by its index from a course")
   @GetMapping("/{worldIndex}")
-  public WorldDTO getWorldByStaticName(@PathVariable int lectureId, @PathVariable int worldIndex) {
-    log.debug("get world by index {} of lecture {}", worldIndex, lectureId);
-    return worldMapper.worldToWorldDTO(worldService.getWorldByIndexFromLecture(lectureId, worldIndex));
+  public WorldDTO getWorldByStaticName(@PathVariable int courseId, @PathVariable int worldIndex) {
+    log.debug("get world by index {} of course {}", worldIndex, courseId);
+    return worldMapper.worldToWorldDTO(worldService.getWorldByIndexFromCourse(courseId, worldIndex));
   }
 
-  @Operation(summary = "Update a world by its index from a lecture")
+  @Operation(summary = "Update a world by its index from a course")
   @PutMapping("/{worldIndex}")
   public WorldDTO updateWorld(
-    @PathVariable int lectureId,
+    @PathVariable int courseId,
     @PathVariable int worldIndex,
     @RequestBody WorldDTO worldDTO
   ) {
-    log.debug("update world by index {} of lecture {} with {}", worldIndex, lectureId, worldDTO);
-    return worldService.updateWorldFromLecture(lectureId, worldIndex, worldDTO);
+    log.debug("update world by index {} of course {} with {}", worldIndex, courseId, worldDTO);
+    return worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
   }
 }

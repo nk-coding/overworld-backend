@@ -31,7 +31,7 @@ public class PlayerStatistic {
   Area currentArea;
 
   @ManyToOne
-  Lecture lecture;
+  Course course;
 
   @NotNull
   String userId;

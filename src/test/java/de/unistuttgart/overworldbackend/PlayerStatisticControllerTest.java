@@ -6,11 +6,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
-import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
-import de.unistuttgart.overworldbackend.repositories.LectureRepository;
+import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import java.util.*;
 import javax.transaction.Transactional;
@@ -34,13 +34,13 @@ class PlayerStatisticControllerTest {
   private MockMvc mvc;
 
   @Autowired
-  private LectureRepository lectureRepository;
+  private CourseRepository courseRepository;
 
   @Autowired
   private PlayerStatisticRepository playerstatisticRepository;
 
   @Autowired
-  private LectureMapper lectureMapper;
+  private CourseMapper courseMapper;
 
   @Autowired
   private WorldMapper worldMapper;
@@ -54,8 +54,8 @@ class PlayerStatisticControllerTest {
   private String fullURL;
   private ObjectMapper objectMapper;
 
-  private Lecture initialLecture;
-  private LectureDTO initialLectureDTO;
+  private Course initialCourse;
+  private CourseDTO initialCourseDTO;
   private World initialWorld;
   private WorldDTO initialWorldDTO;
 
@@ -68,7 +68,7 @@ class PlayerStatisticControllerTest {
   @BeforeEach
   public void createBasicData() {
     playerstatisticRepository.deleteAll();
-    lectureRepository.deleteAll();
+    courseRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
     dungeon.setIndex(1);
@@ -92,11 +92,11 @@ class PlayerStatisticControllerTest {
     List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
-    final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
-    initialLecture = lectureRepository.save(lecture);
-    initialLectureDTO = lectureMapper.lectureToLectureDTO(initialLecture);
+    final Course course = new Course("PSE", "Basic lecture of computer science students", worlds);
+    initialCourse = courseRepository.save(course);
+    initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
-    initialWorld = initialLecture.getWorlds().stream().findFirst().get();
+    initialWorld = initialCourse.getWorlds().stream().findFirst().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
 
     initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
@@ -106,7 +106,7 @@ class PlayerStatisticControllerTest {
 
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
-    playerstatistic.setLecture(initialLecture);
+    playerstatistic.setCourse(initialCourse);
     playerstatistic.setCurrentArea(initialWorld);
     playerstatistic.setKnowledge(new Random(10).nextLong());
     final ArrayList<Area> unlockedAreas = new ArrayList<>();
@@ -116,12 +116,12 @@ class PlayerStatisticControllerTest {
     initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
     initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
-    assertNotNull(initialLecture.getLectureName());
+    assertNotNull(initialCourse.getCourseName());
 
     assertNotNull(initialPlayerStatistic.getId());
     assertNotNull(initialPlayerStatisticDTO.getId());
 
-    fullURL = "/lectures/" + initialLectureDTO.getId() + "/playerstatistics";
+    fullURL = "/courses/" + initialCourseDTO.getId() + "/playerstatistics";
 
     objectMapper = new ObjectMapper();
   }

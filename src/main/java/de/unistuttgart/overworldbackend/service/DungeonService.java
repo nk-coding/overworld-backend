@@ -21,17 +21,17 @@ public class DungeonService {
   private DungeonMapper dungeonMapper;
 
   /**
-   * Get a dungeon of a lecture and a world
+   * Get a dungeon of a course and a world
    *
-   * @throws ResponseStatusException (404) if dungeon with its static name could not be found in the lecture
-   * @param lectureId the id of the lecture the dungeon is part of
+   * @throws ResponseStatusException (404) if dungeon with its static name could not be found in the course
+   * @param courseId the id of the course the dungeon is part of
    * @param worldIndex the index of the world the dungeon is part of
    * @param dungeonIndex the index of the dungeon searching of
    * @return the found dungeon object
    */
-  public Dungeon getDungeonByIndexFromLecture(final int lectureId, final int worldIndex, final int dungeonIndex) {
+  public Dungeon getDungeonByIndexFromCourse(final int courseId, final int worldIndex, final int dungeonIndex) {
     return dungeonRepository
-      .findAllByIndexAndLectureId(dungeonIndex, lectureId)
+      .findAllByIndexAndCourseId(dungeonIndex, courseId)
       .parallelStream()
       .filter(dungeon -> dungeon.getWorld().getIndex() == worldIndex)
       .findAny()
@@ -39,27 +39,27 @@ public class DungeonService {
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
           String.format(
-            "There is no dungeon with index %s in world with index %s in lecture with id %s.",
+            "There is no dungeon with index %s in world with index %s in course with id %s.",
             dungeonIndex,
             worldIndex,
-            lectureId
+            courseId
           )
         )
       );
   }
 
   /**
-   * Get dungeons of a lecture and a world
+   * Get dungeons of a course and a world
    *
-   * @throws ResponseStatusException (404) if world with its static name could not be found in the lecture
-   * @param lectureId the id of the lecture the dungeons are part of
+   * @throws ResponseStatusException (404) if world with its static name could not be found in the course
+   * @param courseId the id of the course the dungeons are part of
    * @param worldIndex the index of the world the dungeons are part of
    * @return the found dungeon object
    */
-  public Set<DungeonDTO> getDungeonsFromWorld(final int lectureId, final int worldIndex) {
+  public Set<DungeonDTO> getDungeonsFromWorld(final int courseId, final int worldIndex) {
     return dungeonMapper.dungeonsToDungeonDTOs(
       dungeonRepository
-        .findAllByLectureId(lectureId)
+        .findAllByCourseId(courseId)
         .parallelStream()
         .filter(dungeon -> dungeon.getWorld().getIndex() == worldIndex)
         .collect(Collectors.toSet())
@@ -67,24 +67,24 @@ public class DungeonService {
   }
 
   /**
-   * Update a dungeon by its id from a lecture and a world.
+   * Update a dungeon by its id from a course and a world.
    *
    * Only the topic name and active status is updatable.
    *
-   * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
-   * @param lectureId the id of the lecture the dungeon is part of
+   * @throws ResponseStatusException (404) if course, world or dungeon by its id do not exist
+   * @param courseId the id of the course the dungeon is part of
    * @param worldIndex the index of the world where the dungeon should be listed
    * @param dungeonIndex the index of the dungeon that should get updated
    * @param dungeonDTO the updated parameters
    * @return the updated dungeon as DTO
    */
-  public DungeonDTO updateDungeonFromLecture(
-    final int lectureId,
+  public DungeonDTO updateDungeonFromCourse(
+    final int courseId,
     final int worldIndex,
     final int dungeonIndex,
     final DungeonDTO dungeonDTO
   ) {
-    final Dungeon dungeon = getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex);
+    final Dungeon dungeon = getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex);
     dungeon.setTopicName(dungeonDTO.getTopicName());
     dungeon.setActive(dungeonDTO.isActive());
     final Dungeon updatedDungeon = dungeonRepository.save(dungeon);

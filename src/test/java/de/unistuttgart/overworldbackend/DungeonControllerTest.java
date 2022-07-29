@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
-import de.unistuttgart.overworldbackend.repositories.LectureRepository;
+import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.Arrays;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ class DungeonControllerTest {
   private MockMvc mvc;
 
   @Autowired
-  private LectureRepository lectureRepository;
+  private CourseRepository courseRepository;
 
   @Autowired
   private WorldMapper worldMapper;
@@ -42,7 +42,7 @@ class DungeonControllerTest {
   private String fullURL;
   private ObjectMapper objectMapper;
 
-  private Lecture initialLecture;
+  private Course initialCourse;
   private World initialWorld;
   private WorldDTO initialWorldDTO;
 
@@ -51,7 +51,7 @@ class DungeonControllerTest {
 
   @BeforeEach
   public void createBasicData() {
-    lectureRepository.deleteAll();
+    courseRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
     dungeon.setIndex(1);
@@ -70,10 +70,10 @@ class DungeonControllerTest {
     world.setNpcs(Set.of());
     world.setDungeons(Arrays.asList(dungeon));
 
-    final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
-    initialLecture = lectureRepository.save(lecture);
+    final Course course = new Course("PSE", "Basic lecture of computer science students", Arrays.asList(world));
+    initialCourse = courseRepository.save(course);
 
-    initialWorld = initialLecture.getWorlds().stream().findFirst().get();
+    initialWorld = initialCourse.getWorlds().stream().findFirst().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
 
     initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
@@ -85,7 +85,7 @@ class DungeonControllerTest {
     assertNotNull(initialDungeon.getId());
     assertNotNull(initialDungeonDTO.getId());
 
-    fullURL = String.format("/lectures/%d/worlds/%d/dungeons", initialLecture.getId(), initialWorld.getIndex());
+    fullURL = String.format("/courses/%d/worlds/%d/dungeons", initialCourse.getId(), initialWorld.getIndex());
 
     objectMapper = new ObjectMapper();
   }

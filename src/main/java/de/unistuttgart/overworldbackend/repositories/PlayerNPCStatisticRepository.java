@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlayerNPCStatisticRepository extends JpaRepository<PlayerNPCStatistic, UUID> {
-  List<PlayerNPCStatistic> findByLectureId(int lectureId);
-  Optional<PlayerNPCStatistic> findByNpcIdAndLectureIdAndPlayerStatisticId(
+  List<PlayerNPCStatistic> findByCourseId(int courseId);
+  Optional<PlayerNPCStatistic> findByNpcIdAndCourseIdAndPlayerStatisticId(
     UUID npcId,
-    int lectureId,
+    int courseId,
     UUID playerStatisticId
   );
 }

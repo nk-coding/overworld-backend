@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Player statistic", description = "Statistics of a player")
 @RestController
 @Slf4j
-@RequestMapping("/lectures/{lectureId}/playerstatistics")
+@RequestMapping("/courses/{courseId}/playerstatistics")
 public class PlayerStatisticController {
 
   @Autowired
@@ -24,31 +24,31 @@ public class PlayerStatisticController {
   @Autowired
   private PlayerStatisticMapper playerStatisticMapper;
 
-  @Operation(summary = "Get a playerStatistic from a player in a lecture by playerId and lectureId")
+  @Operation(summary = "Get a playerStatistic from a player in a course by playerId and courseId")
   @GetMapping("/{playerId}")
-  public PlayerStatisticDTO getPlayerstatistic(@PathVariable int lectureId, @PathVariable String playerId) {
-    log.debug("get statistics from player {} in lecture {}", playerId, lectureId);
+  public PlayerStatisticDTO getPlayerstatistic(@PathVariable int courseId, @PathVariable String playerId) {
+    log.debug("get statistics from player {} in course {}", playerId, courseId);
     return playerStatisticMapper.playerStatisticToPlayerstatisticDTO(
-      playerStatisticService.getPlayerStatisticFromLecture(lectureId, playerId)
+      playerStatisticService.getPlayerStatisticFromCourse(courseId, playerId)
     );
   }
 
-  @Operation(summary = "Create a playerStatistic in a lecture by playerId ")
+  @Operation(summary = "Create a playerStatistic in a course by playerId ")
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
-  public PlayerStatisticDTO createPlayerstatistic(@PathVariable int lectureId, @Valid @RequestBody Player player) {
-    log.debug("create playerstatistic for userId {} in lecture {}", player, lectureId);
-    return playerStatisticService.createPlayerStatisticInLecture(lectureId, player);
+  public PlayerStatisticDTO createPlayerstatistic(@PathVariable int courseId, @Valid @RequestBody Player player) {
+    log.debug("create playerstatistic for userId {} in course {}", player, courseId);
+    return playerStatisticService.createPlayerStatisticInCourse(courseId, player);
   }
 
-  @Operation(summary = "Update a playerStatistic in a lecture by playerId ")
+  @Operation(summary = "Update a playerStatistic in a course by playerId ")
   @PutMapping("/{playerId}")
   public PlayerStatisticDTO updatePlayerStatistic(
-    @PathVariable int lectureId,
+    @PathVariable int courseId,
     @PathVariable String playerId,
     @RequestBody PlayerStatisticDTO playerstatisticDTO
   ) {
-    log.debug("update playerStatistic for userId {} in lecture {} with {}", playerId, lectureId, playerstatisticDTO);
-    return playerStatisticService.updatePlayerStatisticInLecture(lectureId, playerId, playerstatisticDTO);
+    log.debug("update playerStatistic for userId {} in course {} with {}", playerId, courseId, playerstatisticDTO);
+    return playerStatisticService.updatePlayerStatisticInCourse(courseId, playerId, playerstatisticDTO);
   }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "NPC", description = "Get and update NPCs from areas")
 @RestController
 @Slf4j
-@RequestMapping("/lectures/{lectureId}/worlds/{worldIndex}")
+@RequestMapping("/courses/{courseId}/worlds/{worldIndex}")
 public class NPCController {
 
   @Autowired
@@ -20,32 +20,32 @@ public class NPCController {
   @Operation(summary = "Update a NPC by its index in a world")
   @PutMapping("/npcs/{npcIndex}")
   public NPCDTO updateNPCFromWorld(
-    @PathVariable int lectureId,
+    @PathVariable int courseId,
     @PathVariable int worldIndex,
     @PathVariable int npcIndex,
     @RequestBody NPCDTO npcDTO
   ) {
-    log.debug("update npc {} of world {} of lecture {}", npcIndex, worldIndex, lectureId);
-    return npcService.updateNPCFromWorld(lectureId, worldIndex, npcIndex, npcDTO);
+    log.debug("update npc {} of world {} of course {}", npcIndex, worldIndex, courseId);
+    return npcService.updateNPCFromWorld(courseId, worldIndex, npcIndex, npcDTO);
   }
 
   @Operation(summary = "Update a NPC by its index in a dungeon")
   @PutMapping("/dungeons/{dungeonIndex}/npcs/{npcIndex}")
   public NPCDTO updateNPCFromDungeon(
-    @PathVariable int lectureId,
+    @PathVariable int courseId,
     @PathVariable int worldIndex,
     @PathVariable int dungeonIndex,
     @PathVariable int npcIndex,
     @RequestBody NPCDTO npcDTO
   ) {
     log.debug(
-      "update npc {} of dungeon {} from world {} of lecture {} with {}",
+      "update npc {} of dungeon {} from world {} of course {} with {}",
       npcIndex,
       dungeonIndex,
       worldIndex,
-      lectureId,
+      courseId,
       npcDTO
     );
-    return npcService.updateNPCFromDungeon(lectureId, worldIndex, dungeonIndex, npcIndex, npcDTO);
+    return npcService.updateNPCFromDungeon(courseId, worldIndex, dungeonIndex, npcIndex, npcDTO);
   }
 }

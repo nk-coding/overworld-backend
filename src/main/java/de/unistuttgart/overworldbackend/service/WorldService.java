@@ -19,37 +19,37 @@ public class WorldService {
   private WorldMapper worldMapper;
 
   /**
-   * Get a world of a lecture
+   * Get a world of a course
    *
-   * @throws ResponseStatusException (404) if world with its static name could not be found in the lecture
-   * @param lectureId the id of the lecture the world is part of
+   * @throws ResponseStatusException (404) if world with its static name could not be found in the course
+   * @param courseId the id of the course the world is part of
    * @param worldIndex the index of the world searching for
    * @return the found world object
    */
-  public World getWorldByIndexFromLecture(final int lectureId, final int worldIndex) {
+  public World getWorldByIndexFromCourse(final int courseId, final int worldIndex) {
     return worldRepository
-      .findByIndexAndLectureId(worldIndex, lectureId)
+      .findByIndexAndCourseId(worldIndex, courseId)
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format("There is no world with static name %s in the lecture with ID %s.", worldIndex, lectureId)
+          String.format("There is no world with static name %s in the course with ID %s.", worldIndex, courseId)
         )
       );
   }
 
   /**
-   * Update a world by its id from a lecture.
+   * Update a world by its id from a course.
    *
    * Only the topic name and active status is updatable.
    *
-   * @throws ResponseStatusException (404) if lecture or world by its id do not exist
-   * @param lectureId the id of the lecture the world is part of
+   * @throws ResponseStatusException (404) if course or world by its id do not exist
+   * @param courseId the id of the course the world is part of
    * @param worldIndex the index of the world that should get updated
    * @param worldDTO the updated parameters
    * @return the updated world as DTO
    */
-  public WorldDTO updateWorldFromLecture(final int lectureId, final int worldIndex, final WorldDTO worldDTO) {
-    final World world = getWorldByIndexFromLecture(lectureId, worldIndex);
+  public WorldDTO updateWorldFromCourse(final int courseId, final int worldIndex, final WorldDTO worldDTO) {
+    final World world = getWorldByIndexFromCourse(courseId, worldIndex);
     world.setTopicName(worldDTO.getTopicName());
     world.setActive(worldDTO.isActive());
     final World updatedWorld = worldRepository.save(world);

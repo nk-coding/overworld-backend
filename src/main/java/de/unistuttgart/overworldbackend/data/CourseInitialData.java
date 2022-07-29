@@ -11,10 +11,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LectureInitialData {
+public class CourseInitialData {
 
   @NotNull
-  String lectureName;
+  String courseName;
 
   String description;
 }

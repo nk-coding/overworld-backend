@@ -36,7 +36,7 @@ public class Area {
   Set<NPC> npcs;
 
   @ManyToOne
-  Lecture lecture;
+  Course course;
 
   protected Area(
     final String staticName,

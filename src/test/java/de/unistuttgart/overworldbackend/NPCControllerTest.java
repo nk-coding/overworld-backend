@@ -8,13 +8,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
-import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
-import de.unistuttgart.overworldbackend.repositories.LectureRepository;
+import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.Arrays;
 import java.util.Set;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -34,7 +32,7 @@ class NPCControllerTest {
   private MockMvc mvc;
 
   @Autowired
-  private LectureRepository lectureRepository;
+  private CourseRepository courseRepository;
 
   @Autowired
   private WorldMapper worldMapper;
@@ -49,7 +47,7 @@ class NPCControllerTest {
   private String fullDungeonURL;
   private ObjectMapper objectMapper;
 
-  private Lecture initialLecture;
+  private Course initialCourse;
   private World initialWorld;
   private WorldDTO initialWorldDTO;
   private Dungeon initialDungoen;
@@ -62,7 +60,7 @@ class NPCControllerTest {
 
   @BeforeEach
   public void createBasicData() {
-    lectureRepository.deleteAll();
+    courseRepository.deleteAll();
 
     final NPC npc = new NPC();
     npc.setText("You want to learn PSE?\nThis is so cool\nLet's go!");
@@ -89,10 +87,10 @@ class NPCControllerTest {
     world.setNpcs(Set.of(npc));
     world.setDungeons(Arrays.asList(dungeon));
 
-    final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
-    initialLecture = lectureRepository.save(lecture);
+    final Course course = new Course("PSE", "Basic lecture of computer science students", Arrays.asList(world));
+    initialCourse = courseRepository.save(course);
 
-    initialWorld = initialLecture.getWorlds().stream().findFirst().get();
+    initialWorld = initialCourse.getWorlds().stream().findFirst().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
 
     initialDungoen = initialWorld.getDungeons().stream().findFirst().get();
@@ -113,11 +111,11 @@ class NPCControllerTest {
     assertNotNull(initialDungeonNPC.getId());
     assertNotNull(initialDungeonNPCDTO.getId());
 
-    fullURL = String.format("/lectures/%d/worlds/%d/npcs", initialLecture.getId(), initialWorld.getIndex());
+    fullURL = String.format("/courses/%d/worlds/%d/npcs", initialCourse.getId(), initialWorld.getIndex());
     fullDungeonURL =
       String.format(
-        "/lectures/%d/worlds/%d/dungeons/%d/npcs",
-        initialLecture.getId(),
+        "/courses/%d/worlds/%d/dungeons/%d/npcs",
+        initialCourse.getId(),
         initialWorld.getIndex(),
         initialDungoen.getIndex()
       );

@@ -14,13 +14,13 @@ public class AreaService {
   @Autowired
   private WorldService worldService;
 
-  public Area getAreaFromAreaLocationDTO(int lectureId, AreaLocationDTO areaLocationDTO) {
+  public Area getAreaFromAreaLocationDTO(int courseId, AreaLocationDTO areaLocationDTO) {
     return areaLocationDTO.getDungeonIndex() != null
-      ? dungeonService.getDungeonByIndexFromLecture(
-        lectureId,
+      ? dungeonService.getDungeonByIndexFromCourse(
+        courseId,
         areaLocationDTO.getWorldIndex(),
         areaLocationDTO.getDungeonIndex()
       )
-      : worldService.getWorldByIndexFromLecture(lectureId, areaLocationDTO.getWorldIndex());
+      : worldService.getWorldByIndexFromCourse(courseId, areaLocationDTO.getWorldIndex());
   }
 }

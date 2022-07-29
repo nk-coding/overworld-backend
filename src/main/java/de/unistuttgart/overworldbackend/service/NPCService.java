@@ -25,17 +25,17 @@ public class NPCService {
   private NPCMapper npcMapper;
 
   /**
-   * Get a NPC from a world by its index and a lecture by its id
+   * Get a NPC from a world by its index and a course by its id
    *
    * @throws ResponseStatusException (404) if npc not found
-   * @param lectureId the id of the lecture
+   * @param courseId the id of the course
    * @param worldIndex the index of the word
    * @param npcIndex the index of the npc
    * @return the found npc
    */
-  public NPC getNPCFromWorld(final int lectureId, final int worldIndex, int npcIndex) {
+  public NPC getNPCFromWorld(final int courseId, final int worldIndex, int npcIndex) {
     return worldService
-      .getWorldByIndexFromLecture(lectureId, worldIndex)
+      .getWorldByIndexFromCourse(courseId, worldIndex)
       .getNpcs()
       .parallelStream()
       .filter(npc -> npc.getIndex() == npcIndex)
@@ -43,24 +43,24 @@ public class NPCService {
       .orElseThrow(() ->
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format("There is no NPC %d in world %d, lecture %d.", npcIndex, worldIndex, lectureId)
+          String.format("There is no NPC %d in world %d, course %d.", npcIndex, worldIndex, courseId)
         )
       );
   }
 
   /**
-   * Get a NPC from a world by its index and a lecture by its id
+   * Get a NPC from a world by its index and a course by its id
    *
    * @throws ResponseStatusException (404) if npc not found
-   * @param lectureId the id of the lecture
+   * @param courseId the id of the course
    * @param worldIndex the index of the word
    * @param dungeonIndex the index of the dungeon
    * @param npcIndex the index of the npc
    * @return the found npc
    */
-  public NPC getNPCFromDungeon(final int lectureId, final int worldIndex, final int dungeonIndex, int npcIndex) {
+  public NPC getNPCFromDungeon(final int courseId, final int worldIndex, final int dungeonIndex, int npcIndex) {
     return dungeonService
-      .getDungeonByIndexFromLecture(lectureId, worldIndex, dungeonIndex)
+      .getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex)
       .getNpcs()
       .parallelStream()
       .filter(npc -> npc.getIndex() == npcIndex)
@@ -69,42 +69,42 @@ public class NPCService {
         new ResponseStatusException(
           HttpStatus.NOT_FOUND,
           String.format(
-            "There is no NPC %d in dungeon %d, world %d, lecture %d.",
+            "There is no NPC %d in dungeon %d, world %d, course %d.",
             npcIndex,
             dungeonIndex,
             worldIndex,
-            lectureId
+            courseId
           )
         )
       );
   }
 
   /**
-   * Update a npc by its id from a lecture and an area.
+   * Update a npc by its id from a course and an area.
    *
    * Only the text is updatable.
    *
    * @throws ResponseStatusException (404) if npc not found
-   * @param lectureId the id of the lecture the npc should be part of
+   * @param courseId the id of the course the npc should be part of
    * @param worldIndex the index of the world
    * @param npcIndex the index of the npc
    * @param npcDTO the updated parameters
    * @return the npc area as DTO
    */
-  public NPCDTO updateNPCFromWorld(final int lectureId, final int worldIndex, final int npcIndex, final NPCDTO npcDTO) {
-    final NPC npc = getNPCFromWorld(lectureId, worldIndex, npcIndex);
+  public NPCDTO updateNPCFromWorld(final int courseId, final int worldIndex, final int npcIndex, final NPCDTO npcDTO) {
+    final NPC npc = getNPCFromWorld(courseId, worldIndex, npcIndex);
     npc.setText(npcDTO.getText());
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
   }
 
   /**
-   * Update a npc by its id from a lecture and an area.
+   * Update a npc by its id from a course and an area.
    *
    * Only the text is updatable.
    *
    * @throws ResponseStatusException (404) if npc not found
-   * @param lectureId the id of the lecture the npc should be part of
+   * @param courseId the id of the course the npc should be part of
    * @param worldIndex the index of the world
    * @param dungeonIndex the index of the dungeon
    * @param npcIndex the index of the npc
@@ -112,13 +112,13 @@ public class NPCService {
    * @return the npc area as DTO
    */
   public NPCDTO updateNPCFromDungeon(
-    final int lectureId,
+    final int courseId,
     final int worldIndex,
     final int dungeonIndex,
     final int npcIndex,
     final NPCDTO npcDTO
   ) {
-    final NPC npc = getNPCFromDungeon(lectureId, worldIndex, dungeonIndex, npcIndex);
+    final NPC npc = getNPCFromDungeon(courseId, worldIndex, dungeonIndex, npcIndex);
     npc.setText(npcDTO.getText());
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
