@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic, UUID> {
-  Optional<PlayerStatistic> findByLectureIdAndUserId(int lectureId, String userId);
+  Optional<PlayerStatistic> findByCourseIdAndUserId(int courseId, String userId);
 }

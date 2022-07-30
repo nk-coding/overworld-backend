@@ -3,11 +3,11 @@ package de.unistuttgart.overworldbackend.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
-import de.unistuttgart.overworldbackend.data.config.LectureConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
-import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
-import de.unistuttgart.overworldbackend.repositories.LectureRepository;
+import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
+import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -21,88 +21,88 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class LectureService {
+public class CourseService {
 
-  LectureConfig configLecture;
-
-  @Autowired
-  private LectureRepository lectureRepository;
+  CourseConfig configCourse;
 
   @Autowired
-  private LectureMapper lectureMapper;
+  private CourseRepository courseRepository;
 
-  public LectureService() {
-    configLecture = new LectureConfig();
+  @Autowired
+  private CourseMapper courseMapper;
+
+  public CourseService() {
+    configCourse = new CourseConfig();
     ObjectMapper mapper = new ObjectMapper();
 
     InputStream inputStream = TypeReference.class.getResourceAsStream("/config.json");
     try {
-      configLecture = mapper.readValue(inputStream, LectureConfig.class);
+      configCourse = mapper.readValue(inputStream, CourseConfig.class);
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
   /**
-   * @throws ResponseStatusException (404) when lecture by its id could not be found
-   * @param id the id of the lecture searching for
-   * @return the found lecture
+   * @throws ResponseStatusException (404) when course by its id could not be found
+   * @param id the id of the course searching for
+   * @return the found course
    */
-  public Lecture getLecture(final int id) {
-    return lectureRepository
+  public Course getCourse(final int id) {
+    return courseRepository
       .findById(id)
       .orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no lecture with id %s.", id))
+        new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no course with id %s.", id))
       );
   }
 
   /**
-   * Update a lecture by its id.
+   * Update a course by its id.
    *
-   * Only the lecture name and description is updatable.
+   * Only the course name and description is updatable.
    *
-   * @throws ResponseStatusException (404) if lecture, world or dungeon by its id do not exist
-   * @param lectureId the id of the lecture thath should get updated
-   * @param lectureDTO the updated parameters
-   * @return the updated lecture as DTO
+   * @throws ResponseStatusException (404) if course, world or dungeon by its id do not exist
+   * @param courseId the id of the course that should get updated
+   * @param courseDTO the updated parameters
+   * @return the updated course as DTO
    */
-  public LectureDTO updateLecture(final int lectureId, final LectureDTO lectureDTO) {
-    Lecture lecture = getLecture(lectureId);
-    lecture.setLectureName(lectureDTO.getLectureName());
-    lecture.setDescription(lectureDTO.getDescription());
-    Lecture updatedLecture = lectureRepository.save(lecture);
-    return lectureMapper.lectureToLectureDTO(updatedLecture);
+  public CourseDTO updateCourse(final int courseId, final CourseDTO courseDTO) {
+    Course course = getCourse(courseId);
+    course.setCourseName(courseDTO.getCourseName());
+    course.setDescription(courseDTO.getDescription());
+    Course updatedCourse = courseRepository.save(course);
+    return courseMapper.courseToCourseDTO(updatedCourse);
   }
 
   /**
-   * Create a lecture with initial data.
+   * Create a course with initial data.
    *
-   * Creates a lecture with pre generated worlds, dungeons, minigame tasks and npcs.
+   * Creates a course with pre generated worlds, dungeons, minigame tasks and npcs.
    *
-   * @param lectureInit the initial data with the lecture should be created with
-   * @return the created lecture as DTO with all its generated worlds, dungeons, minigame tasks and npcs
+   * @param courseInit the initial data with the course should be created with
+   * @return the created course as DTO with all its generated worlds, dungeons, minigame tasks and npcs
    */
-  public LectureDTO createLecture(final LectureInitialData lectureInit) {
+  public CourseDTO createCourse(final CourseInitialData courseInit) {
     List<World> worlds = new ArrayList<>();
     AtomicInteger worldId = new AtomicInteger(1);
-    configLecture.getWorlds().forEach(worldConfig -> configureWorld(worlds, worldId.getAndIncrement(), worldConfig));
+    configCourse.getWorlds().forEach(worldConfig -> configureWorld(worlds, worldId.getAndIncrement(), worldConfig));
 
-    Lecture lecture = new Lecture(lectureInit.getLectureName(), lectureInit.getDescription(), worlds);
-    lectureRepository.save(lecture);
-    return lectureMapper.lectureToLectureDTO(lecture);
+    Course course = new Course(courseInit.getCourseName(), courseInit.getDescription(), worlds);
+    courseRepository.save(course);
+    return courseMapper.courseToCourseDTO(course);
   }
 
   /**
-   * Delete a lecture by its id
+   * Delete a course by its id
    *
-   * @throws ResponseStatusException (404) when lecture with its id does not exist
-   * @param id the lecture that should be deleted
-   * @return the deleted lecture as DTO
+   * @throws ResponseStatusException (404) when course with its id does not exist
+   * @param id the course that should be deleted
+   * @return the deleted course as DTO
    */
-  public LectureDTO deleteLecture(final int id) {
-    Lecture lecture = getLecture(id);
-    lectureRepository.delete(lecture);
-    return lectureMapper.lectureToLectureDTO(lecture);
+  public CourseDTO deleteCourse(final int id) {
+    Course course = getCourse(id);
+    courseRepository.delete(course);
+    return courseMapper.courseToCourseDTO(course);
   }
 
   private void configureWorld(List<World> worlds, int worldId, WorldConfig worldConfig) {

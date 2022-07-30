@@ -5,14 +5,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.unistuttgart.overworldbackend.data.Lecture;
+import de.unistuttgart.overworldbackend.data.Course;
 import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
-import de.unistuttgart.overworldbackend.repositories.LectureRepository;
+import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.Arrays;
 import java.util.Set;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -32,7 +31,7 @@ class WorldControllerTest {
   private MockMvc mvc;
 
   @Autowired
-  private LectureRepository lectureRepository;
+  private CourseRepository courseRepository;
 
   @Autowired
   private WorldMapper worldMapper;
@@ -40,13 +39,13 @@ class WorldControllerTest {
   private String fullURL;
   private ObjectMapper objectMapper;
 
-  private Lecture initialLecture;
+  private Course initialCourse;
   private World initialWorld;
   private WorldDTO initialWorldDTO;
 
   @BeforeEach
   public void createBasicData() {
-    lectureRepository.deleteAll();
+    courseRepository.deleteAll();
 
     final World world = new World();
     world.setIndex(1);
@@ -57,21 +56,21 @@ class WorldControllerTest {
     world.setNpcs(Set.of());
     world.setDungeons(Arrays.asList());
 
-    final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", Arrays.asList(world));
-    initialLecture = lectureRepository.save(lecture);
-    initialWorld = initialLecture.getWorlds().stream().findAny().get();
+    final Course course = new Course("PSE", "Basic lecture of computer science students", Arrays.asList(world));
+    initialCourse = courseRepository.save(course);
+    initialWorld = initialCourse.getWorlds().stream().findAny().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
 
     assertNotNull(initialWorld.getId());
     assertNotNull(initialWorldDTO.getId());
 
-    fullURL = String.format("/lectures/%d/worlds", initialLecture.getId());
+    fullURL = String.format("/courses/%d/worlds", initialCourse.getId());
 
     objectMapper = new ObjectMapper();
   }
 
   @Test
-  void getWorldsFromLecture() throws Exception {
+  void getWorldsFromCourse() throws Exception {
     final MvcResult result = mvc
       .perform(get(fullURL).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
@@ -91,7 +90,7 @@ class WorldControllerTest {
   }
 
   @Test
-  void getWorldFromLecture() throws Exception {
+  void getWorldFromCourse() throws Exception {
     final MvcResult result = mvc
       .perform(get(fullURL + "/" + initialWorldDTO.getIndex()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
@@ -104,7 +103,7 @@ class WorldControllerTest {
   }
 
   @Test
-  void getWorldFromLecture_DoesNotExist_ThrowsNotFound() throws Exception {
+  void getWorldFromCourse_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
       .perform(get(fullURL + "/" + Integer.MAX_VALUE).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
@@ -112,7 +111,7 @@ class WorldControllerTest {
   }
 
   @Test
-  void updateWorldFromLecture() throws Exception {
+  void updateWorldFromCourse() throws Exception {
     final String newTopicName = "Closed Topic";
     final boolean newActiveStatus = false;
     final WorldDTO updatedWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
@@ -144,7 +143,7 @@ class WorldControllerTest {
   }
 
   @Test
-  void updateWorldFromLecture_DoNotUpdatedStaticName() throws Exception {
+  void updateWorldFromCourse_DoNotUpdatedStaticName() throws Exception {
     final String newTopicName = "Closed Topic";
     final String newStaticName = "PSE World Override Static Name";
     final boolean newActiveStatus = false;

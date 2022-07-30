@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LectureConfig {
+public class CourseConfig {
 
   List<WorldConfig> worlds;
 }

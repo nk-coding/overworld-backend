@@ -31,7 +31,7 @@ public class PlayerTaskStatistic {
   MinigameTask minigameTask;
 
   @ManyToOne
-  Lecture lecture;
+  Course course;
 
   @Min(0)
   @Max(100)

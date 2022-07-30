@@ -28,7 +28,7 @@ public class PlayerTaskActionLog {
   PlayerTaskStatistic playerTaskStatistic;
 
   @ManyToOne
-  Lecture lecture;
+  Course course;
 
   @CreationTimestamp
   Date date;

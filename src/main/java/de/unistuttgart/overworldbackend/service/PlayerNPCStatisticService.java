@@ -3,11 +3,9 @@ package de.unistuttgart.overworldbackend.service;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerNPCStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.*;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,14 +32,14 @@ public class PlayerNPCStatisticService {
   PlayerNPCActionLogRepository playerNPCActionLogRepository;
 
   /**
-   * Gets a list of all NPC statistics of a player of the given lecture
-   * @param lectureId lecture which the statistics belong to
+   * Gets a list of all NPC statistics of a player of the given course
+   * @param courseId course which the statistics belong to
    * @param playerId player which the statistics belong to
-   * @return List of playerNPCStatistiks of the player of the lecture
+   * @return List of playerNPCStatistics of the player of the course
    */
-  public List<PlayerNPCStatisticDTO> getAllStatisticsOfPlayer(final int lectureId, final String playerId) {
+  public List<PlayerNPCStatisticDTO> getAllStatisticsOfPlayer(final int courseId, final String playerId) {
     List<PlayerNPCStatistic> statisticList = playerNPCStatisticRepository
-      .findByLectureId(lectureId)
+      .findByCourseId(courseId)
       .stream()
       .filter(playerNPCStatistic -> playerNPCStatistic.getPlayerStatistic().getUserId().equals(playerId))
       .toList();
@@ -49,31 +47,27 @@ public class PlayerNPCStatisticService {
   }
 
   /**
-   * Gets the NPC statistic of the player within the lecture with the statisticId
-   * @param lectureId lecture which the statistic belongs to
+   * Gets the NPC statistic of the player within the course with the statisticId
+   * @param courseId course which the statistic belongs to
    * @param playerId player which the statistic belongs to
    * @param statisticId id of the statistic, which is returned
    * @return playerNPCStatistic with the given statisticId
    */
-  public PlayerNPCStatisticDTO getStatisticOfPlayer(
-    final int lectureId,
-    final String playerId,
-    final UUID statisticId
-  ) {
+  public PlayerNPCStatisticDTO getStatisticOfPlayer(final int courseId, final String playerId, final UUID statisticId) {
     return playerNPCStatisticMapper.playerNPCStatisticToPlayerNPCStatisticDTO(
       playerNPCStatisticRepository
         .findById(statisticId)
         .filter(statistic ->
-          statistic.getLecture().getId() == lectureId && statistic.getPlayerStatistic().getUserId().equals(playerId)
+          statistic.getCourse().getId() == courseId && statistic.getPlayerStatistic().getUserId().equals(playerId)
         )
         .orElseThrow(() ->
           new ResponseStatusException(
             HttpStatus.NOT_FOUND,
             String.format(
-              "Statistic with the id %s of the player %s in the lecture %s not found.",
+              "Statistic with the id %s of the player %s in the course %s not found.",
               statisticId,
               playerId,
-              lectureId
+              courseId
             )
           )
         )
@@ -91,15 +85,15 @@ public class PlayerNPCStatisticService {
       .orElseThrow(() ->
         new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("NPC %s not found", data.getNpcId()))
       );
-    final Lecture lecture = npc.getLecture();
+    final Course course = npc.getCourse();
     final PlayerStatistic playerStatistic = playerstatisticRepository
-      .findByLectureIdAndUserId(lecture.getId(), data.getUserId())
+      .findByCourseIdAndUserId(course.getId(), data.getUserId())
       .orElseThrow(() ->
         new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Player %s not found", data.getUserId()))
       );
-    final Optional<PlayerNPCStatistic> playerNPCStatistic = playerNPCStatisticRepository.findByNpcIdAndLectureIdAndPlayerStatisticId(
+    final Optional<PlayerNPCStatistic> playerNPCStatistic = playerNPCStatisticRepository.findByNpcIdAndCourseIdAndPlayerStatisticId(
       npc.getId(),
-      lecture.getId(),
+      course.getId(),
       playerStatistic.getId()
     );
     long gainedKnowledge = 0;
@@ -109,7 +103,7 @@ public class PlayerNPCStatisticService {
       final PlayerNPCStatistic newPlayerNPCStatistic = new PlayerNPCStatistic();
       newPlayerNPCStatistic.setPlayerStatistic(playerStatistic);
       newPlayerNPCStatistic.setNpc(npc);
-      newPlayerNPCStatistic.setLecture(lecture);
+      newPlayerNPCStatistic.setCourse(course);
       newPlayerNPCStatistic.setCompleted(data.isCompleted());
       currentPlayerNPCStatistic = playerNPCStatisticRepository.save(newPlayerNPCStatistic);
     } else {
@@ -120,7 +114,7 @@ public class PlayerNPCStatisticService {
       }
     }
 
-    logData(lecture, currentPlayerNPCStatistic, gainedKnowledge);
+    logData(course, currentPlayerNPCStatistic, gainedKnowledge);
 
     // TODO: calculate unlocked areas
 
@@ -133,13 +127,13 @@ public class PlayerNPCStatisticService {
   }
 
   private void logData(
-    final Lecture lecture,
+    final Course course,
     final PlayerNPCStatistic currentPlayerNPCStatistic,
     final long gainedKnowledge
   ) {
     final PlayerNPCActionLog actionLog = new PlayerNPCActionLog();
     actionLog.setPlayerNPCStatistic(currentPlayerNPCStatistic);
-    actionLog.setLecture(lecture);
+    actionLog.setCourse(course);
     actionLog.setGainedKnowledge(gainedKnowledge);
     playerNPCActionLogRepository.save(actionLog);
   }

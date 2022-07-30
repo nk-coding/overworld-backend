@@ -13,20 +13,20 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LectureDTO {
+public class CourseDTO {
 
   @Nullable
   int id;
 
   @NotNull
-  String lectureName;
+  String courseName;
 
   String description;
 
   List<WorldDTO> worlds;
 
-  public LectureDTO(final String lectureName, final String description, final List<WorldDTO> worlds) {
-    this.lectureName = lectureName;
+  public CourseDTO(final String courseName, final String description, final List<WorldDTO> worlds) {
+    this.courseName = courseName;
     this.description = description;
     this.worlds = worlds;
   }

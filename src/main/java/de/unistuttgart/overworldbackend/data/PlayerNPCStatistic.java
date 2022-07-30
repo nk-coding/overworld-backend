@@ -29,7 +29,7 @@ public class PlayerNPCStatistic {
   NPC npc;
 
   @ManyToOne
-  Lecture lecture;
+  Course course;
 
   boolean completed;
 }

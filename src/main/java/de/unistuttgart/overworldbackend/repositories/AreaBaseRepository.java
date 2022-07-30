@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AreaBaseRepository<T extends Area> extends JpaRepository<T, UUID> {
-  Optional<Area> findByStaticNameAndLectureId(String staticName, int lectureId);
+  Optional<Area> findByStaticNameAndCourseId(String staticName, int courseId);
 }

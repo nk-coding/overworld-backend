@@ -36,15 +36,15 @@ public class PlayerTaskStatisticService {
   PlayerTaskActionLogRepository playerTaskActionLogRepository;
 
   /**
-   * Gets a list of all playerTaskStatistics of a player of the given lecture
+   * Gets a list of all playerTaskStatistics of a player of the given course
    *
-   * @param lectureId lecture which the statistics belong to
+   * @param courseId course which the statistics belong to
    * @param playerId player which the statistics belong to
-   * @return List of playerTaskStatisticDTOs of the player of the lecture
+   * @return List of playerTaskStatisticDTOs of the player of the course
    */
-  public List<PlayerTaskStatisticDTO> getAllStatisticsOfPlayer(final int lectureId, final String playerId) {
+  public List<PlayerTaskStatisticDTO> getAllStatisticsOfPlayer(final int courseId, final String playerId) {
     final List<PlayerTaskStatistic> statisticList = playerTaskStatisticRepository
-      .findByLectureId(lectureId)
+      .findByCourseId(courseId)
       .parallelStream()
       .filter(playerTaskStatistic -> playerTaskStatistic.getPlayerStatistic().getUserId().equals(playerId))
       .toList();
@@ -52,14 +52,14 @@ public class PlayerTaskStatisticService {
   }
 
   /**
-   * Gets the playerStatistic of the lecture of the player of the statisticId
-   * @param lectureId lecture which the statistic belongs to
+   * Gets the playerStatistic of the course of the player of the statisticId
+   * @param courseId course which the statistic belongs to
    * @param playerId player which the statistic belongs to
    * @param statisticId id of the statistic, which is returned
    * @return playerTaskStatistic with the given statisticId
    */
   public PlayerTaskStatisticDTO getStatisticOfPlayer(
-    final int lectureId,
+    final int courseId,
     final String playerId,
     final UUID statisticId
   ) {
@@ -67,15 +67,15 @@ public class PlayerTaskStatisticService {
       playerTaskStatisticRepository
         .findById(statisticId)
         .filter(statistic ->
-          statistic.getLecture().getId() == lectureId && statistic.getPlayerStatistic().getUserId().equals(playerId)
+          statistic.getCourse().getId() == courseId && statistic.getPlayerStatistic().getUserId().equals(playerId)
         )
         .orElseThrow(() ->
           new ResponseStatusException(
             HttpStatus.NOT_FOUND,
             String.format(
-              "Statistic with the id %s of the lecture %s of the player %s not found",
+              "Statistic with the id %s of the course %s of the player %s not found",
               statisticId,
-              lectureId,
+              courseId,
               playerId
             )
           )
@@ -95,23 +95,23 @@ public class PlayerTaskStatisticService {
     final MinigameTask minigameTask = minigameTaskRepository
       .findByGameAndConfigurationId(data.getGame(), data.getConfigurationId())
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Minigame not found"));
-    final Lecture lecture = minigameTask.getLecture();
+    final Course course = minigameTask.getCourse();
     final PlayerStatistic playerStatistic = playerstatisticRepository
-      .findByLectureIdAndUserId(lecture.getId(), data.getUserId())
+      .findByCourseIdAndUserId(course.getId(), data.getUserId())
       .orElseThrow(() ->
         new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Player %s not found", data.getUserId()))
       );
     final PlayerTaskStatistic playerTaskStatistic = playerTaskStatisticRepository
-      .findByMinigameTaskIdAndLectureIdAndPlayerStatisticId(
+      .findByMinigameTaskIdAndCourseIdAndPlayerStatisticId(
         minigameTask.getId(),
-        lecture.getId(),
+        course.getId(),
         playerStatistic.getId()
       )
       .orElseGet(() -> {
         final PlayerTaskStatistic newPlayerTaskStatistic = new PlayerTaskStatistic();
         newPlayerTaskStatistic.setPlayerStatistic(playerStatistic);
         newPlayerTaskStatistic.setMinigameTask(minigameTask);
-        newPlayerTaskStatistic.setLecture(lecture);
+        newPlayerTaskStatistic.setCourse(course);
         return playerTaskStatisticRepository.save(newPlayerTaskStatistic);
       });
 
@@ -120,7 +120,7 @@ public class PlayerTaskStatisticService {
     playerTaskStatistic.setHighscore(Math.max(playerTaskStatistic.getHighscore(), data.getScore()));
     playerTaskStatistic.setCompleted(playerTaskStatistic.isCompleted() || checkCompleted(data.getScore()));
 
-    logData(data, lecture, playerTaskStatistic, gainedKnowledge);
+    logData(data, course, playerTaskStatistic, gainedKnowledge);
 
     calculateCompletedDungeons(playerStatistic);
 
@@ -140,7 +140,7 @@ public class PlayerTaskStatisticService {
     );
     playerstatistic.setCompletedDungeons(
       playerstatistic
-        .getLecture()
+        .getCourse()
         .getWorlds()
         .parallelStream()
         .map(World::getDungeons)
@@ -162,13 +162,13 @@ public class PlayerTaskStatisticService {
 
   private void logData(
     final PlayerTaskStatisticData data,
-    final Lecture lecture,
+    final Course course,
     final PlayerTaskStatistic currentPlayerTaskStatistic,
     final long gainedKnowledge
   ) {
     final PlayerTaskActionLog actionLog = new PlayerTaskActionLog();
     actionLog.setPlayerTaskStatistic(currentPlayerTaskStatistic);
-    actionLog.setLecture(lecture);
+    actionLog.setCourse(course);
     actionLog.setScore(data.getScore());
     actionLog.setCurrentHighscore(currentPlayerTaskStatistic.getHighscore());
     actionLog.setGainedKnowledge(gainedKnowledge);

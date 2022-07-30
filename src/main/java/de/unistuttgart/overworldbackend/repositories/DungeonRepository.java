@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DungeonRepository extends JpaRepository<Dungeon, UUID> {
-  Set<Dungeon> findAllByIndexAndLectureId(int index, int lectureId);
+  Set<Dungeon> findAllByIndexAndCourseId(int index, int courseId);
 
-  Set<Dungeon> findAllByLectureId(int lectureId);
+  Set<Dungeon> findAllByCourseId(int courseId);
 }

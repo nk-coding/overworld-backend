@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
-import de.unistuttgart.overworldbackend.data.mapper.LectureMapper;
+import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.*;
@@ -34,7 +34,7 @@ class NPCInputControllerTest {
   private MockMvc mvc;
 
   @Autowired
-  private LectureRepository lectureRepository;
+  private CourseRepository courseRepository;
 
   @Autowired
   private PlayerStatisticRepository playerstatisticRepository;
@@ -46,7 +46,7 @@ class NPCInputControllerTest {
   private PlayerNPCStatisticService playerNPCStatisticService;
 
   @Autowired
-  private LectureMapper lectureMapper;
+  private CourseMapper courseMapper;
 
   @Autowired
   private PlayerStatisticMapper playerstatisticMapper;
@@ -57,8 +57,8 @@ class NPCInputControllerTest {
   private String fullURL;
   private ObjectMapper objectMapper;
 
-  private Lecture initialLecture;
-  private LectureDTO initialLectureDTO;
+  private Course initialCourse;
+  private CourseDTO initialCourseDTO;
 
   private PlayerStatistic initialPlayerStatistic;
   private PlayerStatisticDTO initialPlayerStatisticDTO;
@@ -69,7 +69,7 @@ class NPCInputControllerTest {
 
   @BeforeEach
   public void createBasicData() {
-    lectureRepository.deleteAll();
+    courseRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
     dungeon.setStaticName("Dark Dungeon");
@@ -96,29 +96,29 @@ class NPCInputControllerTest {
     final List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
-    final Lecture lecture = new Lecture("PSE", "Basic lecture of computer science students", worlds);
+    final Course course = new Course("PSE", "Basic lecture of computer science students", worlds);
 
-    initialLecture = lectureRepository.save(lecture);
-    initialLectureDTO = lectureMapper.lectureToLectureDTO(initialLecture);
+    initialCourse = courseRepository.save(course);
+    initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
-    initialNpc = initialLecture.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
+    initialNpc = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
     initialNpcDTO = npcMapper.npcToNPCDTO(initialNpc);
 
     final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
-    playerstatistic.setLecture(initialLecture);
-    playerstatistic.setCurrentArea(initialLecture.getWorlds().stream().findFirst().get());
+    playerstatistic.setCourse(initialCourse);
+    playerstatistic.setCurrentArea(initialCourse.getWorlds().stream().findFirst().get());
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
     initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
     initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
-    assertNotNull(initialLecture.getLectureName());
+    assertNotNull(initialCourse.getCourseName());
 
-    assertEquals(initialLecture.getId(), initialNpc.getLecture().getId());
-    assertEquals(initialLecture.getId(), initialPlayerStatistic.getLecture().getId());
+    assertEquals(initialCourse.getId(), initialNpc.getCourse().getId());
+    assertEquals(initialCourse.getId(), initialPlayerStatistic.getCourse().getId());
     fullURL = "/internal";
 
     objectMapper = new ObjectMapper();

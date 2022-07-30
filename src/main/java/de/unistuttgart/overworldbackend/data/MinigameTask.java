@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "index", "area_id", "lecture_id" }) })
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "index", "area_id", "course_id" }) })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +25,7 @@ public class MinigameTask {
   UUID configurationId;
 
   @ManyToOne
-  Lecture lecture;
+  Course course;
 
   @ManyToOne
   Area area;
