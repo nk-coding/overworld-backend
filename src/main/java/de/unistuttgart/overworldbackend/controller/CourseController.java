@@ -8,6 +8,7 @@ import de.unistuttgart.overworldbackend.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,14 +46,14 @@ public class CourseController {
   @Operation(summary = "Create a course")
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
-  public CourseDTO createCourse(@RequestBody CourseInitialData course) {
+  public CourseDTO createCourse(@Valid @RequestBody CourseInitialData course) {
     log.debug("create course {}");
     return courseService.createCourse(course);
   }
 
   @Operation(summary = "Update a course by its id")
   @PutMapping("/{id}")
-  public CourseDTO updateCourse(@PathVariable int id, @RequestBody CourseDTO courseDTO) {
+  public CourseDTO updateCourse(@PathVariable int id, @Valid @RequestBody CourseDTO courseDTO) {
     log.debug("update course {} with {}", id, courseDTO);
     return courseService.updateCourse(id, courseDTO);
   }

@@ -70,6 +70,8 @@ public class CourseService {
     Course course = getCourse(courseId);
     course.setCourseName(courseDTO.getCourseName());
     course.setDescription(courseDTO.getDescription());
+    course.setActive(courseDTO.isActive());
+    course.setSemester(courseDTO.getSemester());
     Course updatedCourse = courseRepository.save(course);
     return courseMapper.courseToCourseDTO(updatedCourse);
   }
@@ -87,7 +89,13 @@ public class CourseService {
     AtomicInteger worldId = new AtomicInteger(1);
     configCourse.getWorlds().forEach(worldConfig -> configureWorld(worlds, worldId.getAndIncrement(), worldConfig));
 
-    Course course = new Course(courseInit.getCourseName(), courseInit.getDescription(), worlds);
+    Course course = new Course(
+      courseInit.getCourseName(),
+      courseInit.getSemester(),
+      courseInit.getDescription(),
+      false,
+      worlds
+    );
     courseRepository.save(course);
     return courseMapper.courseToCourseDTO(course);
   }
@@ -113,11 +121,11 @@ public class CourseService {
     worldConfig
       .getDungeons()
       .forEach(dungeonConfig -> dungeons.add(configureDungeon(dungeonId.getAndIncrement(), dungeonConfig)));
-    for (int minigameIndex = 1; minigameIndex < worldConfig.getNumberOfMinigames(); minigameIndex++) {
+    for (int minigameIndex = 1; minigameIndex <= worldConfig.getNumberOfMinigames(); minigameIndex++) {
       MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);
     }
-    for (int npcIndex = 1; npcIndex < worldConfig.getNumberOfNPCs(); npcIndex++) {
+    for (int npcIndex = 1; npcIndex <= worldConfig.getNumberOfNPCs(); npcIndex++) {
       NPC npc = new NPC("", npcIndex);
       npcs.add(npc);
     }
@@ -128,11 +136,11 @@ public class CourseService {
   private Dungeon configureDungeon(int dungeonId, DungeonConfig dungeonConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
-    for (int minigameIndex = 0; minigameIndex < dungeonConfig.getNumberOfMinigames(); minigameIndex++) {
+    for (int minigameIndex = 1; minigameIndex <= dungeonConfig.getNumberOfMinigames(); minigameIndex++) {
       MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);
     }
-    for (int npcIndex = 0; npcIndex < dungeonConfig.getNumberOfNPCs(); npcIndex++) {
+    for (int npcIndex = 1; npcIndex <= dungeonConfig.getNumberOfNPCs(); npcIndex++) {
       NPC npc = new NPC("", npcIndex);
       npcs.add(npc);
     }

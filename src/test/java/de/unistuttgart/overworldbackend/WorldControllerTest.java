@@ -21,8 +21,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 @AutoConfigureMockMvc
+@Transactional
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WorldControllerTest {
@@ -56,7 +58,13 @@ class WorldControllerTest {
     world.setNpcs(Set.of());
     world.setDungeons(Arrays.asList());
 
-    final Course course = new Course("PSE", "Basic lecture of computer science students", Arrays.asList(world));
+    final Course course = new Course(
+      "PSE",
+      "SS-22",
+      "Basic lecture of computer science students",
+      true,
+      Arrays.asList(world)
+    );
     initialCourse = courseRepository.save(course);
     initialWorld = initialCourse.getWorlds().stream().findAny().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);

@@ -67,7 +67,6 @@ class PlayerStatisticControllerTest {
 
   @BeforeEach
   public void createBasicData() {
-    playerstatisticRepository.deleteAll();
     courseRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
@@ -92,7 +91,7 @@ class PlayerStatisticControllerTest {
     List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
-    final Course course = new Course("PSE", "Basic lecture of computer science students", worlds);
+    final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
     initialCourse = courseRepository.save(course);
     initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
