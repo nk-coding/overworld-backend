@@ -12,7 +12,6 @@ Alternatively you can use [Docker](https://www.docker.com/)
 
 First you have to change the spring.datasource.username and the spring.datasource.password in the application.properties file. If you changed the properties of the postgres db, you also have to change spring.datasource.url.
 
-
 ## Run 
 
 ```sh
@@ -24,20 +23,10 @@ Go to the target folder and run
 java -jar crossword-service-0.0.1-SNAPSHOT.jar
 ```
 
-### With Docker
+### Run with Docker-compose
 
-#### Docker compose
-
-To build the container and run the backend, frontend and a reverse proxy use
-```
-docker-compose up --build
-```
-
-To run the backend locally without docker use
-```
-docker-compose -f docker-compose-dev.yaml up
-```
-and then start the backend locally
+Start all dependencies with our docker-compose files.
+Check the [manual for docker-compose](https://github.com/Gamify-IT/docs/blob/main/dev-manuals/docker-compose/docker-compose.md).
 
 #### Single Container
 
