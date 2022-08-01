@@ -58,6 +58,14 @@ services:
     expose:
       - "80"
 
+  overworld:
+    container_name: overworld
+    image: ghcr.io/gamify-it/overworld:main
+    restart: always
+    pull_policy: always
+    expose:
+      - "80"
+
   # --- reverse proxy ---
   reverse-proxy:
     container_name: reverse-proxy
