@@ -2,6 +2,7 @@ package de.unistuttgart.overworldbackend.data;
 
 import java.util.List;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,13 +22,24 @@ public class CourseDTO {
   @NotNull
   String courseName;
 
-  String description;
+  @Pattern(regexp = "^(WS|SS)-[0-9][0-9]$")
+  String semester;
 
+  String description;
+  boolean active;
   List<WorldDTO> worlds;
 
-  public CourseDTO(final String courseName, final String description, final List<WorldDTO> worlds) {
+  public CourseDTO(
+    final String courseName,
+    final String semester,
+    final String description,
+    final boolean active,
+    final List<WorldDTO> worlds
+  ) {
     this.courseName = courseName;
+    this.semester = semester;
     this.description = description;
+    this.active = active;
     this.worlds = worlds;
   }
 }

@@ -63,7 +63,7 @@ class CourseControllerTest {
     final List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
-    final Course course = new Course("PSE", "Basic lecture of computer science students", worlds);
+    final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
     initialCourse = courseRepository.save(course);
     initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
@@ -158,7 +158,7 @@ class CourseControllerTest {
 
   @Test
   void createCourse() throws Exception {
-    final CourseInitialData toCreateCourse = new CourseInitialData("testName", "testDescription");
+    final CourseInitialData toCreateCourse = new CourseInitialData("testName", "SS-22", "testDescription");
     final String bodyValue = objectMapper.writeValueAsString(toCreateCourse);
 
     final MvcResult result = mvc
@@ -178,5 +178,15 @@ class CourseControllerTest {
       createdCourse.getDescription(),
       courseRepository.getReferenceById(createdCourse.getId()).getDescription()
     );
+  }
+
+  @Test
+  void createCourse_InvalidSemesterRegex_ThrowsException() throws Exception {
+    final CourseInitialData toCreateCourse = new CourseInitialData("testName", "Sommer 2021", "testDescription");
+    final String bodyValue = objectMapper.writeValueAsString(toCreateCourse);
+
+    mvc
+      .perform(post(fullURL).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isBadRequest());
   }
 }
