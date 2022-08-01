@@ -22,7 +22,7 @@ public class CourseDTO {
   @NotNull
   String courseName;
 
-  @Pattern(regexp = "^(WS|SS)-[0-9][0-9]$")
+  @Pattern(regexp = "^(WS|SS)-[0-9][0-9]+$")
   String semester;
 
   String description;

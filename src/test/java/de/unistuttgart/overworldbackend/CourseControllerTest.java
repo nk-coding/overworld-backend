@@ -182,7 +182,7 @@ class CourseControllerTest {
 
   @Test
   void createCourse_InvalidSemesterRegex_ThrowsException() throws Exception {
-    final CourseInitialData toCreateCourse = new CourseInitialData("testName", "Sommer 2021", "testDescription");
+    final CourseInitialData toCreateCourse = new CourseInitialData("testName2", "Sommer 2021", "testDescription");
     final String bodyValue = objectMapper.writeValueAsString(toCreateCourse);
 
     mvc

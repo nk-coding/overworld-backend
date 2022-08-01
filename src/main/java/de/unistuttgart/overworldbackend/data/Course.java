@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "courseName", "semester" }) })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,7 +25,7 @@ public class Course {
   @NotNull
   String courseName;
 
-  @Pattern(regexp = "^(WS|SS)-[0-9][0-9]$")
+  @Pattern(regexp = "^(WS|SS)-[0-9][0-9]+$")
   String semester;
 
   String description;

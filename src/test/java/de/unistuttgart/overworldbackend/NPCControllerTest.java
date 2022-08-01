@@ -22,8 +22,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 @AutoConfigureMockMvc
+@Transactional
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NPCControllerTest {

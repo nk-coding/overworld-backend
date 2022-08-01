@@ -67,7 +67,6 @@ class PlayerStatisticControllerTest {
 
   @BeforeEach
   public void createBasicData() {
-    playerstatisticRepository.deleteAll();
     courseRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
