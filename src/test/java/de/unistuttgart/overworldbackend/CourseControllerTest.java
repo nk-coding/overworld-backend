@@ -189,4 +189,18 @@ class CourseControllerTest {
       .perform(post(fullURL).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isBadRequest());
   }
+
+  @Test
+  void updateCourse_InvalidSemesterRegex_ThrowsException() throws Exception {
+    final CourseDTO courseToUpdate = new CourseDTO();
+    courseToUpdate.setCourseName("Software-engineering");
+    courseToUpdate.setDescription("Basic lecture of software engineering students");
+    courseToUpdate.setSemester("Sommer 2022");
+
+    final String bodyValue = objectMapper.writeValueAsString(courseToUpdate);
+
+    mvc
+      .perform(put(fullURL + "/" + initialCourseDTO.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isBadRequest());
+  }
 }

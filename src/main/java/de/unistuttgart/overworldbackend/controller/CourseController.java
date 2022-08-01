@@ -53,7 +53,7 @@ public class CourseController {
 
   @Operation(summary = "Update a course by its id")
   @PutMapping("/{id}")
-  public CourseDTO updateCourse(@PathVariable int id, @RequestBody CourseDTO courseDTO) {
+  public CourseDTO updateCourse(@PathVariable int id, @Valid @RequestBody CourseDTO courseDTO) {
     log.debug("update course {} with {}", id, courseDTO);
     return courseService.updateCourse(id, courseDTO);
   }

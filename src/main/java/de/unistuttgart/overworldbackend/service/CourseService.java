@@ -70,6 +70,8 @@ public class CourseService {
     Course course = getCourse(courseId);
     course.setCourseName(courseDTO.getCourseName());
     course.setDescription(courseDTO.getDescription());
+    course.setActive(courseDTO.isActive());
+    course.setSemester(courseDTO.getSemester());
     Course updatedCourse = courseRepository.save(course);
     return courseMapper.courseToCourseDTO(updatedCourse);
   }
