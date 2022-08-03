@@ -89,7 +89,7 @@ class MinigameInputControllerTest {
 
     final MinigameTask dungeonMinigameTask2 = new MinigameTask();
     dungeonMinigameTask2.setConfigurationId(UUID.randomUUID());
-    dungeonMinigameTask2.setGame("Moorhuhn");
+    dungeonMinigameTask2.setGame("Chickenshock");
     dungeonMinigameTask2.setIndex(2);
 
     Set<MinigameTask> dungeonMinigameTasks = new HashSet<>();
