@@ -79,8 +79,11 @@ class NPCInputControllerTest {
     dungeon.setNpcs(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
 
+    final List<String> npcText = new ArrayList<>();
+    npcText.add("NPCText");
+
     final NPC npc = new NPC();
-    npc.setText("NPCText");
+    npc.setText(npcText);
     npc.setIndex(1);
 
     final Set<NPC> npcs = new HashSet<>();
