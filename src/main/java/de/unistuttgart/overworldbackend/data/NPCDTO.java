@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,5 +20,5 @@ public class NPCDTO {
 
   AreaLocationDTO area;
   int index;
-  String text;
+  List<String> text;
 }

@@ -10,10 +10,7 @@ import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -126,7 +123,7 @@ public class CourseService {
       minigames.add(minigame);
     }
     for (int npcIndex = 1; npcIndex <= worldConfig.getNumberOfNPCs(); npcIndex++) {
-      NPC npc = new NPC("", npcIndex);
+      NPC npc = new NPC(new ArrayList<>(), npcIndex);
       npcs.add(npc);
     }
     World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, dungeons, worldId);
@@ -141,7 +138,7 @@ public class CourseService {
       minigames.add(minigame);
     }
     for (int npcIndex = 1; npcIndex <= dungeonConfig.getNumberOfNPCs(); npcIndex++) {
-      NPC npc = new NPC("", npcIndex);
+      NPC npc = new NPC(new ArrayList<>(), npcIndex);
       npcs.add(npc);
     }
     return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, dungeonId);

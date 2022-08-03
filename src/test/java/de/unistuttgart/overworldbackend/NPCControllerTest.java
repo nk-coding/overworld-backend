@@ -11,7 +11,9 @@ import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,13 +66,23 @@ class NPCControllerTest {
   public void createBasicData() {
     courseRepository.deleteAll();
 
+    final List<String> npcText = new ArrayList<>();
+    npcText.add("You want to learn PSE?");
+    npcText.add("This is so cool");
+    npcText.add("Let's go!");
+
     final NPC npc = new NPC();
-    npc.setText("You want to learn PSE?\nThis is so cool\nLet's go!");
+    npc.setText(npcText);
     npc.setIndex(1);
 
+    final List<String> dungeonNPCText = new ArrayList<>();
+    dungeonNPCText.add("You want to learn DSA?");
+    dungeonNPCText.add("This is so cool");
+    dungeonNPCText.add("Let's go!");
+
     final NPC dungeonNPC = new NPC();
-    npc.setText("You want to learn DSA?\nThis is so cool\nLet's go!");
-    npc.setIndex(1);
+    dungeonNPC.setText(dungeonNPCText);
+    dungeonNPC.setIndex(1);
 
     final Dungeon dungeon = new Dungeon();
     dungeon.setIndex(1);
@@ -134,7 +146,7 @@ class NPCControllerTest {
   @Test
   void updateNPCFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
     final NPCDTO npcDTO = new NPCDTO();
-    npcDTO.setText("Hey ho");
+    npcDTO.setText(Arrays.asList("Hey ho"));
     final String bodyValue = objectMapper.writeValueAsString(npcDTO);
     mvc
       .perform(put(fullURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
@@ -144,7 +156,7 @@ class NPCControllerTest {
 
   @Test
   void updateNPCTaskFromWorld() throws Exception {
-    final String newText = "New text incoming";
+    final List<String> newText = Arrays.asList("New text incoming");
     final NPC updateNPCDTO = new NPC();
     updateNPCDTO.setText(newText);
 
@@ -165,7 +177,7 @@ class NPCControllerTest {
   @Test
   void updateNPCFromDungeon_DoesNotExist_ThrowsNotFound() throws Exception {
     final NPCDTO npcDTO = new NPCDTO();
-    npcDTO.setText("Hey ho");
+    npcDTO.setText(Arrays.asList("Hey ho"));
     final String bodyValue = objectMapper.writeValueAsString(npcDTO);
     mvc
       .perform(put(fullDungeonURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
@@ -175,7 +187,7 @@ class NPCControllerTest {
 
   @Test
   void updateNPCTaskFromDungeon() throws Exception {
-    final String newText = "New text incoming";
+    final List<String> newText = Arrays.asList("New text incoming");
     final NPC updateNPCDTO = new NPC();
     updateNPCDTO.setText(newText);
 

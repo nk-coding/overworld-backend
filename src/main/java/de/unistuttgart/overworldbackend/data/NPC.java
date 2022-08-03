@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.AccessLevel;
@@ -22,7 +23,9 @@ public class NPC {
   UUID id;
 
   int index;
-  String text;
+
+  @ElementCollection
+  List<String> text;
 
   @JsonBackReference
   @ManyToOne
@@ -31,7 +34,7 @@ public class NPC {
   @ManyToOne
   Area area;
 
-  public NPC(final String text, final int index) {
+  public NPC(final List<String> text, final int index) {
     this.text = text;
     this.index = index;
   }
