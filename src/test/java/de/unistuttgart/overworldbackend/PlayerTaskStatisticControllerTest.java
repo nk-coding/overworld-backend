@@ -79,7 +79,7 @@ class PlayerTaskStatisticControllerTest {
 
     final MinigameTask minigameTask2 = new MinigameTask();
     minigameTask2.setConfigurationId(UUID.randomUUID());
-    minigameTask2.setGame("Moorhuhn");
+    minigameTask2.setGame("Chickenshock");
     minigameTask2.setIndex(2);
 
     final MinigameTask minigameTask3 = new MinigameTask();

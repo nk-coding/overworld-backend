@@ -74,7 +74,7 @@ class MinigameTaskControllerTest {
 
     final MinigameTask minigameTask2 = new MinigameTask();
     minigameTask2.setConfigurationId(UUID.randomUUID());
-    minigameTask2.setGame("Moorhuhn");
+    minigameTask2.setGame("Chickenshock");
     minigameTask2.setIndex(2);
 
     final MinigameTask minigameTask3 = new MinigameTask();
@@ -270,7 +270,7 @@ class MinigameTaskControllerTest {
 
   @Test
   void updateMinigameTaskFromDungeon() throws Exception {
-    final String newGame = "Moorhuhn";
+    final String newGame = "Chickenshock";
     final UUID newConfigurationId = UUID.randomUUID();
     final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
     updateMinigameTaskDTO.setGame(newGame);
