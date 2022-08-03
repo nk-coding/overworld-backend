@@ -41,7 +41,7 @@ curl -w "%{url_effective} -> %{response_code}\n" --silent --output /dev/null --l
                 \"dungeonIndex\": null
             },
             \"index\": 2,
-            \"game\": \"moorhuhn\",
+            \"game\": \"chickenshock\",
             \"configurationId\": \"c5a40953-1d84-498f-9008-8a74129b734a\"
         }"
 
@@ -136,7 +136,7 @@ curl -w "%{url_effective} -> %{response_code}\n" --silent --output /dev/null --l
 --request POST "${HOST}/overworld/api/v1/internal/submit-game-pass" \
 --header "Content-Type: application/json" \
 --data-raw "{
-  \"game\": \"moorhuhn\",
+  \"game\": \"chickenshock\",
   \"configurationId\": \"c5a40953-1d84-498f-9008-8a74129b734a\",
   \"score\": 100,
   \"userId\": \"1\"
