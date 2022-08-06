@@ -18,7 +18,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Course {
 
-  static final String SEMESTER_PATTERN = "^(WS|SS)-[0-9][0-9]+$";
+  static final String SEMESTER_PATTERN = "^(WS|SS)-\\d\\d+$";
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
