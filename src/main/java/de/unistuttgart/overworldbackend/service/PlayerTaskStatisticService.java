@@ -21,6 +21,9 @@ public class PlayerTaskStatisticService {
   private static final double RETRY_KNOWLEDGE = 0.02;
 
   @Autowired
+  MinigameTaskService minigameTaskService;
+
+  @Autowired
   PlayerTaskStatisticMapper playerTaskStatisticMapper;
 
   @Autowired
@@ -121,8 +124,7 @@ public class PlayerTaskStatisticService {
     playerTaskStatistic.setCompleted(playerTaskStatistic.isCompleted() || checkCompleted(data.getScore()));
 
     logData(data, course, playerTaskStatistic, gainedKnowledge);
-
-    calculateCompletedDungeonsParallel(playerStatistic);
+    calculateCompletedDungeons(playerStatistic);
 
     //TODO:calculate unlocked areas
 
@@ -134,38 +136,8 @@ public class PlayerTaskStatisticService {
     );
   }
 
-  private void calculateCompletedDungeonsParallel(final PlayerStatistic playerstatistic) {
-    final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
-      playerstatistic.getId()
-    );
-    try {
-      playerstatistic.setCompletedDungeons(
-        playerstatistic
-          .getCourse()
-          .getWorlds()
-          .parallelStream()
-          .map(World::getDungeons)
-          .flatMap(Collection::parallelStream)
-          .filter(dungeon ->
-            dungeon
-              .getMinigameTasks()
-              .parallelStream()
-              .allMatch(minigameTask ->
-                playerTaskStatistics
-                  .parallelStream()
-                  .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
-                  .anyMatch(PlayerTaskStatistic::isCompleted)
-              )
-          )
-          .collect(Collectors.toCollection(ArrayList::new))
-      );
-    } catch (Exception e) {
-      e.printStackTrace();
-      calculateCompletedDungeonsSerial(playerstatistic);
-    }
-  }
-
-  private void calculateCompletedDungeonsSerial(final PlayerStatistic playerstatistic) {
+  private void calculateCompletedDungeons(final PlayerStatistic playerstatistic) {
+    while (minigameTaskService.getUpdatingMinigame());
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
       playerstatistic.getId()
     );
@@ -173,16 +145,16 @@ public class PlayerTaskStatisticService {
       playerstatistic
         .getCourse()
         .getWorlds()
-        .stream()
+        .parallelStream()
         .map(World::getDungeons)
-        .flatMap(Collection::stream)
+        .flatMap(Collection::parallelStream)
         .filter(dungeon ->
           dungeon
             .getMinigameTasks()
-            .stream()
+            .parallelStream()
             .allMatch(minigameTask ->
               playerTaskStatistics
-                .stream()
+                .parallelStream()
                 .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
                 .anyMatch(PlayerTaskStatistic::isCompleted)
             )

@@ -176,15 +176,15 @@ class NPCInputControllerTest {
   }
 
   @Test
-  void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
+  void submitGameData_NPCDoesNotExist_ThrowNotFound() throws Exception {
     final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
-    playerNPCStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
+    playerNPCStatisticData.setUserId(initialPlayerStatistic.getUserId());
     playerNPCStatisticData.setNpcId(UUID.randomUUID());
 
     final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     mvc
-      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound());
   }
 }
