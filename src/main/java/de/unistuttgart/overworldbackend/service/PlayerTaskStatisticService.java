@@ -122,7 +122,7 @@ public class PlayerTaskStatisticService {
 
     logData(data, course, playerTaskStatistic, gainedKnowledge);
 
-    calculateCompletedDungeons(playerStatistic);
+    calculateCompletedDungeonsParallel(playerStatistic);
 
     //TODO:calculate unlocked areas
 
@@ -134,7 +134,38 @@ public class PlayerTaskStatisticService {
     );
   }
 
-  private void calculateCompletedDungeons(final PlayerStatistic playerstatistic) {
+  private void calculateCompletedDungeonsParallel(final PlayerStatistic playerstatistic) {
+    final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
+      playerstatistic.getId()
+    );
+    try {
+      playerstatistic.setCompletedDungeons(
+        playerstatistic
+          .getCourse()
+          .getWorlds()
+          .parallelStream()
+          .map(World::getDungeons)
+          .flatMap(Collection::parallelStream)
+          .filter(dungeon ->
+            dungeon
+              .getMinigameTasks()
+              .parallelStream()
+              .allMatch(minigameTask ->
+                playerTaskStatistics
+                  .parallelStream()
+                  .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
+                  .anyMatch(PlayerTaskStatistic::isCompleted)
+              )
+          )
+          .collect(Collectors.toCollection(ArrayList::new))
+      );
+    } catch (Exception e) {
+      e.printStackTrace();
+      calculateCompletedDungeonsSerial(playerstatistic);
+    }
+  }
+
+  private void calculateCompletedDungeonsSerial(final PlayerStatistic playerstatistic) {
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
       playerstatistic.getId()
     );
@@ -142,16 +173,16 @@ public class PlayerTaskStatisticService {
       playerstatistic
         .getCourse()
         .getWorlds()
-        .parallelStream()
+        .stream()
         .map(World::getDungeons)
-        .flatMap(Collection::parallelStream)
+        .flatMap(Collection::stream)
         .filter(dungeon ->
           dungeon
             .getMinigameTasks()
-            .parallelStream()
+            .stream()
             .allMatch(minigameTask ->
               playerTaskStatistics
-                .parallelStream()
+                .stream()
                 .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
                 .anyMatch(PlayerTaskStatistic::isCompleted)
             )
