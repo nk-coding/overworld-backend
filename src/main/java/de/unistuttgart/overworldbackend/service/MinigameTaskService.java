@@ -15,8 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class MinigameTaskService {
 
-  private boolean updatingMinigame;
-
   @Autowired
   private MinigameTaskRepository minigameTaskRepository;
 
@@ -157,7 +155,6 @@ public class MinigameTaskService {
     final int taskIndex,
     final MinigameTaskDTO taskDTO
   ) {
-    updatingMinigame = true;
     final MinigameTask minigameTask = getMinigameTaskFromAreaOrThrowNotFound(
       courseId,
       worldIndex,
@@ -167,11 +164,6 @@ public class MinigameTaskService {
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());
     final MinigameTask updatedMinigameTask = minigameTaskRepository.save(minigameTask);
-    updatingMinigame = false;
     return minigameTaskMapper.minigameTaskToMinigameTaskDTO(updatedMinigameTask);
-  }
-
-  public boolean getUpdatingMinigame() {
-    return updatingMinigame;
   }
 }
