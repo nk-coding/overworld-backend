@@ -2,8 +2,11 @@ package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.NPC;
 import de.unistuttgart.overworldbackend.data.NPCDTO;
+import de.unistuttgart.overworldbackend.data.PlayerNPCStatistic;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.repositories.NPCRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerNPCStatisticRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,9 @@ public class NPCService {
 
   @Autowired
   private NPCMapper npcMapper;
+
+  @Autowired
+  private PlayerNPCStatisticRepository playerNPCStatisticRepository;
 
   /**
    * Get a NPC from a world by its index and a course by its id
@@ -118,6 +124,9 @@ public class NPCService {
     final int npcIndex,
     final NPCDTO npcDTO
   ) {
+    List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npcDTO.getId());
+    statistics.forEach(statistic -> statistic.setCompleted(false));
+    playerNPCStatisticRepository.saveAll(statistics);
     final NPC npc = getNPCFromDungeon(courseId, worldIndex, dungeonIndex, npcIndex);
     npc.setText(npcDTO.getText());
     final NPC updatedNPC = npcRepository.save(npc);
