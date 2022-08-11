@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.Set;
 import java.util.UUID;
 import javax.persistence.*;
@@ -32,6 +33,7 @@ public class Area {
   @OneToMany(cascade = CascadeType.ALL)
   Set<MinigameTask> minigameTasks;
 
+  @JsonManagedReference
   @OneToMany(cascade = CascadeType.ALL)
   Set<NPC> npcs;
 

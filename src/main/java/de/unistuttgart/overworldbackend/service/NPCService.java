@@ -98,6 +98,9 @@ public class NPCService {
    * @return the npc area as DTO
    */
   public NPCDTO updateNPCFromWorld(final int courseId, final int worldIndex, final int npcIndex, final NPCDTO npcDTO) {
+    List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npcDTO.getId());
+    List<PlayerNPCStatistic> courseStatistics = playerNPCStatisticRepository.findByCourseId(courseId);
+    statistics.forEach(statistic -> statistic.setCompleted(false));
     final NPC npc = getNPCFromWorld(courseId, worldIndex, npcIndex);
     npc.setText(npcDTO.getText());
     final NPC updatedNPC = npcRepository.save(npc);

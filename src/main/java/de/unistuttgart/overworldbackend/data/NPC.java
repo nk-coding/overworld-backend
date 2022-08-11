@@ -31,6 +31,7 @@ public class NPC {
   @ManyToOne
   Course course;
 
+  @JsonBackReference
   @ManyToOne
   Area area;
 

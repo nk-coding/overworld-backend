@@ -148,9 +148,12 @@ public class PlayerTaskStatisticService {
     boolean dungeonCompleted = dungeon
       .getMinigameTasks()
       .parallelStream()
-      .allMatch(minigameTask -> playerTaskStatistics
-        .parallelStream()
-        .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask)).anyMatch(PlayerTaskStatistic::isCompleted));
+      .allMatch(minigameTask ->
+        playerTaskStatistics
+          .parallelStream()
+          .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
+          .anyMatch(PlayerTaskStatistic::isCompleted)
+      );
     long duration = System.nanoTime() - currentTime;
     System.out.println(duration);
     if (dungeonCompleted) {
