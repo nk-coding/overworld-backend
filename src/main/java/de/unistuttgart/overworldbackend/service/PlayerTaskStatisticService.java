@@ -126,8 +126,8 @@ public class PlayerTaskStatisticService {
     logData(data, course, playerTaskStatistic, gainedKnowledge);
 
     Area area = minigameTask.getArea();
-    if (area instanceof Dungeon) {
-      calculateCompletedDungeon((Dungeon) area, playerStatistic);
+    if (area instanceof Dungeon dungeon) {
+      calculateCompletedDungeon(dungeon, playerStatistic);
     }
 
     //TODO:calculate unlocked areas
@@ -156,7 +156,6 @@ public class PlayerTaskStatisticService {
     if (dungeonCompleted) {
       List<Area> completedDungeons = playerStatistic.getCompletedDungeons();
       completedDungeons.add(dungeon);
-      playerStatistic.setCompletedDungeons(completedDungeons);
     }
   }
 

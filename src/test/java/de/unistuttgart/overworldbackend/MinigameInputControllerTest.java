@@ -266,9 +266,9 @@ class MinigameInputControllerTest {
       CourseDTO.class
     );
 
-    MinigameTaskDTO updateMinigameTaskDTO = createdCourse
-      .getWorlds()
-      .get(0)
+    WorldDTO createdWorld = createdCourse.getWorlds().get(0);
+
+    MinigameTaskDTO updateMinigameTaskDTO = createdWorld
       .getMinigameTasks()
       .stream()
       .findFirst()
@@ -286,7 +286,7 @@ class MinigameInputControllerTest {
           "/" +
           createdCourse.getId() +
           "/worlds/" +
-          createdCourse.getWorlds().get(0).getIndex() +
+          createdWorld.getIndex() +
           "/minigame-tasks/" +
           updateMinigameTaskDTO.getIndex()
         )
