@@ -268,11 +268,7 @@ class MinigameInputControllerTest {
 
     WorldDTO createdWorld = createdCourse.getWorlds().get(0);
 
-    MinigameTaskDTO updateMinigameTaskDTO = createdWorld
-      .getMinigameTasks()
-      .stream()
-      .findFirst()
-      .get();
+    MinigameTaskDTO updateMinigameTaskDTO = createdWorld.getMinigameTasks().stream().findFirst().get();
     final String newGame = "Crosswordpuzzle";
     final UUID newConfigurationId = UUID.randomUUID();
     updateMinigameTaskDTO.setGame(newGame);

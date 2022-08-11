@@ -131,10 +131,10 @@ public class NPCService {
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
   }
-  private void resetNPC(NPC npc){
+
+  private void resetNPC(NPC npc) {
     List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npc.getId());
     statistics.forEach(statistic -> statistic.setCompleted(false));
     playerNPCStatisticRepository.saveAll(statistics);
   }
 }
-
