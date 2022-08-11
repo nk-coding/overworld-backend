@@ -124,7 +124,11 @@ public class PlayerTaskStatisticService {
     playerTaskStatistic.setCompleted(playerTaskStatistic.isCompleted() || checkCompleted(data.getScore()));
 
     logData(data, course, playerTaskStatistic, gainedKnowledge);
-    calculateCompletedDungeons(playerStatistic);
+
+    Area area = minigameTask.getArea();
+    if (area instanceof Dungeon) {
+      isDungeonCompleted((Dungeon) area, playerStatistic);
+    }
 
     //TODO:calculate unlocked areas
 
@@ -136,61 +140,24 @@ public class PlayerTaskStatisticService {
     );
   }
 
-  private void calculateCompletedDungeons(final PlayerStatistic playerstatistic) {
-    try {
-      final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
-        playerstatistic.getId()
-      );
-      playerstatistic.setCompletedDungeons(
-        playerstatistic
-          .getCourse()
-          .getWorlds()
-          .parallelStream()
-          .map(World::getDungeons)
-          .flatMap(Collection::parallelStream)
-          .filter(dungeon ->
-            dungeon
-              .getMinigameTasks()
-              .parallelStream()
-              .allMatch(minigameTask ->
-                playerTaskStatistics
-                  .parallelStream()
-                  .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
-                  .anyMatch(PlayerTaskStatistic::isCompleted)
-              )
-          )
-          .collect(Collectors.toCollection(ArrayList::new))
-      );
-    } catch (Exception e) {
-      calculateCompletedDungeonsSerial(playerstatistic);
-      e.printStackTrace();
-    }
-  }
-
-  private void calculateCompletedDungeonsSerial(final PlayerStatistic playerstatistic) {
+  private void isDungeonCompleted(Dungeon dungeon, PlayerStatistic playerStatistic) {
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
-      playerstatistic.getId()
+      playerStatistic.getId()
     );
-    playerstatistic.setCompletedDungeons(
-      playerstatistic
-        .getCourse()
-        .getWorlds()
-        .stream()
-        .map(World::getDungeons)
-        .flatMap(Collection::stream)
-        .filter(dungeon ->
-          dungeon
-            .getMinigameTasks()
-            .stream()
-            .allMatch(minigameTask ->
-              playerTaskStatistics
-                .stream()
-                .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
-                .anyMatch(PlayerTaskStatistic::isCompleted)
-            )
-        )
-        .collect(Collectors.toCollection(ArrayList::new))
-    );
+    long currentTime = System.nanoTime();
+    boolean dungeonCompleted = dungeon
+      .getMinigameTasks()
+      .parallelStream()
+      .allMatch(minigameTask -> playerTaskStatistics
+        .parallelStream()
+        .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask)).anyMatch(PlayerTaskStatistic::isCompleted));
+    long duration = System.nanoTime() - currentTime;
+    System.out.println(duration);
+    if (dungeonCompleted) {
+      List<Area> completedDungeons = playerStatistic.getCompletedDungeons();
+      completedDungeons.add(dungeon);
+      playerStatistic.setCompletedDungeons(completedDungeons);
+    }
   }
 
   private void logData(
