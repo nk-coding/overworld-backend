@@ -7,7 +7,7 @@ import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
 import java.util.*;
-import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -127,7 +127,7 @@ public class PlayerTaskStatisticService {
 
     Area area = minigameTask.getArea();
     if (area instanceof Dungeon) {
-      isDungeonCompleted((Dungeon) area, playerStatistic);
+      calculateCompletedDungeon((Dungeon) area, playerStatistic);
     }
 
     //TODO:calculate unlocked areas
@@ -140,11 +140,10 @@ public class PlayerTaskStatisticService {
     );
   }
 
-  private void isDungeonCompleted(Dungeon dungeon, PlayerStatistic playerStatistic) {
+  private void calculateCompletedDungeon(final Dungeon dungeon, final PlayerStatistic playerStatistic) {
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
       playerStatistic.getId()
     );
-    long currentTime = System.nanoTime();
     boolean dungeonCompleted = dungeon
       .getMinigameTasks()
       .parallelStream()
@@ -154,8 +153,6 @@ public class PlayerTaskStatisticService {
           .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
           .anyMatch(PlayerTaskStatistic::isCompleted)
       );
-    long duration = System.nanoTime() - currentTime;
-    System.out.println(duration);
     if (dungeonCompleted) {
       List<Area> completedDungeons = playerStatistic.getCompletedDungeons();
       completedDungeons.add(dungeon);

@@ -25,7 +25,7 @@ public class PlayerTaskStatisticData {
 
   @Min(0)
   @Max(100)
-  int score;
+  long score;
 
   @NotNull
   String userId;

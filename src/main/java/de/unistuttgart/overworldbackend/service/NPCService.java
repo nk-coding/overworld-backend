@@ -98,9 +98,7 @@ public class NPCService {
    * @return the npc area as DTO
    */
   public NPCDTO updateNPCFromWorld(final int courseId, final int worldIndex, final int npcIndex, final NPCDTO npcDTO) {
-    List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npcDTO.getId());
-    List<PlayerNPCStatistic> courseStatistics = playerNPCStatisticRepository.findByCourseId(courseId);
-    statistics.forEach(statistic -> statistic.setCompleted(false));
+    resetNPC(npcMapper.npcDTOToNPC(npcDTO));
     final NPC npc = getNPCFromWorld(courseId, worldIndex, npcIndex);
     npc.setText(npcDTO.getText());
     final NPC updatedNPC = npcRepository.save(npc);
@@ -127,12 +125,16 @@ public class NPCService {
     final int npcIndex,
     final NPCDTO npcDTO
   ) {
-    List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npcDTO.getId());
-    statistics.forEach(statistic -> statistic.setCompleted(false));
-    playerNPCStatisticRepository.saveAll(statistics);
+    resetNPC(npcMapper.npcDTOToNPC(npcDTO));
     final NPC npc = getNPCFromDungeon(courseId, worldIndex, dungeonIndex, npcIndex);
     npc.setText(npcDTO.getText());
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
   }
+  private void resetNPC(NPC npc){
+    List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npc.getId());
+    statistics.forEach(statistic -> statistic.setCompleted(false));
+    playerNPCStatisticRepository.saveAll(statistics);
+  }
 }
+

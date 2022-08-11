@@ -273,8 +273,6 @@ class MinigameInputControllerTest {
       .stream()
       .findFirst()
       .get();
-    System.out.println(updateMinigameTaskDTO.getIndex());
-    System.out.println(updateMinigameTaskDTO.getId());
     final String newGame = "Crosswordpuzzle";
     final UUID newConfigurationId = UUID.randomUUID();
     updateMinigameTaskDTO.setGame(newGame);
