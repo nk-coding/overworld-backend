@@ -2,8 +2,11 @@ package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.NPC;
 import de.unistuttgart.overworldbackend.data.NPCDTO;
+import de.unistuttgart.overworldbackend.data.PlayerNPCStatistic;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.repositories.NPCRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerNPCStatisticRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,9 @@ public class NPCService {
 
   @Autowired
   private NPCMapper npcMapper;
+
+  @Autowired
+  private PlayerNPCStatisticRepository playerNPCStatisticRepository;
 
   /**
    * Get a NPC from a world by its index and a course by its id
@@ -92,6 +98,7 @@ public class NPCService {
    * @return the npc area as DTO
    */
   public NPCDTO updateNPCFromWorld(final int courseId, final int worldIndex, final int npcIndex, final NPCDTO npcDTO) {
+    resetNPC(npcMapper.npcDTOToNPC(npcDTO));
     final NPC npc = getNPCFromWorld(courseId, worldIndex, npcIndex);
     npc.setText(npcDTO.getText());
     final NPC updatedNPC = npcRepository.save(npc);
@@ -118,9 +125,16 @@ public class NPCService {
     final int npcIndex,
     final NPCDTO npcDTO
   ) {
+    resetNPC(npcMapper.npcDTOToNPC(npcDTO));
     final NPC npc = getNPCFromDungeon(courseId, worldIndex, dungeonIndex, npcIndex);
     npc.setText(npcDTO.getText());
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
+  }
+
+  private void resetNPC(NPC npc) {
+    List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npc.getId());
+    statistics.forEach(statistic -> statistic.setCompleted(false));
+    playerNPCStatisticRepository.saveAll(statistics);
   }
 }

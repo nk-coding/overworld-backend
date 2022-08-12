@@ -249,4 +249,88 @@ class MinigameInputControllerTest {
       .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound());
   }
+
+  @Test
+  void createLectureAndSubmitMinigameData() throws Exception {
+    String currentUrl = "/courses";
+    final CourseInitialData toCreateCourse = new CourseInitialData("testName", "SS-22", "testDescription");
+    final String bodyValueCourse = objectMapper.writeValueAsString(toCreateCourse);
+
+    final MvcResult resultCourse = mvc
+      .perform(post(currentUrl).content(bodyValueCourse).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    final CourseDTO createdCourse = objectMapper.readValue(
+      resultCourse.getResponse().getContentAsString(),
+      CourseDTO.class
+    );
+
+    WorldDTO createdWorld = createdCourse.getWorlds().get(0);
+
+    MinigameTaskDTO updateMinigameTaskDTO = createdWorld.getMinigameTasks().stream().findFirst().get();
+    final String newGame = "Crosswordpuzzle";
+    final UUID newConfigurationId = UUID.randomUUID();
+    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    final String bodyValueTask = objectMapper.writeValueAsString(updateMinigameTaskDTO);
+
+    final MvcResult resultTask = mvc
+      .perform(
+        put(
+          currentUrl +
+          "/" +
+          createdCourse.getId() +
+          "/worlds/" +
+          createdWorld.getIndex() +
+          "/minigame-tasks/" +
+          updateMinigameTaskDTO.getIndex()
+        )
+          .content(bodyValueTask)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    final MinigameTaskDTO updatedMinigameTaskDTOResult = objectMapper.readValue(
+      resultTask.getResponse().getContentAsString(),
+      MinigameTaskDTO.class
+    );
+
+    final Player newPlayer = new Player("n423l34213", "newPlayer");
+    final String bodyValue = objectMapper.writeValueAsString(newPlayer);
+
+    final MvcResult resultStatistic = mvc
+      .perform(
+        post("/courses/" + createdCourse.getId() + "/playerstatistics")
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    final PlayerStatisticDTO createdPlayerStatisticDTOResult = objectMapper.readValue(
+      resultStatistic.getResponse().getContentAsString(),
+      PlayerStatisticDTO.class
+    );
+
+    final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    playerTaskStatisticData.setUserId(createdPlayerStatisticDTOResult.getUserId());
+    playerTaskStatisticData.setGame(updatedMinigameTaskDTOResult.getGame());
+    playerTaskStatisticData.setConfigurationId(updatedMinigameTaskDTOResult.getConfigurationId());
+    playerTaskStatisticData.setScore(80);
+
+    final String bodyValueMinigame = objectMapper.writeValueAsString(playerTaskStatisticData);
+
+    final MvcResult resultPlayerStatistic = mvc
+      .perform(post(fullURL + "/submit-game-pass").content(bodyValueMinigame).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    final PlayerTaskStatisticDTO playerTaskStatisticDTO = objectMapper.readValue(
+      resultPlayerStatistic.getResponse().getContentAsString(),
+      PlayerTaskStatisticDTO.class
+    );
+    assertEquals(playerTaskStatisticData.getScore(), playerTaskStatisticDTO.getHighscore());
+  }
 }

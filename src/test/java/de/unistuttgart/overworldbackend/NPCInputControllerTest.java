@@ -54,7 +54,11 @@ class NPCInputControllerTest {
   @Autowired
   private NPCMapper npcMapper;
 
+  @Autowired
+  private PlayerNPCStatisticRepository playerNPCStatisticRepository;
+
   private String fullURL;
+  private String npcURL;
   private ObjectMapper objectMapper;
 
   private Course initialCourse;
@@ -104,7 +108,8 @@ class NPCInputControllerTest {
     initialCourse = courseRepository.save(course);
     initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
-    initialNpc = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
+    World initialWorld = initialCourse.getWorlds().stream().findFirst().get();
+    initialNpc = initialWorld.getNpcs().stream().findFirst().get();
     initialNpcDTO = npcMapper.npcToNPCDTO(initialNpc);
 
     final PlayerStatistic playerstatistic = new PlayerStatistic();
@@ -123,12 +128,12 @@ class NPCInputControllerTest {
     assertEquals(initialCourse.getId(), initialNpc.getCourse().getId());
     assertEquals(initialCourse.getId(), initialPlayerStatistic.getCourse().getId());
     fullURL = "/internal";
-
+    npcURL = String.format("/courses/%d/worlds/%d/npcs", initialCourse.getId(), initialWorld.getIndex());
     objectMapper = new ObjectMapper();
   }
 
   @Test
-  void submitGameData() throws Exception {
+  void submitNPCData() throws Exception {
     PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
     playerNPCStatisticData.setUserId(initialPlayerStatistic.getUserId());
     playerNPCStatisticData.setNpcId(initialNpcDTO.getId());
@@ -163,7 +168,7 @@ class NPCInputControllerTest {
   }
 
   @Test
-  void submitGameData_PlayerDoesNotExist_ThrowNotFound() throws Exception {
+  void submitNPCData_PlayerDoesNotExist_ThrowNotFound() throws Exception {
     final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
     playerNPCStatisticData.setUserId(UUID.randomUUID().toString());
     playerNPCStatisticData.setNpcId(initialNpc.getId());
@@ -176,15 +181,56 @@ class NPCInputControllerTest {
   }
 
   @Test
-  void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
+  void submitNPCData_NPCDoesNotExist_ThrowNotFound() throws Exception {
     final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
-    playerNPCStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
+    playerNPCStatisticData.setUserId(initialPlayerStatistic.getUserId());
     playerNPCStatisticData.setNpcId(UUID.randomUUID());
 
     final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     mvc
-      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void submitNPCData_ResetNPC() throws Exception {
+    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    playerNPCStatisticData.setUserId(initialPlayerStatistic.getUserId());
+    playerNPCStatisticData.setNpcId(initialNpcDTO.getId());
+    playerNPCStatisticData.setCompleted(true);
+
+    final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
+
+    final MvcResult result = mvc
+      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
+      result.getResponse().getContentAsString(),
+      PlayerNPCStatisticDTO.class
+    );
+    assertEquals(playerNPCStatisticData.isCompleted(), playerNPCStatisticDTO.isCompleted());
+    final List<String> newText = Arrays.asList("New text incoming");
+    final NPC updateNPCDTO = initialNpc;
+    updateNPCDTO.setText(newText);
+
+    final String bodyValueNPC = objectMapper.writeValueAsString(updateNPCDTO);
+
+    final MvcResult resultNPC = mvc
+      .perform(
+        put(npcURL + "/" + initialNpcDTO.getIndex()).content(bodyValueNPC).contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+    PlayerNPCStatistic currentPlayerNPCStatistic = playerNPCStatisticRepository
+      .findByNpcIdAndCourseIdAndPlayerStatisticId(
+        initialNpc.getId(),
+        initialCourse.getId(),
+        initialPlayerStatistic.getId()
+      )
+      .get();
+    assertFalse(currentPlayerNPCStatistic.isCompleted());
   }
 }

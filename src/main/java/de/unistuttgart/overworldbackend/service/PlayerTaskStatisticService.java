@@ -7,7 +7,6 @@ import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,9 @@ public class PlayerTaskStatisticService {
   private static final long COMPLETED_SCORE = 50;
   private static final long MAX_KNOWLEDGE = 100;
   private static final double RETRY_KNOWLEDGE = 0.02;
+
+  @Autowired
+  MinigameTaskService minigameTaskService;
 
   @Autowired
   PlayerTaskStatisticMapper playerTaskStatisticMapper;
@@ -122,7 +124,10 @@ public class PlayerTaskStatisticService {
 
     logData(data, course, playerTaskStatistic, gainedKnowledge);
 
-    calculateCompletedDungeons(playerStatistic);
+    Area area = minigameTask.getArea();
+    if (area instanceof Dungeon dungeon) {
+      calculateCompletedDungeon(dungeon, playerStatistic);
+    }
 
     //TODO:calculate unlocked areas
 
@@ -134,30 +139,23 @@ public class PlayerTaskStatisticService {
     );
   }
 
-  private void calculateCompletedDungeons(final PlayerStatistic playerstatistic) {
+  private void calculateCompletedDungeon(final Dungeon dungeon, final PlayerStatistic playerStatistic) {
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
-      playerstatistic.getId()
+      playerStatistic.getId()
     );
-    playerstatistic.setCompletedDungeons(
-      playerstatistic
-        .getCourse()
-        .getWorlds()
-        .parallelStream()
-        .map(World::getDungeons)
-        .flatMap(Collection::parallelStream)
-        .filter(dungeon ->
-          dungeon
-            .getMinigameTasks()
-            .parallelStream()
-            .allMatch(minigameTask ->
-              playerTaskStatistics
-                .parallelStream()
-                .filter(taskStatistic -> taskStatistic.getMinigameTask().equals(minigameTask))
-                .anyMatch(PlayerTaskStatistic::isCompleted)
-            )
-        )
-        .collect(Collectors.toCollection(ArrayList::new))
-    );
+    boolean dungeonCompleted = dungeon
+      .getMinigameTasks()
+      .parallelStream()
+      .allMatch(minigameTask ->
+        playerTaskStatistics
+          .parallelStream()
+          .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
+          .anyMatch(PlayerTaskStatistic::isCompleted)
+      );
+    if (dungeonCompleted) {
+      List<Area> completedDungeons = playerStatistic.getCompletedDungeons();
+      completedDungeons.add(dungeon);
+    }
   }
 
   private void logData(
