@@ -182,7 +182,8 @@ public class PlayerTaskStatisticService {
       100 +
       MAX_KNOWLEDGE *
       Math.max(0, score - Math.max(0, score - highscore)) *
-      RETRY_KNOWLEDGE
+      RETRY_KNOWLEDGE /
+      100
     );
   }
 
