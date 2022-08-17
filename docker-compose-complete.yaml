@@ -19,8 +19,6 @@ services:
     restart: always
     expose:
       - "5432"
-    volumes:
-      - ./data/login-db:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=super_secure_password
@@ -31,8 +29,6 @@ services:
     restart: always
     expose:
       - "5432"
-    volumes:
-      - ./data/overworld-db:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -43,8 +39,6 @@ services:
     restart: always
     expose:
       - "5432"
-    volumes:
-      - ./data/chickenshock-db:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -55,8 +49,6 @@ services:
     restart: always
     expose:
       - "5432"
-    volumes:
-      - ./data/crossword-db:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
