@@ -26,8 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class CourseService {
 
-  private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.baeldung.movie_catalog");
-
+  private EntityManager entityManager;
   CourseConfig configCourse;
 
   @Autowired
@@ -161,8 +160,7 @@ public class CourseService {
       .orElseThrow(() ->
         new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no course with id %s.", id))
       );
-    EntityManager em = emf.createEntityManager();
-    em.detach(course);
+    entityManager.detach(course);
     course.setId(0);
     course.setCourseName(courseInitialData.getCourseName());
     course.setDescription(courseInitialData.getDescription());
@@ -182,9 +180,5 @@ public class CourseService {
       config = chickenshockClient.postConfiguration(config);
       minigameTask.setConfigurationId(config.getId());
     }
-  }
-
-  private static EntityManager getEntityManager() {
-    return emf.createEntityManager();
   }
 }
