@@ -64,4 +64,11 @@ public class CourseController {
     log.debug("delete course {}", id);
     return courseService.deleteCourse(id);
   }
+
+  @Operation(summary = "Clone existing course")
+  @PostMapping("/{id}")
+  public CourseDTO cloneCourse(@PathVariable int id, @Valid @RequestBody CourseInitialData course) {
+    log.debug("clone course {}", id);
+    return courseService.cloneCourse(id, course);
+  }
 }

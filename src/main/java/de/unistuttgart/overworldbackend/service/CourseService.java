@@ -2,23 +2,31 @@ package de.unistuttgart.overworldbackend.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
+import de.unistuttgart.overworldbackend.data.minigames.ChickenshockConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CourseService {
+
+  private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.baeldung.movie_catalog");
 
   CourseConfig configCourse;
 
@@ -27,6 +35,9 @@ public class CourseService {
 
   @Autowired
   private CourseMapper courseMapper;
+
+  @Autowired
+  private ChickenshockClient chickenshockClient;
 
   public CourseService() {
     configCourse = new CourseConfig();
@@ -142,5 +153,38 @@ public class CourseService {
       npcs.add(npc);
     }
     return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, dungeonId);
+  }
+
+  public CourseDTO cloneCourse(int id, CourseInitialData courseInitialData) {
+    Course course = courseRepository
+      .findById(id)
+      .orElseThrow(() ->
+        new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no course with id %s.", id))
+      );
+    EntityManager em = emf.createEntityManager();
+    em.detach(course);
+    course.setId(0);
+    course.setCourseName(courseInitialData.getCourseName());
+    course.setDescription(courseInitialData.getDescription());
+    course.setSemester(courseInitialData.getSemester());
+    courseRepository.save(course);
+    course.getWorlds().forEach(world -> {
+      world.getMinigameTasks().forEach(this::cloneMinigameTask);
+      world.getDungeons().forEach(dungeon -> dungeon.getMinigameTasks().forEach(this::cloneMinigameTask));
+    });
+    return courseMapper.courseToCourseDTO(course);
+  }
+
+  private void cloneMinigameTask(MinigameTask minigameTask){
+    if(minigameTask.getGame().equals("CHICKENSHOCK")){
+      ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
+      config.setId(null);
+      config = chickenshockClient.postConfiguration(config);
+      minigameTask.setConfigurationId(config.getId());
+    }
+  }
+
+  private static EntityManager getEntityManager() {
+    return emf.createEntityManager();
   }
 }

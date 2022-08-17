@@ -1,0 +1,186 @@
+version: "3.7"
+
+services:
+
+  #databases
+  setup:
+    container_name: setup
+    image: ghcr.io/gamify-it/test-data:latest
+    pull_policy: always
+    restart: on-failure
+    environment:
+      POSTGRES_SETUP: >
+        login/default.sql
+        overworld/default.sql
+
+  login-db:
+    container_name: login-db
+    image: postgres:14-alpine
+    restart: always
+    expose:
+      - "5432"
+    volumes:
+      - ./data/login-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=super_secure_password
+
+  overworld-db:
+    container_name: overworld-db
+    image: postgres:14-alpine
+    restart: always
+    expose:
+      - "5432"
+    volumes:
+      - ./data/overworld-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  chickenshock-db:
+    container_name: chickenshock-db
+    image: postgres:14-alpine
+    restart: always
+    expose:
+      - "5432"
+    volumes:
+      - ./data/chickenshock-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  crosswordpuzzle-db:
+    container_name: crossword-db
+    image: postgres:14-alpine
+    restart: always
+    expose:
+      - "5432"
+    volumes:
+      - ./data/crossword-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+
+  #backends
+  login-backend:
+    container_name: login-backend
+    image: ghcr.io/gamify-it/login-backend:latest
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - login-db
+    environment:
+      - JWT_KEY=SecretKEY
+      - JWT_VALIDITY_DURATION=720h
+      - POSTGRES_URL=postgresql://postgres:super_secure_password@login-db:5432/
+
+  overworld-backend:
+    container_name: overworld-backend
+    build: .
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - overworld-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://overworld-db:5432/postgres
+
+  crosswordpuzzle-backend:
+    container_name:   crosswordpuzzle-backend
+    image: ghcr.io/gamify-it/crosswordpuzzle-backend:latest
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - crosswordpuzzle-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://crosswordpuzzle-db:5432/postgres
+
+  chickenshock-backend:
+    container_name:   chickenshock-backend
+    image: ghcr.io/gamify-it/chickenshock-backend:latest
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - chickenshock-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
+
+
+  #frontends
+  login-frontend:
+    container_name: login-frontend
+    image: ghcr.io/gamify-it/login-frontend:latest
+    restart: always
+    expose:
+      - "80"
+
+  overworld:
+    container_name: overworld
+    image: ghcr.io/gamify-it/overworld:latest
+    restart: always
+    expose:
+      - "80"
+
+  git-card-game:
+    container_name: git-card-game
+    image: ghcr.io/gamify-it/git-card-game:latest
+    restart: always
+    expose:
+      - "80"
+
+  chickenshock:
+    container_name: chickenshock
+    image: ghcr.io/gamify-it/chickenshock:latest
+    restart: always
+    expose:
+      - "80"
+
+  crosswordpuzzle:
+    container_name: crosswordpuzzle
+    image: ghcr.io/gamify-it/crosswordpuzzle:latest
+    restart: always
+    expose:
+      - "80"
+
+  regex-game:
+    container_name: regex-game
+    image: ghcr.io/gamify-it/regex-game:latest
+    restart: always
+    expose:
+      - "80"
+
+  bugfinder:
+    container_name: bugfinder
+    image: ghcr.io/gamify-it/bugfinder:latest
+    restart: always
+    expose:
+      - "80"
+
+  lecturer-interface:
+    container_name: lecturer-interface
+    image: ghcr.io/gamify-it/lecturer-interface:latest
+    restart: always
+    expose:
+      - "80"
+
+  # reverse-proxy
+  reverse-proxy:
+    container_name: reverse-proxy
+    image: nginx
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./.nginx/compose/nginx-complete.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
