@@ -175,15 +175,6 @@ public class PlayerTaskStatisticService {
     playerTaskActionLogRepository.save(actionLog);
   }
 
-  /**
-   * This method calculates the knowledge out of the score and the highscore.
-   *
-   * You get all the points you gained above the high score.
-   * The points below the high score get multiplied by the RETRY_KNOWLEDGE constant.
-   * @param score score achieved in the game
-   * @param highscore high score achieved in the game
-   * @return knowledge to be added
-   */
   private long calculateKnowledge(final long score, final long highscore) {
     return (long) (
       MAX_KNOWLEDGE *
