@@ -113,7 +113,6 @@ public class CourseService {
   public CourseDTO deleteCourse(final int id) {
     Course course = getCourse(id);
     CourseDTO courseDTO = courseMapper.courseToCourseDTO(course);
-    course.clearPlayerStatistics();
     courseRepository.delete(course);
     return courseDTO;
   }
