@@ -40,24 +40,34 @@ class CourseControllerTest {
 
   private Course initialCourse;
   private CourseDTO initialCourseDTO;
+  private MinigameTask initialMinigameTask;
 
   @BeforeEach
   public void createBasicData() {
     courseRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
+    dungeon.setIndex(1);
     dungeon.setStaticName("Dark Dungeon");
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
     dungeon.setNpcs(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
+    final Set<MinigameTask> minigameTasks = new HashSet<>();
+
+    final MinigameTask minigameTask = new MinigameTask();
+    minigameTask.setConfigurationId(UUID.randomUUID());
+    minigameTask.setGame("Bugfinder");
+    minigameTask.setIndex(1);
+    minigameTasks.add(minigameTask);
 
     final World world = new World();
+    world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
-    world.setMinigameTasks(Set.of());
+    world.setMinigameTasks(minigameTasks);
     world.setNpcs(Set.of());
     world.setDungeons(dungeons);
     final List<World> worlds = new ArrayList<>();
@@ -66,6 +76,8 @@ class CourseControllerTest {
     final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
     initialCourse = courseRepository.save(course);
     initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
+
+    initialMinigameTask = course.getWorlds().stream().findFirst().get().getMinigameTasks().stream().findFirst().get();
 
     assertNotNull(initialCourse.getCourseName());
 
@@ -178,6 +190,49 @@ class CourseControllerTest {
       createdCourse.getDescription(),
       courseRepository.getReferenceById(createdCourse.getId()).getDescription()
     );
+  }
+
+  @Test
+  void deleteCourseWithPlayerStatistics() throws Exception {
+    // create playerstatstic
+    final Player newPlayer = new Player("n423l34213", "newPlayer");
+    mvc
+      .perform(
+        post(fullURL + "/" + initialCourseDTO.getId() + "/playerstatistics")
+          .content(objectMapper.writeValueAsString(newPlayer))
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    // submit a playertaskstatstic
+    final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    playerTaskStatisticData.setUserId(newPlayer.getUserId());
+    playerTaskStatisticData.setGame(initialMinigameTask.getGame());
+    playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
+    playerTaskStatisticData.setScore(80);
+    mvc
+      .perform(
+        post("/internal/submit-game-pass")
+          .content(objectMapper.writeValueAsString(playerTaskStatisticData))
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    final MvcResult result = mvc
+      .perform(delete(fullURL + "/" + initialCourseDTO.getId()).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    final CourseDTO courseDTOResult = objectMapper.readValue(
+      result.getResponse().getContentAsString(),
+      CourseDTO.class
+    );
+
+    assertEquals(initialCourseDTO, courseDTOResult);
+    assertEquals(initialCourseDTO.getId(), courseDTOResult.getId());
+    assertTrue(courseRepository.findAll().isEmpty());
   }
 
   @Test
