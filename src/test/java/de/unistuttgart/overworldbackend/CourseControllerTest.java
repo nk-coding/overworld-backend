@@ -157,6 +157,47 @@ class CourseControllerTest {
   }
 
   @Test
+  void deleteCourseWithPlayerStatistics() throws Exception {
+    // create playerstatstic
+    final Player newPlayer = new Player("n423l34213", "newPlayer");
+    mvc
+      .perform(
+        post(fullURL).content(objectMapper.writeValueAsString(newPlayer)).contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    // submit a playertaskstatstic
+    final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    playerTaskStatisticData.setUserId(newPlayer.getUserId());
+    playerTaskStatisticData.setGame("BUGFINDER");
+    playerTaskStatisticData.setConfigurationId(UUID.randomUUID());
+    playerTaskStatisticData.setScore(80);
+    mvc
+      .perform(
+        post(fullURL + "/submit-game-pass")
+          .content(objectMapper.writeValueAsString(playerTaskStatisticData))
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    final MvcResult result = mvc
+      .perform(delete(fullURL + "/" + initialCourseDTO.getId()).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    final CourseDTO courseDTOResult = objectMapper.readValue(
+      result.getResponse().getContentAsString(),
+      CourseDTO.class
+    );
+
+    assertEquals(initialCourseDTO, courseDTOResult);
+    assertEquals(initialCourseDTO.getId(), courseDTOResult.getId());
+    assertTrue(courseRepository.findAll().isEmpty());
+  }
+
+  @Test
   void createCourse() throws Exception {
     final CourseInitialData toCreateCourse = new CourseInitialData("testName", "SS-22", "testDescription");
     final String bodyValue = objectMapper.writeValueAsString(toCreateCourse);
