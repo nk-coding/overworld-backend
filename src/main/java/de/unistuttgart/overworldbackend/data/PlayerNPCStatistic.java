@@ -1,18 +1,15 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -31,5 +28,12 @@ public class PlayerNPCStatistic {
   @ManyToOne
   Course course;
 
+  @OneToMany(cascade = CascadeType.ALL)
+  Set<PlayerNPCActionLog> playerNPCActionLogs = new HashSet<>();
+
   boolean completed;
+
+  public void addActionLog(final PlayerNPCActionLog actionLog) {
+    this.playerNPCActionLogs.add(actionLog);
+  }
 }

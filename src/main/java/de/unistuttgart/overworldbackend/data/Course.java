@@ -1,6 +1,8 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -35,6 +37,9 @@ public class Course {
 
   @OneToMany(cascade = CascadeType.ALL)
   List<World> worlds;
+
+  @OneToMany(cascade = CascadeType.ALL)
+  Set<PlayerStatistic> playerStatistics = new HashSet<>();
 
   public Course(
     final String courseName,
@@ -83,5 +88,17 @@ public class Course {
           });
       }
     });
+  }
+
+  public void addPlayerStatistic(final PlayerStatistic playerStatistic) {
+    this.playerStatistics.add(playerStatistic);
+  }
+
+  public void removePlayerStatistic(final PlayerStatistic playerStatistic) {
+    this.playerStatistics.remove(playerStatistic);
+  }
+
+  public void clearPlayerStatistics() {
+    this.playerStatistics.clear();
   }
 }

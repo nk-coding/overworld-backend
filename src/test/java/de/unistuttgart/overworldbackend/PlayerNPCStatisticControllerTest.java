@@ -97,22 +97,24 @@ class PlayerNPCStatisticControllerTest {
 
     final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
 
-    initialCourse = courseRepository.save(course);
-    initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
-
-    initialNpc = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
-    initialNpcDTO = npcMapper.npcToNPCDTO(initialNpc);
-
     final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
-    playerstatistic.setCourse(initialCourse);
-    playerstatistic.setCurrentArea(initialCourse.getWorlds().stream().findFirst().get());
+    playerstatistic.setCourse(course);
+    playerstatistic.setCurrentArea(world);
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
+    course.addPlayerStatistic(playerstatistic);
+
+    initialCourse = courseRepository.save(course);
+    initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
+
+    initialPlayerStatistic = course.getPlayerStatistics().stream().findAny().get();
     initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
+
+    initialNpc = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
+    initialNpcDTO = npcMapper.npcToNPCDTO(initialNpc);
 
     assertNotNull(initialCourse.getCourseName());
 

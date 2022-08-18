@@ -112,9 +112,10 @@ public class CourseService {
    */
   public CourseDTO deleteCourse(final int id) {
     Course course = getCourse(id);
-    playerStatisticRepository.deletePlayerStatisticsByCourseId(id);
+    CourseDTO courseDTO = courseMapper.courseToCourseDTO(course);
+    course.clearPlayerStatistics();
     courseRepository.delete(course);
-    return courseMapper.courseToCourseDTO(course);
+    return courseDTO;
   }
 
   private void configureWorld(List<World> worlds, int worldId, WorldConfig worldConfig) {
