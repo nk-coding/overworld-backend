@@ -9,5 +9,5 @@ public class ChickenshockConfiguration {
 
   UUID id;
 
-  Set<Object> questions;
+  Set<ChickenshockQuestion> questions;
 }

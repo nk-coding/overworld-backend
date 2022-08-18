@@ -14,11 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -159,48 +155,52 @@ public class CourseService {
       .orElseThrow(() ->
         new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no course with id %s.", id))
       );
-    Course cloneCourse = courseMapper.courseDTOToCourse(createCourse(courseInitialData));
-    for (int i = 0; i < course.getWorlds().size(); i++) {
-      cloneWorld(course.getWorlds().get(i), cloneCourse.getWorlds().get(i));
-    }
+    List<World> worlds = new ArrayList<>();
+    course.getWorlds().forEach(world -> cloneWorld(world, worlds));
+
+    Course cloneCourse = new Course(
+            courseInitialData.getCourseName(),
+            courseInitialData.getSemester(),
+            courseInitialData.getDescription(),
+            false,
+            worlds
+    );
+    courseRepository.save(cloneCourse);
     return courseMapper.courseToCourseDTO(cloneCourse);
   }
 
-  private void cloneWorld(World oldWorld, World newWorld) {
+  private void cloneWorld(World oldWorld, List<World> newWorlds) {
+    Set<MinigameTask> minigameTasks = new HashSet<>();
+    Set<NPC> npcs = new HashSet<>();
+    List<Dungeon> dungeons = new ArrayList<>();
     oldWorld
       .getMinigameTasks()
       .forEach(minigameTask ->
-        newWorld
-          .getMinigameTasks()
-          .stream()
-          .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
-          .forEach(minigameTask1 -> {
-            minigameTask1 = cloneMinigameTask(minigameTask);
-          })
+        minigameTasks.add(cloneMinigameTask(minigameTask))
       );
-    oldWorld.getNpcs().forEach(npc -> newWorld.getNpcs().stream().filter(npc1 -> npc1.getIndex() == npc.getIndex()).forEach(npc1 -> {
-      npc1.setText(npc.getText());
-    }));
-    for(int i = 0; i< newWorld.getDungeons().size();i++){
-      cloneDungeon(newWorld.getDungeons().get(i), oldWorld.getDungeons().get(i));
-    }
+    oldWorld.getNpcs().forEach(npc -> npcs.add(cloneNPC(npc)));
+
+    oldWorld.getDungeons().forEach(dungeon -> cloneDungeon(dungeon, dungeons));
+
+    newWorlds.add(new World(oldWorld.getStaticName(), oldWorld.getTopicName(), false, minigameTasks, npcs, dungeons, oldWorld.getIndex()));
   }
 
-  private void cloneDungeon(Dungeon oldDungeon, Dungeon newDungeon) {
+  private void cloneDungeon(Dungeon oldDungeon, List<Dungeon> newDungeons) {
+    Set<MinigameTask> minigameTasks = new HashSet<>();
+    Set<NPC> npcs = new HashSet<>();
     oldDungeon
             .getMinigameTasks()
             .forEach(minigameTask ->
-                    newDungeon
-                            .getMinigameTasks()
-                            .stream()
-                            .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
-                            .forEach(minigameTask1 -> {
-                              minigameTask1 = cloneMinigameTask(minigameTask);
-                            })
+                    minigameTasks.add(cloneMinigameTask(minigameTask))
             );
-    oldDungeon.getNpcs().forEach(npc -> newDungeon.getNpcs().stream().filter(npc1 -> npc1.getIndex() == npc.getIndex()).forEach(npc1 -> {
-      npc1.setText(npc.getText());
-    }));
+    oldDungeon.getNpcs().forEach(npc -> npcs.add(cloneNPC(npc)));
+    newDungeons.add(new Dungeon(oldDungeon.getStaticName(), oldDungeon.getTopicName(), false ,minigameTasks, npcs, oldDungeon.getIndex()));
+  }
+
+  private NPC cloneNPC(NPC npc){
+    List<String> text = new ArrayList<>();
+    npc.getText().forEach(npcText -> text.add(npcText));
+    return new NPC(text,npc.getIndex());
   }
 
   private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
@@ -210,6 +210,7 @@ public class CourseService {
     if (minigameTask.getGame().equals("CHICKENSHOCK")) {
       ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
       config.setId(null);
+      config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
       config = chickenshockClient.postConfiguration(config);
       MinigameTask newMinigame = new MinigameTask("CHICKENSHOCK", config.getId(), minigameTask.getIndex());
       return newMinigame;

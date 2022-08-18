@@ -66,7 +66,7 @@ public class CourseController {
   }
 
   @Operation(summary = "Clone existing course")
-  @PostMapping("/{id}")
+  @PostMapping("/clones/{id}")
   public CourseDTO cloneCourse(@PathVariable int id, @Valid @RequestBody CourseInitialData course) {
     log.debug("clone course {}", id);
     return courseService.cloneCourse(id, course);

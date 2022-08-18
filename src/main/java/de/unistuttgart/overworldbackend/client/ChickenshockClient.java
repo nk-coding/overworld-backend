@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(value = "resultClient", url = "${chickenshock.url}/counfigurations")
+@FeignClient(value = "resultClient", url = "${chickenshock.url}/configurations")
 public interface ChickenshockClient {
   @GetMapping("/{id}")
   ChickenshockConfiguration getConfiguration(@PathVariable("id") UUID id);
