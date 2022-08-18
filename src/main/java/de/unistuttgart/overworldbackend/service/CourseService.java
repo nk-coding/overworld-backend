@@ -26,7 +26,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class CourseService {
 
-  private EntityManager entityManager;
   CourseConfig configCourse;
 
   @Autowired
@@ -160,25 +159,61 @@ public class CourseService {
       .orElseThrow(() ->
         new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no course with id %s.", id))
       );
-    entityManager.detach(course);
-    course.setId(0);
-    course.setCourseName(courseInitialData.getCourseName());
-    course.setDescription(courseInitialData.getDescription());
-    course.setSemester(courseInitialData.getSemester());
-    courseRepository.save(course);
-    course.getWorlds().forEach(world -> {
-      world.getMinigameTasks().forEach(this::cloneMinigameTask);
-      world.getDungeons().forEach(dungeon -> dungeon.getMinigameTasks().forEach(this::cloneMinigameTask));
-    });
-    return courseMapper.courseToCourseDTO(course);
+    Course cloneCourse = courseMapper.courseDTOToCourse(createCourse(courseInitialData));
+    for (int i = 0; i < course.getWorlds().size(); i++) {
+      cloneWorld(course.getWorlds().get(i), cloneCourse.getWorlds().get(i));
+    }
+    return courseMapper.courseToCourseDTO(cloneCourse);
   }
 
-  private void cloneMinigameTask(MinigameTask minigameTask){
-    if(minigameTask.getGame().equals("CHICKENSHOCK")){
+  private void cloneWorld(World oldWorld, World newWorld) {
+    oldWorld
+      .getMinigameTasks()
+      .forEach(minigameTask ->
+        newWorld
+          .getMinigameTasks()
+          .stream()
+          .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
+          .forEach(minigameTask1 -> {
+            minigameTask1 = cloneMinigameTask(minigameTask);
+          })
+      );
+    oldWorld.getNpcs().forEach(npc -> newWorld.getNpcs().stream().filter(npc1 -> npc1.getIndex() == npc.getIndex()).forEach(npc1 -> {
+      npc1.setText(npc.getText());
+    }));
+    for(int i = 0; i< newWorld.getDungeons().size();i++){
+      cloneDungeon(newWorld.getDungeons().get(i), oldWorld.getDungeons().get(i));
+    }
+  }
+
+  private void cloneDungeon(Dungeon oldDungeon, Dungeon newDungeon) {
+    oldDungeon
+            .getMinigameTasks()
+            .forEach(minigameTask ->
+                    newDungeon
+                            .getMinigameTasks()
+                            .stream()
+                            .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
+                            .forEach(minigameTask1 -> {
+                              minigameTask1 = cloneMinigameTask(minigameTask);
+                            })
+            );
+    oldDungeon.getNpcs().forEach(npc -> newDungeon.getNpcs().stream().filter(npc1 -> npc1.getIndex() == npc.getIndex()).forEach(npc1 -> {
+      npc1.setText(npc.getText());
+    }));
+  }
+
+  private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
+    if (minigameTask.getGame() == null) {
+      return new MinigameTask(null, null, minigameTask.getIndex());
+    }
+    if (minigameTask.getGame().equals("CHICKENSHOCK")) {
       ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
       config.setId(null);
       config = chickenshockClient.postConfiguration(config);
-      minigameTask.setConfigurationId(config.getId());
+      MinigameTask newMinigame = new MinigameTask("CHICKENSHOCK", config.getId(), minigameTask.getIndex());
+      return newMinigame;
     }
+    return minigameTask;
   }
 }

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @FeignClient(value = "resultClient", url = "${chickenshock.url}/counfigurations")
 public interface ChickenshockClient {
   @GetMapping("/{id}")
-  ChickenshockConfiguration getConfiguration(@PathVariable UUID id);
+  ChickenshockConfiguration getConfiguration(@PathVariable("id") UUID id);
 
-  @PostMapping("")
+  @PostMapping("/")
   ChickenshockConfiguration postConfiguration(ChickenshockConfiguration chickenshockConfiguration);
 }
