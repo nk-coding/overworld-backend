@@ -8,7 +8,9 @@ import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerNPCActionLogRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -30,6 +32,12 @@ public class CourseService {
 
   @Autowired
   private PlayerStatisticRepository playerStatisticRepository;
+
+  @Autowired
+  private PlayerTaskActionLogRepository playerTaskActionLogRepository;
+
+  @Autowired
+  private PlayerNPCActionLogRepository playerNPCActionLogRepository;
 
   @Autowired
   private CourseMapper courseMapper;
@@ -112,9 +120,8 @@ public class CourseService {
    */
   public CourseDTO deleteCourse(final int id) {
     Course course = getCourse(id);
-    CourseDTO courseDTO = courseMapper.courseToCourseDTO(course);
     courseRepository.delete(course);
-    return courseDTO;
+    return courseMapper.courseToCourseDTO(course);
   }
 
   private void configureWorld(List<World> worlds, int worldId, WorldConfig worldConfig) {

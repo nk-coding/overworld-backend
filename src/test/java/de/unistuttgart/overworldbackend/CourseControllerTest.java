@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class CourseControllerTest {
   private CourseRepository courseRepository;
 
   @Autowired
+  private PlayerStatisticRepository playerStatisticRepository;
+
+  @Autowired
   private CourseMapper courseMapper;
 
   private String fullURL;
@@ -41,6 +45,7 @@ class CourseControllerTest {
   private Course initialCourse;
   private CourseDTO initialCourseDTO;
   private MinigameTask initialMinigameTask;
+  private NPC initialNPC;
 
   @BeforeEach
   public void createBasicData() {
@@ -62,13 +67,21 @@ class CourseControllerTest {
     minigameTask.setIndex(1);
     minigameTasks.add(minigameTask);
 
+    final List<String> npcText = new ArrayList<>();
+    npcText.add("NPCText");
+    final NPC npc = new NPC();
+    npc.setText(npcText);
+    npc.setIndex(1);
+    final Set<NPC> npcs = new HashSet<>();
+    npcs.add(npc);
+
     final World world = new World();
     world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(minigameTasks);
-    world.setNpcs(Set.of());
+    world.setNpcs(npcs);
     world.setDungeons(dungeons);
     final List<World> worlds = new ArrayList<>();
     worlds.add(world);
@@ -78,6 +91,7 @@ class CourseControllerTest {
     initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
     initialMinigameTask = course.getWorlds().stream().findFirst().get().getMinigameTasks().stream().findFirst().get();
+    initialNPC = course.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
 
     assertNotNull(initialCourse.getCourseName());
 
@@ -220,6 +234,30 @@ class CourseControllerTest {
       .andExpect(status().isOk())
       .andReturn();
 
+    // submit a npc statistic
+    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    playerNPCStatisticData.setUserId(newPlayer.getUserId());
+    playerNPCStatisticData.setNpcId(initialNPC.getId());
+    playerNPCStatisticData.setCompleted(true);
+
+    Optional<PlayerStatistic> playerStatistic = playerStatisticRepository.findByCourseIdAndUserId(
+      initialCourse.getId(),
+      newPlayer.getUserId()
+    );
+
+    mvc
+      .perform(
+        post("/internal/submit-npc-pass")
+          .content(objectMapper.writeValueAsString(playerNPCStatisticData))
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    assertTrue(playerStatistic.isPresent());
+    assertFalse(playerStatistic.get().getPlayerTaskStatistics().isEmpty());
+    assertFalse(playerStatistic.get().getPlayerNPCStatistics().isEmpty());
+
     final MvcResult result = mvc
       .perform(delete(fullURL + "/" + initialCourseDTO.getId()).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
@@ -232,6 +270,9 @@ class CourseControllerTest {
 
     assertEquals(initialCourseDTO, courseDTOResult);
     assertEquals(initialCourseDTO.getId(), courseDTOResult.getId());
+    assertTrue(
+      playerStatisticRepository.findByCourseIdAndUserId(initialCourse.getId(), newPlayer.getUserId()).isEmpty()
+    );
     assertTrue(courseRepository.findAll().isEmpty());
   }
 

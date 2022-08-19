@@ -141,6 +141,6 @@ public class PlayerNPCStatisticService {
     actionLog.setPlayerNPCStatistic(currentPlayerNPCStatistic);
     actionLog.setCourse(course);
     actionLog.setGainedKnowledge(gainedKnowledge);
-    playerNPCActionLogRepository.save(actionLog);
+    currentPlayerNPCStatistic.addActionLog(actionLog);
   }
 }

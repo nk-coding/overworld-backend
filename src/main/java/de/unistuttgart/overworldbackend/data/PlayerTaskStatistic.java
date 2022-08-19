@@ -30,7 +30,7 @@ public class PlayerTaskStatistic {
   @ManyToOne
   Course course;
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   Set<PlayerTaskActionLog> playerTaskActionLogs = new HashSet<>();
 
   @Min(0)

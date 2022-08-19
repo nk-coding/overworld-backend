@@ -40,10 +40,10 @@ public class PlayerStatistic {
   @NotNull
   String username;
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   Set<PlayerTaskStatistic> playerTaskStatistics = new HashSet<>();
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   Set<PlayerNPCStatistic> playerNPCStatistics = new HashSet<>();
 
   long knowledge = 0;

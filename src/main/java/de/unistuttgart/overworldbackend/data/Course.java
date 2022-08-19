@@ -38,7 +38,7 @@ public class Course {
   @OneToMany(cascade = CascadeType.ALL)
   List<World> worlds;
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   Set<PlayerStatistic> playerStatistics = new HashSet<>();
 
   public Course(

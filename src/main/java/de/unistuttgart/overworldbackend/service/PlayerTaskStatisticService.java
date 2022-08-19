@@ -181,7 +181,7 @@ public class PlayerTaskStatisticService {
     actionLog.setGainedKnowledge(gainedKnowledge);
     actionLog.setGame(data.getGame());
     actionLog.setConfigurationId(data.getConfigurationId());
-    playerTaskActionLogRepository.save(actionLog);
+    currentPlayerTaskStatistic.addActionLog(actionLog);
   }
 
   private long calculateKnowledge(final long score, final long highscore) {

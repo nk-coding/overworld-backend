@@ -28,7 +28,7 @@ public class PlayerNPCStatistic {
   @ManyToOne
   Course course;
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   Set<PlayerNPCActionLog> playerNPCActionLogs = new HashSet<>();
 
   boolean completed;
