@@ -207,6 +207,9 @@ public class CourseService {
     if (minigameTask.getGame() == null) {
       return new MinigameTask(null, null, minigameTask.getIndex());
     }
+    if (minigameTask.getGame().equals("NONE")) {
+      return new MinigameTask("NONE", null, minigameTask.getIndex());
+    }
     if (minigameTask.getGame().equals("CHICKENSHOCK")) {
       ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
       config.setId(null);
