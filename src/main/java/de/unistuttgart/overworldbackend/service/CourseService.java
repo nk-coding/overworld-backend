@@ -159,11 +159,11 @@ public class CourseService {
     course.getWorlds().forEach(world -> cloneWorld(world, worlds));
 
     Course cloneCourse = new Course(
-            courseInitialData.getCourseName(),
-            courseInitialData.getSemester(),
-            courseInitialData.getDescription(),
-            false,
-            worlds
+      courseInitialData.getCourseName(),
+      courseInitialData.getSemester(),
+      courseInitialData.getDescription(),
+      false,
+      worlds
     );
     courseRepository.save(cloneCourse);
     return courseMapper.courseToCourseDTO(cloneCourse);
@@ -173,34 +173,45 @@ public class CourseService {
     Set<MinigameTask> minigameTasks = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
     List<Dungeon> dungeons = new ArrayList<>();
-    oldWorld
-      .getMinigameTasks()
-      .forEach(minigameTask ->
-        minigameTasks.add(cloneMinigameTask(minigameTask))
-      );
+    oldWorld.getMinigameTasks().forEach(minigameTask -> minigameTasks.add(cloneMinigameTask(minigameTask)));
     oldWorld.getNpcs().forEach(npc -> npcs.add(cloneNPC(npc)));
 
     oldWorld.getDungeons().forEach(dungeon -> cloneDungeon(dungeon, dungeons));
 
-    newWorlds.add(new World(oldWorld.getStaticName(), oldWorld.getTopicName(), false, minigameTasks, npcs, dungeons, oldWorld.getIndex()));
+    newWorlds.add(
+      new World(
+        oldWorld.getStaticName(),
+        oldWorld.getTopicName(),
+        false,
+        minigameTasks,
+        npcs,
+        dungeons,
+        oldWorld.getIndex()
+      )
+    );
   }
 
   private void cloneDungeon(Dungeon oldDungeon, List<Dungeon> newDungeons) {
     Set<MinigameTask> minigameTasks = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
-    oldDungeon
-            .getMinigameTasks()
-            .forEach(minigameTask ->
-                    minigameTasks.add(cloneMinigameTask(minigameTask))
-            );
+    oldDungeon.getMinigameTasks().forEach(minigameTask -> minigameTasks.add(cloneMinigameTask(minigameTask)));
     oldDungeon.getNpcs().forEach(npc -> npcs.add(cloneNPC(npc)));
-    newDungeons.add(new Dungeon(oldDungeon.getStaticName(), oldDungeon.getTopicName(), false ,minigameTasks, npcs, oldDungeon.getIndex()));
+    newDungeons.add(
+      new Dungeon(
+        oldDungeon.getStaticName(),
+        oldDungeon.getTopicName(),
+        false,
+        minigameTasks,
+        npcs,
+        oldDungeon.getIndex()
+      )
+    );
   }
 
-  private NPC cloneNPC(NPC npc){
+  private NPC cloneNPC(NPC npc) {
     List<String> text = new ArrayList<>();
     npc.getText().forEach(npcText -> text.add(npcText));
-    return new NPC(text,npc.getIndex());
+    return new NPC(text, npc.getIndex());
   }
 
   private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
