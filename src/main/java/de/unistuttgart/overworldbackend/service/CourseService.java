@@ -31,15 +31,6 @@ public class CourseService {
   private CourseRepository courseRepository;
 
   @Autowired
-  private PlayerStatisticRepository playerStatisticRepository;
-
-  @Autowired
-  private PlayerTaskActionLogRepository playerTaskActionLogRepository;
-
-  @Autowired
-  private PlayerNPCActionLogRepository playerNPCActionLogRepository;
-
-  @Autowired
   private CourseMapper courseMapper;
 
   public CourseService() {
