@@ -7,9 +7,11 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@Transactional
 public class PlayerStatisticService {
 
   @Autowired
@@ -87,7 +89,9 @@ public class PlayerStatisticService {
     playerstatistic.setUsername(player.getUsername());
     playerstatistic.setCurrentArea(firstWorld);
     playerstatistic.setKnowledge(0);
-    return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(playerstatisticRepository.save(playerstatistic));
+    course.addPlayerStatistic(playerstatistic);
+    PlayerStatistic savedPlayerStatistic = getPlayerStatisticFromCourse(courseId, player.getUserId());
+    return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(savedPlayerStatistic);
   }
 
   /**

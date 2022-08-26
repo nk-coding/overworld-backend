@@ -8,6 +8,9 @@ import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerNPCActionLogRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -15,9 +18,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@Transactional
 public class CourseService {
 
   CourseConfig configCourse;

@@ -10,9 +10,11 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@Transactional
 public class PlayerTaskStatisticService {
 
   private static final long COMPLETED_SCORE = 50;
@@ -114,7 +116,14 @@ public class PlayerTaskStatisticService {
         newPlayerTaskStatistic.setPlayerStatistic(playerStatistic);
         newPlayerTaskStatistic.setMinigameTask(minigameTask);
         newPlayerTaskStatistic.setCourse(course);
-        return playerTaskStatisticRepository.save(newPlayerTaskStatistic);
+        playerStatistic.addPlayerTaskStatistic(newPlayerTaskStatistic);
+        return playerTaskStatisticRepository
+          .findByMinigameTaskIdAndCourseIdAndPlayerStatisticId(
+            minigameTask.getId(),
+            course.getId(),
+            playerStatistic.getId()
+          )
+          .get();
       });
 
     long gainedKnowledge = calculateKnowledge(data.getScore(), playerTaskStatistic.getHighscore());
@@ -172,7 +181,7 @@ public class PlayerTaskStatisticService {
     actionLog.setGainedKnowledge(gainedKnowledge);
     actionLog.setGame(data.getGame());
     actionLog.setConfigurationId(data.getConfigurationId());
-    playerTaskActionLogRepository.save(actionLog);
+    currentPlayerTaskStatistic.addActionLog(actionLog);
   }
 
   /**
