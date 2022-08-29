@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "index", "area_id", "course_id" }) })
@@ -26,7 +27,6 @@ public class NPC {
 
   @ElementCollection
   List<String> text;
-
 
   @Nullable
   String description;

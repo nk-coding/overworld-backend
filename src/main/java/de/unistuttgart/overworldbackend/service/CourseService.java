@@ -25,6 +25,8 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class CourseService {
 
+  private final boolean DEFAULT_IS_ACTIVE = true;
+
   CourseConfig configCourse;
 
   @Autowired
@@ -95,7 +97,7 @@ public class CourseService {
       courseInit.getCourseName(),
       courseInit.getSemester(),
       courseInit.getDescription(),
-      true,
+      DEFAULT_IS_ACTIVE,
       worlds
     );
     courseRepository.save(course);
