@@ -23,6 +23,8 @@ public class MinigameTask {
   int index;
   String game;
   UUID configurationId;
+
+  @Nullable
   String description;
 
   @ManyToOne

@@ -27,6 +27,8 @@ public class NPC {
   @ElementCollection
   List<String> text;
 
+
+  @Nullable
   String description;
 
   @JsonBackReference
