@@ -35,7 +35,8 @@ public class CloneTest {
   public static DockerComposeContainer compose = new DockerComposeContainer(
     new File("src/test/resources/docker-compose-test.yaml")
   )
-    .withExposedService("overworld-db", 5432);
+    .withExposedService("overworld-db", 5432)
+    .withExposedService("reverse-proxy", 80);
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
@@ -47,6 +48,10 @@ public class CloneTest {
           compose.getServiceHost("overworld-db", 5432),
           compose.getServicePort("overworld-db", 5432)
         )
+    );
+    registry.add(
+      "chickenshock.url",
+      () -> String.format("http://%s/minigames/chickenshock/api/v1", compose.getServiceHost("reverse-proxy", 80))
     );
   }
 
