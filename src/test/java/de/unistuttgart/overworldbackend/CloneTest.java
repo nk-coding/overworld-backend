@@ -91,13 +91,6 @@ public class CloneTest {
 
   @Test
   public void cloneCourseTest() throws Exception {
-    CourseInitialData initialData = new CourseInitialData();
-    initialData.setCourseName("CloneCourse");
-    initialData.setDescription("CloneDescription");
-    initialData.setSemester("WS-23");
-
-    final String bodyValue = objectMapper.writeValueAsString(initialData);
-
     final MvcResult resultGet = mvc
       .perform(get(fullURL + "/1").contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
@@ -106,6 +99,13 @@ public class CloneTest {
     final Course course = courseMapper.courseDTOToCourse(
       objectMapper.readValue(resultGet.getResponse().getContentAsString(), CourseDTO.class)
     );
+
+    CourseInitialData initialData = new CourseInitialData();
+    initialData.setCourseName("CloneCourse");
+    initialData.setDescription("CloneDescription");
+    initialData.setSemester("WS-23");
+
+    final String bodyValue = objectMapper.writeValueAsString(initialData);
 
     final MvcResult resultClone = mvc
       .perform(post(fullURL + "/1/clone").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
