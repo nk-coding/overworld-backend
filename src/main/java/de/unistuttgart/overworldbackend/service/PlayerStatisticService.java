@@ -145,6 +145,7 @@ public class PlayerStatisticService {
     boolean areaCompleted = currentArea
       .getMinigameTasks()
       .parallelStream()
+      .filter(minigameTask -> !minigameTask.getGame().equals("NONE") && minigameTask.getGame() != null)
       .allMatch(minigameTask ->
         playerTaskStatistics
           .parallelStream()
