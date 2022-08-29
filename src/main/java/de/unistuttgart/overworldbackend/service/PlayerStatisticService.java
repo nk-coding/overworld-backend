@@ -5,6 +5,7 @@ import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -145,7 +146,7 @@ public class PlayerStatisticService {
     boolean areaCompleted = currentArea
       .getMinigameTasks()
       .parallelStream()
-      .filter(minigameTask -> !minigameTask.getGame().equals("NONE") && minigameTask.getGame() != null)
+      .filter(minigameTask -> minigameTask.getGame() != null && !minigameTask.getGame().equals("NONE"))
       .allMatch(minigameTask ->
         playerTaskStatistics
           .parallelStream()
@@ -180,9 +181,9 @@ public class PlayerStatisticService {
           .getWorld()
           .getDungeons()
           .stream()
-          .filter(dungeon -> dungeon.getIndex() > currentArea.getIndex())
-          .toList();
-        otherDungeons.sort(Comparator.comparingInt(Area::getIndex));
+          .filter(dungeon -> dungeon.getIndex() > currentDungeon.getIndex())
+          .collect(Collectors.toList());
+        otherDungeons.sort(Comparator.comparingInt(Dungeon::getIndex));
 
         for (Dungeon dungeon : otherDungeons) {
           if (dungeon.isActive()) {
