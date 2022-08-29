@@ -61,6 +61,8 @@ public class PlayerStatistic {
   }
 
   public void addUnlockedArea(final Area area) {
-    this.unlockedAreas.add(area);
+    if(!this.unlockedAreas.contains(area)){
+      this.unlockedAreas.add(area);
+    }
   }
 }
