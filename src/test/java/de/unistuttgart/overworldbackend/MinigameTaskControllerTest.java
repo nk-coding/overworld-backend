@@ -242,10 +242,12 @@ class MinigameTaskControllerTest {
   @Test
   void updateMinigameTaskFromWorld() throws Exception {
     final String newGame = "Crosswordpuzzle";
+    final String newDescription = "New Crosswordpuzzle game";
     final UUID newConfigurationId = UUID.randomUUID();
     final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
     updateMinigameTaskDTO.setGame(newGame);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
     final MvcResult result = mvc
@@ -265,16 +267,19 @@ class MinigameTaskControllerTest {
     assertEquals(initialTaskDTO1.getId(), updatedMinigameTaskDTOResult.getId());
     assertEquals(newGame, updatedMinigameTaskDTOResult.getGame());
     assertEquals(newConfigurationId, updatedMinigameTaskDTOResult.getConfigurationId());
+    assertEquals(newDescription, updatedMinigameTaskDTOResult.getDescription());
     assertEquals(updateMinigameTaskDTO, updatedMinigameTaskDTOResult);
   }
 
   @Test
   void updateMinigameTaskFromDungeon() throws Exception {
     final String newGame = "Chickenshock";
+    final String newDescription = "New Chickenshock game";
     final UUID newConfigurationId = UUID.randomUUID();
     final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
     updateMinigameTaskDTO.setGame(newGame);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
     final MvcResult result = mvc
@@ -294,5 +299,6 @@ class MinigameTaskControllerTest {
     assertEquals(initialTaskDTO3.getId(), updatedMinigameTaskDTOResult.getId());
     assertEquals(newGame, updatedMinigameTaskDTOResult.getGame());
     assertEquals(newConfigurationId, updatedMinigameTaskDTOResult.getConfigurationId());
+    assertEquals(newDescription, updatedMinigameTaskDTOResult.getDescription());
   }
 }

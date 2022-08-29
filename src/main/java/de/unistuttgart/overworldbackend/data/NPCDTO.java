@@ -21,4 +21,7 @@ public class NPCDTO {
   AreaLocationDTO area;
   int index;
   List<String> text;
+
+  @Nullable
+  String description;
 }

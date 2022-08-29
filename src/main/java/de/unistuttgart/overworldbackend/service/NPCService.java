@@ -103,6 +103,7 @@ public class NPCService {
     resetNPC(npcMapper.npcDTOToNPC(npcDTO));
     final NPC npc = getNPCFromWorld(courseId, worldIndex, npcIndex);
     npc.setText(npcDTO.getText());
+    npc.setDescription(npcDTO.getDescription());
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
   }
@@ -130,6 +131,7 @@ public class NPCService {
     resetNPC(npcMapper.npcDTOToNPC(npcDTO));
     final NPC npc = getNPCFromDungeon(courseId, worldIndex, dungeonIndex, npcIndex);
     npc.setText(npcDTO.getText());
+    npc.setDescription(npcDTO.getDescription());
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
   }

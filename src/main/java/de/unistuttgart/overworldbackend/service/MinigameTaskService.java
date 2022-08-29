@@ -165,6 +165,7 @@ public class MinigameTaskService {
     );
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());
+    minigameTask.setDescription(taskDTO.getDescription());
     final MinigameTask updatedMinigameTask = minigameTaskRepository.save(minigameTask);
     return minigameTaskMapper.minigameTaskToMinigameTaskDTO(updatedMinigameTask);
   }
