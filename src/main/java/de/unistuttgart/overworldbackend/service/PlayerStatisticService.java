@@ -4,6 +4,7 @@ import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class PlayerStatisticService {
 
   @Autowired
   private PlayerStatisticRepository playerstatisticRepository;
+
+  @Autowired
+  private WorldRepository worldRepository;
 
   @Autowired
   private PlayerTaskStatisticRepository playerTaskStatisticRepository;
@@ -143,21 +147,11 @@ public class PlayerStatisticService {
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
       playerStatistic.getId()
     );
-    boolean areaCompleted = currentArea
-      .getMinigameTasks()
-      .parallelStream()
-      .filter(minigameTask -> minigameTask.getGame() != null && !minigameTask.getGame().equals("NONE"))
-      .allMatch(minigameTask ->
-        playerTaskStatistics
-          .parallelStream()
-          .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
-          .anyMatch(PlayerTaskStatistic::isCompleted)
-      );
 
-    if (areaCompleted) {
-      if (currentArea instanceof World) {
-        World currentWorld = ((World) currentArea);
+    int courseId = playerStatistic.getCourse().getId();
 
+    if (isAreaCompleted(currentArea, playerTaskStatistics)) {
+      if (currentArea instanceof World currentWorld) {
         currentWorld.getDungeons().sort(Comparator.comparingInt(Area::getIndex));
 
         for (Dungeon dungeon : currentWorld.getDungeons()) {
@@ -167,23 +161,17 @@ public class PlayerStatisticService {
           }
         }
 
-        try {
-          playerStatistic.addUnlockedArea(
-            worldService.getWorldByIndexFromCourse(playerStatistic.getCourse().getId(), currentWorld.getIndex() + 1)
-          );
-        } catch (Exception e) {
-          //ignore
-        }
-      } else if (currentArea instanceof Dungeon) {
-        Dungeon currentDungeon = (Dungeon) currentArea;
-
+        worldRepository
+          .findByIndexAndCourseId(currentWorld.getIndex() + 1, courseId)
+          .ifPresent(playerStatistic::addUnlockedArea);
+      } else if (currentArea instanceof Dungeon currentDungeon) {
         List<Dungeon> otherDungeons = currentDungeon
           .getWorld()
           .getDungeons()
           .stream()
           .filter(dungeon -> dungeon.getIndex() > currentDungeon.getIndex())
+          .sorted(Comparator.comparingInt(Dungeon::getIndex))
           .collect(Collectors.toList());
-        otherDungeons.sort(Comparator.comparingInt(Dungeon::getIndex));
 
         for (Dungeon dungeon : otherDungeons) {
           if (dungeon.isActive()) {
@@ -192,18 +180,31 @@ public class PlayerStatisticService {
           }
         }
 
-        try {
-          playerStatistic.addUnlockedArea(
-            worldService.getWorldByIndexFromCourse(
-              playerStatistic.getCourse().getId(),
-              currentDungeon.getWorld().getIndex() + 1
-            )
-          );
-        } catch (Exception e) {
-          //ignore
-        }
+        worldRepository
+          .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
+          .ifPresent(playerStatistic::addUnlockedArea);
       }
     }
+  }
+
+  /**
+   * Check if area is completed.
+   *
+   * @param area the area to check if its completed
+   * @param playerTaskStatistics player statistics of the current player
+   * @return boolean if the area is completed
+   */
+  private boolean isAreaCompleted(final Area area, final List<PlayerTaskStatistic> playerTaskStatistics) {
+    return area
+      .getMinigameTasks()
+      .parallelStream()
+      .filter(minigameTask -> minigameTask.getGame() != null && !minigameTask.getGame().equals("NONE"))
+      .allMatch(minigameTask ->
+        playerTaskStatistics
+          .parallelStream()
+          .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
+          .anyMatch(PlayerTaskStatistic::isCompleted)
+      );
   }
 
   private World getFirstWorld(final int courseId) {
