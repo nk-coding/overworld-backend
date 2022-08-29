@@ -3,6 +3,7 @@ package de.unistuttgart.overworldbackend.service;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,9 @@ public class PlayerStatisticService {
 
   @Autowired
   private PlayerStatisticRepository playerstatisticRepository;
+
+  @Autowired
+  private PlayerTaskStatisticRepository playerTaskStatisticRepository;
 
   @Autowired
   private PlayerStatisticMapper playerstatisticMapper;
@@ -125,6 +129,79 @@ public class PlayerStatisticService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Specified area does not exist");
     }
     return playerstatisticMapper.playerStatisticToPlayerstatisticDTO((playerstatisticRepository.save(playerstatistic)));
+  }
+
+  /**
+   * Check if a new area is unlocked.
+   * Adds next area to unlockedAreas if player fulfilled the requirements.
+   *
+   * @param currentArea the area to check where the tasks may be finished
+   * @param playerStatistic player statistics of the current player
+   */
+  public void checkForUnlockedAreas(Area currentArea, PlayerStatistic playerStatistic) {
+    final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
+      playerStatistic.getId()
+    );
+    boolean areaCompleted = currentArea
+      .getMinigameTasks()
+      .parallelStream()
+      .allMatch(minigameTask ->
+        playerTaskStatistics
+          .parallelStream()
+          .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
+          .anyMatch(PlayerTaskStatistic::isCompleted)
+      );
+
+    if (areaCompleted) {
+      if (currentArea instanceof World) {
+        World currentWorld = ((World) currentArea);
+
+        currentWorld.getDungeons().sort(Comparator.comparingInt(Area::getIndex));
+
+        for (Dungeon dungeon : currentWorld.getDungeons()) {
+          if (dungeon.isActive()) {
+            playerStatistic.addUnlockedArea(dungeon);
+            return;
+          }
+        }
+
+        try {
+          playerStatistic.addUnlockedArea(
+            worldService.getWorldByIndexFromCourse(playerStatistic.getCourse().getId(), currentWorld.getIndex() + 1)
+          );
+        } catch (Exception e) {
+          //ignore
+        }
+      } else if (currentArea instanceof Dungeon) {
+        Dungeon currentDungeon = (Dungeon) currentArea;
+
+        List<Dungeon> otherDungeons = currentDungeon
+          .getWorld()
+          .getDungeons()
+          .stream()
+          .filter(dungeon -> dungeon.getIndex() > currentArea.getIndex())
+          .toList();
+        otherDungeons.sort(Comparator.comparingInt(Area::getIndex));
+
+        for (Dungeon dungeon : otherDungeons) {
+          if (dungeon.isActive()) {
+            playerStatistic.addUnlockedArea(dungeon);
+            return;
+          }
+        }
+
+        try {
+          playerStatistic.addUnlockedArea(
+            worldService.getWorldByIndexFromCourse(
+              playerStatistic.getCourse().getId(),
+              currentDungeon.getWorld().getIndex() + 1
+            )
+          );
+        } catch (Exception e) {
+          //ignore
+        }
+      }
+    }
   }
 
   private World getFirstWorld(final int courseId) {

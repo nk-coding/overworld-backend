@@ -19,6 +19,9 @@ public class PlayerNPCStatisticService {
   private static final long GAINED_KNOWLEDGE_PER_NPC = 100;
 
   @Autowired
+  PlayerStatisticService playerStatisticService;
+
+  @Autowired
   PlayerNPCStatisticMapper playerNPCStatisticMapper;
 
   @Autowired
@@ -122,7 +125,7 @@ public class PlayerNPCStatisticService {
 
     logData(course, currentPlayerNPCStatistic, gainedKnowledge);
 
-    // TODO: calculate unlocked areas
+    playerStatisticService.checkForUnlockedAreas(npc.getArea(), playerStatistic);
 
     playerStatistic.addKnowledge(gainedKnowledge);
     playerstatisticRepository.save(playerStatistic);
