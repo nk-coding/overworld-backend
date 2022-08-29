@@ -25,7 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class CourseService {
 
-  private final boolean DEFAULT_IS_ACTIVE = true;
+  private static final boolean DEFAULT_IS_ACTIVE = true;
 
   CourseConfig configCourse;
 
