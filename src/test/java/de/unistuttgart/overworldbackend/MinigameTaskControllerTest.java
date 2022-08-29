@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
@@ -16,7 +17,6 @@ import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -87,17 +87,17 @@ class MinigameTaskControllerTest {
 
     final MinigameTask minigameTask1 = new MinigameTask();
     minigameTask1.setConfigurationId(UUID.randomUUID());
-    minigameTask1.setGame("Bugfinder");
+    minigameTask1.setGame(Minigame.BUGFINDER);
     minigameTask1.setIndex(1);
 
     final MinigameTask minigameTask2 = new MinigameTask();
     minigameTask2.setConfigurationId(UUID.randomUUID());
-    minigameTask2.setGame("Chickenshock");
+    minigameTask2.setGame(Minigame.CHICKENSHOCK);
     minigameTask2.setIndex(2);
 
     final MinigameTask minigameTask3 = new MinigameTask();
     minigameTask2.setConfigurationId(UUID.randomUUID());
-    minigameTask2.setGame("Crosswordpuzzle");
+    minigameTask2.setGame(Minigame.CROSSWORDPUZZLE);
     minigameTask2.setIndex(3);
 
     final Dungeon dungeon = new Dungeon();
@@ -259,10 +259,9 @@ class MinigameTaskControllerTest {
 
   @Test
   void updateMinigameTaskFromWorld() throws Exception {
-    final String newGame = "Crosswordpuzzle";
     final UUID newConfigurationId = UUID.randomUUID();
     final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
-    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setGame(Minigame.CROSSWORDPUZZLE);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
@@ -281,14 +280,14 @@ class MinigameTaskControllerTest {
     );
 
     assertEquals(initialTaskDTO1.getId(), updatedMinigameTaskDTOResult.getId());
-    assertEquals(newGame, updatedMinigameTaskDTOResult.getGame());
+    assertEquals(Minigame.CROSSWORDPUZZLE, updatedMinigameTaskDTOResult.getGame());
     assertEquals(newConfigurationId, updatedMinigameTaskDTOResult.getConfigurationId());
     assertEquals(updateMinigameTaskDTO, updatedMinigameTaskDTOResult);
   }
 
   @Test
   void updateMinigameTaskFromDungeon() throws Exception {
-    final String newGame = "Chickenshock";
+    final Minigame newGame = Minigame.CHICKENSHOCK;
     final UUID newConfigurationId = UUID.randomUUID();
     final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
     updateMinigameTaskDTO.setGame(newGame);

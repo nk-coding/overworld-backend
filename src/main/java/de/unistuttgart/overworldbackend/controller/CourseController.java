@@ -65,7 +65,10 @@ public class CourseController {
     return courseService.deleteCourse(id);
   }
 
-  @Operation(summary = "Clone existing course")
+  @Operation(
+    summary = "Clone an existing course",
+    description = "This includes everything except player statistics, from NPCs to Minigame Questions"
+  )
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("/{id}/clone")
   public CourseDTO cloneCourse(@PathVariable int id, @Valid @RequestBody CourseInitialData course) {

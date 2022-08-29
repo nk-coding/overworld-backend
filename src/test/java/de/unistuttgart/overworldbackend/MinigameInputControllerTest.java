@@ -1,11 +1,13 @@
 package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.*;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
@@ -15,7 +17,6 @@ import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -102,12 +103,12 @@ class MinigameInputControllerTest {
 
     final MinigameTask dungeonMinigameTask1 = new MinigameTask();
     dungeonMinigameTask1.setConfigurationId(UUID.randomUUID());
-    dungeonMinigameTask1.setGame("Bugfinder");
+    dungeonMinigameTask1.setGame(Minigame.BUGFINDER);
     dungeonMinigameTask1.setIndex(1);
 
     final MinigameTask dungeonMinigameTask2 = new MinigameTask();
     dungeonMinigameTask2.setConfigurationId(UUID.randomUUID());
-    dungeonMinigameTask2.setGame("Chickenshock");
+    dungeonMinigameTask2.setGame(Minigame.CHICKENSHOCK);
     dungeonMinigameTask2.setIndex(2);
 
     Set<MinigameTask> dungeonMinigameTasks = new HashSet<>();
@@ -125,7 +126,7 @@ class MinigameInputControllerTest {
 
     final MinigameTask minigameTask = new MinigameTask();
     minigameTask.setConfigurationId(UUID.randomUUID());
-    minigameTask.setGame("Bugfinder");
+    minigameTask.setGame(Minigame.BUGFINDER);
     minigameTask.setIndex(1);
 
     final Set<MinigameTask> minigameTasks = new HashSet<>();
@@ -257,8 +258,8 @@ class MinigameInputControllerTest {
   void submitGameData_MinigameDoesNotExist_ThrowNotFound() throws Exception {
     final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
     playerTaskStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
-    playerTaskStatisticData.setGame(UUID.randomUUID().toString());
-    playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
+    playerTaskStatisticData.setGame(Minigame.NONE);
+    playerTaskStatisticData.setConfigurationId(UUID.randomUUID());
     playerTaskStatisticData.setScore(80);
 
     final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
@@ -287,9 +288,8 @@ class MinigameInputControllerTest {
     WorldDTO createdWorld = createdCourse.getWorlds().get(0);
 
     MinigameTaskDTO updateMinigameTaskDTO = createdWorld.getMinigameTasks().stream().findFirst().get();
-    final String newGame = "Crosswordpuzzle";
     final UUID newConfigurationId = UUID.randomUUID();
-    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setGame(Minigame.CROSSWORDPUZZLE);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
     final String bodyValueTask = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 

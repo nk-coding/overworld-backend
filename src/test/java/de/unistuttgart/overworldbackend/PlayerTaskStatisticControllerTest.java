@@ -1,11 +1,13 @@
 package de.unistuttgart.overworldbackend;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
@@ -17,7 +19,6 @@ import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -92,17 +93,17 @@ class PlayerTaskStatisticControllerTest {
 
     final MinigameTask minigameTask1 = new MinigameTask();
     minigameTask1.setConfigurationId(UUID.randomUUID());
-    minigameTask1.setGame("Bugfinder");
+    minigameTask1.setGame(Minigame.BUGFINDER);
     minigameTask1.setIndex(1);
 
     final MinigameTask minigameTask2 = new MinigameTask();
     minigameTask2.setConfigurationId(UUID.randomUUID());
-    minigameTask2.setGame("Chickenshock");
+    minigameTask2.setGame(Minigame.CHICKENSHOCK);
     minigameTask2.setIndex(2);
 
     final MinigameTask minigameTask3 = new MinigameTask();
     minigameTask2.setConfigurationId(UUID.randomUUID());
-    minigameTask2.setGame("Crosswordpuzzle");
+    minigameTask2.setGame(Minigame.CROSSWORDPUZZLE);
     minigameTask2.setIndex(3);
 
     final Set<MinigameTask> worldMinigameTasks = new HashSet<>();

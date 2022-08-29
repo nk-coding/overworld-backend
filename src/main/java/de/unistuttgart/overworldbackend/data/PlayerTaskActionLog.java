@@ -1,11 +1,9 @@
 package de.unistuttgart.overworldbackend.data;
 
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,5 +39,6 @@ public class PlayerTaskActionLog {
 
   UUID configurationId;
 
-  String game;
+  @Enumerated(EnumType.STRING)
+  Minigame game;
 }

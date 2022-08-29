@@ -2,7 +2,10 @@ package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerNPCStatisticMapper;
-import de.unistuttgart.overworldbackend.repositories.*;
+import de.unistuttgart.overworldbackend.repositories.NPCRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerNPCActionLogRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerNPCStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

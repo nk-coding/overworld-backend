@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.AccessLevel;
@@ -21,7 +22,10 @@ public class MinigameTask {
   UUID id;
 
   int index;
-  String game;
+
+  @Enumerated(EnumType.STRING)
+  Minigame game;
+
   UUID configurationId;
 
   @ManyToOne
@@ -30,7 +34,7 @@ public class MinigameTask {
   @ManyToOne
   Area area;
 
-  public MinigameTask(final String game, final UUID configurationId, final int index) {
+  public MinigameTask(final Minigame game, final UUID configurationId, final int index) {
     this.game = game;
     this.configurationId = configurationId;
     this.index = index;

@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.data.mapper;
 
-import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.PlayerNPCStatistic;
+import de.unistuttgart.overworldbackend.data.PlayerNPCStatisticDTO;
 import java.util.List;
 import org.mapstruct.Mapper;
 

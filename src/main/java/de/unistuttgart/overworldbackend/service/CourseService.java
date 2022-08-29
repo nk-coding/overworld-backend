@@ -7,6 +7,7 @@ import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.minigames.ChickenshockConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,16 +24,18 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class CourseService {
 
+  private static final boolean DEFAULT_IS_ACTIVE = false;
+
   CourseConfig configCourse;
+
+  @Autowired
+  ChickenshockClient chickenshockClient;
 
   @Autowired
   private CourseRepository courseRepository;
 
   @Autowired
   private CourseMapper courseMapper;
-
-  @Autowired
-  private ChickenshockClient chickenshockClient;
 
   public CourseService() {
     configCourse = new CourseConfig();
@@ -155,80 +159,72 @@ public class CourseService {
       .orElseThrow(() ->
         new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no course with id %s.", id))
       );
-    List<World> worlds = new ArrayList<>();
-    course.getWorlds().forEach(world -> cloneWorld(world, worlds));
-
     Course cloneCourse = new Course(
       courseInitialData.getCourseName(),
       courseInitialData.getSemester(),
       courseInitialData.getDescription(),
-      false,
-      worlds
+      DEFAULT_IS_ACTIVE,
+      course.getWorlds().parallelStream().map(this::cloneWorld).collect(Collectors.toCollection(ArrayList::new))
     );
+
     courseRepository.save(cloneCourse);
     return courseMapper.courseToCourseDTO(cloneCourse);
   }
 
-  private void cloneWorld(World oldWorld, List<World> newWorlds) {
-    Set<MinigameTask> minigameTasks = new HashSet<>();
-    Set<NPC> npcs = new HashSet<>();
-    List<Dungeon> dungeons = new ArrayList<>();
-    oldWorld.getMinigameTasks().forEach(minigameTask -> minigameTasks.add(cloneMinigameTask(minigameTask)));
-    oldWorld.getNpcs().forEach(npc -> npcs.add(cloneNPC(npc)));
-
-    oldWorld.getDungeons().forEach(dungeon -> cloneDungeon(dungeon, dungeons));
-
-    newWorlds.add(
-      new World(
-        oldWorld.getStaticName(),
-        oldWorld.getTopicName(),
-        false,
-        minigameTasks,
-        npcs,
-        dungeons,
-        oldWorld.getIndex()
-      )
+  private World cloneWorld(World oldWorld) {
+    return new World(
+      oldWorld.getStaticName(),
+      oldWorld.getTopicName(),
+      false,
+      oldWorld
+        .getMinigameTasks()
+        .parallelStream()
+        .map(this::cloneMinigameTask)
+        .collect(Collectors.toCollection(HashSet::new)),
+      oldWorld.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
+      oldWorld
+        .getDungeons()
+        .parallelStream()
+        .map(this::cloneDungeon)
+        .sorted(Comparator.comparingInt(Area::getIndex))
+        .collect(Collectors.toCollection(ArrayList::new)),
+      oldWorld.getIndex()
     );
   }
 
-  private void cloneDungeon(Dungeon oldDungeon, List<Dungeon> newDungeons) {
-    Set<MinigameTask> minigameTasks = new HashSet<>();
-    Set<NPC> npcs = new HashSet<>();
-    oldDungeon.getMinigameTasks().forEach(minigameTask -> minigameTasks.add(cloneMinigameTask(minigameTask)));
-    oldDungeon.getNpcs().forEach(npc -> npcs.add(cloneNPC(npc)));
-    newDungeons.add(
-      new Dungeon(
-        oldDungeon.getStaticName(),
-        oldDungeon.getTopicName(),
-        false,
-        minigameTasks,
-        npcs,
-        oldDungeon.getIndex()
-      )
+  private Dungeon cloneDungeon(Dungeon oldDungeon) {
+    return new Dungeon(
+      oldDungeon.getStaticName(),
+      oldDungeon.getTopicName(),
+      false,
+      oldDungeon
+        .getMinigameTasks()
+        .parallelStream()
+        .map(this::cloneMinigameTask)
+        .collect(Collectors.toCollection(HashSet::new)),
+      oldDungeon.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
+      oldDungeon.getIndex()
     );
   }
 
   private NPC cloneNPC(NPC npc) {
-    List<String> text = new ArrayList<>();
-    npc.getText().forEach(npcText -> text.add(npcText));
-    return new NPC(text, npc.getIndex());
+    return new NPC(new ArrayList<>(npc.getText()), npc.getIndex());
   }
 
   private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
     if (minigameTask.getGame() == null) {
       return new MinigameTask(null, null, minigameTask.getIndex());
     }
-    if (minigameTask.getGame().equals("NONE")) {
-      return new MinigameTask("NONE", null, minigameTask.getIndex());
+    if (minigameTask.getGame().equals(Minigame.NONE)) {
+      return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
     }
-    if (minigameTask.getGame().equals("CHICKENSHOCK")) {
+    if (minigameTask.getGame().equals(Minigame.CHICKENSHOCK)) {
       ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
       config.setId(null);
       config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
       config = chickenshockClient.postConfiguration(config);
-      MinigameTask newMinigame = new MinigameTask("CHICKENSHOCK", config.getId(), minigameTask.getIndex());
-      return newMinigame;
+      return new MinigameTask(Minigame.CHICKENSHOCK, config.getId(), minigameTask.getIndex());
     }
-    return minigameTask;
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Minigame " + minigameTask.getGame() + "does not exist");
   }
 }

@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import java.util.UUID;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -17,7 +18,7 @@ import lombok.experimental.FieldDefaults;
 public class PlayerTaskStatisticData {
 
   @NotNull
-  String game;
+  Minigame game;
 
   @NotNull
   UUID configurationId;
