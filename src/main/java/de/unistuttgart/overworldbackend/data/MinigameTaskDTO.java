@@ -21,4 +21,7 @@ public class MinigameTaskDTO {
   int index;
   String game;
   UUID configurationId;
+
+  @Nullable
+  String description;
 }

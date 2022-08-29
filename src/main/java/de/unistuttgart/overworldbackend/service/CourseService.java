@@ -95,7 +95,7 @@ public class CourseService {
       courseInit.getCourseName(),
       courseInit.getSemester(),
       courseInit.getDescription(),
-      false,
+      true,
       worlds
     );
     courseRepository.save(course);

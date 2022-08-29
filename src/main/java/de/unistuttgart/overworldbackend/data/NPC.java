@@ -27,6 +27,8 @@ public class NPC {
   @ElementCollection
   List<String> text;
 
+  String description;
+
   @JsonBackReference
   @ManyToOne
   Course course;
