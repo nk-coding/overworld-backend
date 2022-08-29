@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+      - "feature/add-unlocking-logic"
     tags:
       - "v*"
   pull_request:
