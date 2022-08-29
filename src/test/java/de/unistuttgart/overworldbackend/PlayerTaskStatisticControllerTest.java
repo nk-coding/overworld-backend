@@ -38,9 +38,9 @@ class PlayerTaskStatisticControllerTest {
 
   @Container
   public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-          .withDatabaseName("postgres")
-          .withUsername("postgres")
-          .withPassword("postgres");
+    .withDatabaseName("postgres")
+    .withUsername("postgres")
+    .withPassword("postgres");
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {

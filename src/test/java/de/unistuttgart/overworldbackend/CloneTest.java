@@ -12,13 +12,14 @@ import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.io.File;
 import java.util.UUID;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.DockerComposeContainer;
@@ -27,16 +28,27 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @AutoConfigureMockMvc
 @Testcontainers
-@SpringBootTest(
-  webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-  properties = { "spring.datasource.url=jdbc:postgresql://localhost:5432/postgres" }
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CloneTest {
 
   @Container
   public static DockerComposeContainer compose = new DockerComposeContainer(
     new File("src/test/resources/docker-compose-test.yaml")
-  );
+  )
+    .withExposedService("overworld-db", 5432);
+
+  @DynamicPropertySource
+  public static void properties(DynamicPropertyRegistry registry) {
+    registry.add(
+      "spring.datasource.url",
+      () ->
+        String.format(
+          "jdbc:postgresql://%s:%d/postgres",
+          compose.getServiceHost("overworld-db", 5432),
+          compose.getServicePort("overworld-db", 5432)
+        )
+    );
+  }
 
   @Autowired
   MockMvc mvc;
@@ -60,7 +72,7 @@ public class CloneTest {
 
     //wait till chickenshock-backend is ready
     boolean completed = false;
-    while(!completed) {
+    while (!completed) {
       try {
         chickenshockClient.getConfiguration(UUID.fromString("70fcd00c-b67c-46f2-be73-961dc0bc8de1"));
         completed = true;
