@@ -154,11 +154,7 @@ public class CourseService {
   }
 
   public CourseDTO cloneCourse(int id, CourseInitialData courseInitialData) {
-    Course course = courseRepository
-      .findById(id)
-      .orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("There is no course with id %s.", id))
-      );
+    Course course = getCourse(id);
     Course cloneCourse = new Course(
       courseInitialData.getCourseName(),
       courseInitialData.getSemester(),
