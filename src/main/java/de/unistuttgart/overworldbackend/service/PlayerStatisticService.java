@@ -176,9 +176,13 @@ public class PlayerStatisticService {
           .filter(dungeon -> dungeon.getIndex() > currentDungeon.getIndex())
           .sorted(Comparator.comparingInt(Dungeon::getIndex))
           .findFirst()
-          .ifPresentOrElse(playerStatistic::addUnlockedArea, () -> worldRepository
-          .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
-          .ifPresent(playerStatistic::addUnlockedArea))
+          .ifPresentOrElse(
+            playerStatistic::addUnlockedArea,
+            () ->
+              worldRepository
+                .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
+                .ifPresent(playerStatistic::addUnlockedArea)
+          );
       }
     }
   }
