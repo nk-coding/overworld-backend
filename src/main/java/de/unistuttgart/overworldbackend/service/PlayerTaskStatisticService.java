@@ -25,6 +25,9 @@ public class PlayerTaskStatisticService {
   MinigameTaskService minigameTaskService;
 
   @Autowired
+  PlayerStatisticService playerStatisticService;
+
+  @Autowired
   PlayerTaskStatisticMapper playerTaskStatisticMapper;
 
   @Autowired
@@ -138,7 +141,7 @@ public class PlayerTaskStatisticService {
       calculateCompletedDungeon(dungeon, playerStatistic);
     }
 
-    //TODO:calculate unlocked areas
+    playerStatisticService.checkForUnlockedAreas(minigameTask.getArea(), playerStatistic);
 
     playerStatistic.addKnowledge(gainedKnowledge);
     playerstatisticRepository.save(playerStatistic);

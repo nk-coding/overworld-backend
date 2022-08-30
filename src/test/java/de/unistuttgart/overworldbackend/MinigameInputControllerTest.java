@@ -143,7 +143,9 @@ class MinigameInputControllerTest {
     playerstatistic.setCourse(initialCourse);
     playerstatistic.setCurrentArea(initialWorld);
     playerstatistic.setKnowledge(new Random(10).nextLong());
-    playerstatistic.setUnlockedAreas(new ArrayList<>());
+    List<Area> unlockedAreas = new ArrayList<>();
+    unlockedAreas.add(initialWorld);
+    playerstatistic.setUnlockedAreas(unlockedAreas);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
     initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
     initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);

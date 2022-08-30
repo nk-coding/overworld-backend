@@ -3,7 +3,10 @@ package de.unistuttgart.overworldbackend.service;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,12 @@ public class PlayerStatisticService {
 
   @Autowired
   private PlayerStatisticRepository playerstatisticRepository;
+
+  @Autowired
+  private WorldRepository worldRepository;
+
+  @Autowired
+  private PlayerTaskStatisticRepository playerTaskStatisticRepository;
 
   @Autowired
   private PlayerStatisticMapper playerstatisticMapper;
@@ -125,6 +134,77 @@ public class PlayerStatisticService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Specified area does not exist");
     }
     return playerstatisticMapper.playerStatisticToPlayerstatisticDTO((playerstatisticRepository.save(playerstatistic)));
+  }
+
+  /**
+   * Check if a new area is unlocked.
+   * Adds next area to unlockedAreas if player fulfilled the requirements.
+   *
+   * @param currentArea the area to check where the tasks may be finished
+   * @param playerStatistic player statistics of the current player
+   */
+  public void checkForUnlockedAreas(Area currentArea, PlayerStatistic playerStatistic) {
+    final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
+      playerStatistic.getId()
+    );
+
+    int courseId = playerStatistic.getCourse().getId();
+
+    if (isAreaCompleted(currentArea, playerTaskStatistics)) {
+      if (currentArea instanceof World currentWorld) {
+        currentWorld.getDungeons().sort(Comparator.comparingInt(Area::getIndex));
+
+        // As we are in a world, try to unlock the first available dungeon
+        for (Dungeon dungeon : currentWorld.getDungeons()) {
+          if (dungeon.isActive()) {
+            playerStatistic.addUnlockedArea(dungeon);
+            return;
+          }
+        }
+
+        // No dungeon was available - try to unlock the next world
+        worldRepository
+          .findByIndexAndCourseId(currentWorld.getIndex() + 1, courseId)
+          .ifPresent(playerStatistic::addUnlockedArea);
+      } else if (currentArea instanceof Dungeon currentDungeon) {
+        // First try to unlock the next available dungeon in the world, or if that fails try to unlock the next world
+        currentDungeon
+          .getWorld()
+          .getDungeons()
+          .stream()
+          .filter(Dungeon::isActive)
+          .filter(dungeon -> dungeon.getIndex() > currentDungeon.getIndex())
+          .sorted(Comparator.comparingInt(Dungeon::getIndex))
+          .findFirst()
+          .ifPresentOrElse(
+            playerStatistic::addUnlockedArea,
+            () ->
+              worldRepository
+                .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
+                .ifPresent(playerStatistic::addUnlockedArea)
+          );
+      }
+    }
+  }
+
+  /**
+   * Check if area is completed.
+   *
+   * @param area the area to check if its completed
+   * @param playerTaskStatistics player statistics of the current player
+   * @return boolean if the area is completed
+   */
+  private boolean isAreaCompleted(final Area area, final List<PlayerTaskStatistic> playerTaskStatistics) {
+    return area
+      .getMinigameTasks()
+      .parallelStream()
+      .filter(minigameTask -> minigameTask.getGame() != null && !minigameTask.getGame().equals("NONE"))
+      .allMatch(minigameTask ->
+        playerTaskStatistics
+          .parallelStream()
+          .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
+          .anyMatch(PlayerTaskStatistic::isCompleted)
+      );
   }
 
   private World getFirstWorld(final int courseId) {

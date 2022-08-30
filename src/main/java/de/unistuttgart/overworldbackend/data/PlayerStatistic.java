@@ -59,4 +59,10 @@ public class PlayerStatistic {
   public void addPlayerNPCStatistic(final PlayerNPCStatistic playerNPCStatistic) {
     this.playerNPCStatistics.add(playerNPCStatistic);
   }
+
+  public void addUnlockedArea(final Area area) {
+    if(!this.unlockedAreas.contains(area)){
+      this.unlockedAreas.add(area);
+    }
+  }
 }
