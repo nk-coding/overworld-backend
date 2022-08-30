@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class MinigameTaskDTO {
 
   AreaLocationDTO area;
   int index;
-  String game;
+  Minigame game;
   UUID configurationId;
 
   @Nullable

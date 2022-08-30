@@ -1,7 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;

@@ -2,19 +2,20 @@ package de.unistuttgart.overworldbackend.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
+import de.unistuttgart.overworldbackend.data.minigames.ChickenshockConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerNPCActionLogRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class CourseService {
   private static final boolean DEFAULT_IS_ACTIVE = true;
 
   CourseConfig configCourse;
+
+  @Autowired
+  ChickenshockClient chickenshockClient;
 
   @Autowired
   private CourseRepository courseRepository;
@@ -149,5 +153,96 @@ public class CourseService {
       npcs.add(npc);
     }
     return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, dungeonId);
+  }
+
+  public CourseDTO cloneCourse(int id, CourseInitialData courseInitialData) {
+    Course course = getCourse(id);
+    Course cloneCourse = new Course(
+      courseInitialData.getCourseName(),
+      courseInitialData.getSemester(),
+      courseInitialData.getDescription(),
+      DEFAULT_IS_ACTIVE,
+      course.getWorlds().parallelStream().map(this::cloneWorld).collect(Collectors.toCollection(ArrayList::new))
+    );
+
+    courseRepository.save(cloneCourse);
+    return courseMapper.courseToCourseDTO(cloneCourse);
+  }
+
+  private World cloneWorld(World oldWorld) {
+    return new World(
+      oldWorld.getStaticName(),
+      oldWorld.getTopicName(),
+      false,
+      oldWorld
+        .getMinigameTasks()
+        .parallelStream()
+        .map(this::cloneMinigameTask)
+        .collect(Collectors.toCollection(HashSet::new)),
+      oldWorld.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
+      oldWorld
+        .getDungeons()
+        .parallelStream()
+        .map(this::cloneDungeon)
+        .sorted(Comparator.comparingInt(Area::getIndex))
+        .collect(Collectors.toCollection(ArrayList::new)),
+      oldWorld.getIndex()
+    );
+  }
+
+  private Dungeon cloneDungeon(Dungeon oldDungeon) {
+    return new Dungeon(
+      oldDungeon.getStaticName(),
+      oldDungeon.getTopicName(),
+      false,
+      oldDungeon
+        .getMinigameTasks()
+        .parallelStream()
+        .map(this::cloneMinigameTask)
+        .collect(Collectors.toCollection(HashSet::new)),
+      oldDungeon.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
+      oldDungeon.getIndex()
+    );
+  }
+
+  private NPC cloneNPC(NPC npc) {
+    return new NPC(new ArrayList<>(npc.getText()), npc.getIndex());
+  }
+
+  private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
+    if (minigameTask.getGame() == null) {
+      return new MinigameTask(null, null, minigameTask.getIndex());
+    }
+    switch (minigameTask.getGame()) {
+      case NONE:
+        return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
+      case CHICKENSHOCK:
+        if (minigameTask.getConfigurationId() == null) {
+          return new MinigameTask(Minigame.CHICKENSHOCK, null, minigameTask.getIndex());
+        } else {
+          ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
+          config.setId(null);
+          config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
+          config = chickenshockClient.postConfiguration(config);
+          return new MinigameTask(Minigame.CHICKENSHOCK, config.getId(), minigameTask.getIndex());
+        }
+      case FINITEQUIZ:
+        if (minigameTask.getConfigurationId() == null) {
+          return new MinigameTask(Minigame.FINITEQUIZ, null, minigameTask.getIndex());
+        }
+      case CROSSWORDPUZZLE:
+        if (minigameTask.getConfigurationId() == null) {
+          return new MinigameTask(Minigame.CROSSWORDPUZZLE, null, minigameTask.getIndex());
+        }
+      case BUGFINDER:
+        if (minigameTask.getConfigurationId() == null) {
+          return new MinigameTask(Minigame.BUGFINDER, null, minigameTask.getIndex());
+        }
+      default:
+        throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "Minigame " + minigameTask.getGame() + "does not exist"
+        );
+    }
   }
 }

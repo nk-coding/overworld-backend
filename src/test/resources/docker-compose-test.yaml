@@ -1,0 +1,106 @@
+version: "3.7"
+
+services:
+
+  #databases
+  setup:
+    image: ghcr.io/gamify-it/test-data:feature-clone-test-data
+    pull_policy: always
+    restart: on-failure
+    environment:
+      POSTGRES_SETUP: >
+        login/default.sql
+        overworld/cloneTestData.sql
+        chickenshock/cloneTestData.sql
+
+  login-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  overworld-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  chickenshock-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  crosswordpuzzle-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+
+  #backends
+  login-backend:
+    image: ghcr.io/gamify-it/login-backend:main
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - login-db
+    environment:
+      - JWT_KEY=SecretKEY
+      - JWT_VALIDITY_DURATION=720h
+      - POSTGRES_URL=postgresql://postgres:postgres@login-db:5432/
+
+  crosswordpuzzle-backend:
+    image: ghcr.io/gamify-it/crosswordpuzzle-backend:main
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - crosswordpuzzle-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://crosswordpuzzle-db:5432/postgres
+
+  chickenshock-backend:
+    image: ghcr.io/gamify-it/chickenshock-backend:main
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - chickenshock-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
+
+  # reverse-proxy
+  reverse-proxy:
+    build:
+      context: .
+      dockerfile: nginx.DOCKERFILE
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "80:80"
