@@ -11,9 +11,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@Transactional
 public class PlayerTaskStatisticService {
 
   private static final long COMPLETED_SCORE = 50;
@@ -22,6 +24,9 @@ public class PlayerTaskStatisticService {
 
   @Autowired
   MinigameTaskService minigameTaskService;
+
+  @Autowired
+  PlayerStatisticService playerStatisticService;
 
   @Autowired
   PlayerTaskStatisticMapper playerTaskStatisticMapper;
@@ -115,7 +120,14 @@ public class PlayerTaskStatisticService {
         newPlayerTaskStatistic.setPlayerStatistic(playerStatistic);
         newPlayerTaskStatistic.setMinigameTask(minigameTask);
         newPlayerTaskStatistic.setCourse(course);
-        return playerTaskStatisticRepository.save(newPlayerTaskStatistic);
+        playerStatistic.addPlayerTaskStatistic(newPlayerTaskStatistic);
+        return playerTaskStatisticRepository
+          .findByMinigameTaskIdAndCourseIdAndPlayerStatisticId(
+            minigameTask.getId(),
+            course.getId(),
+            playerStatistic.getId()
+          )
+          .get();
       });
 
     long gainedKnowledge = calculateKnowledge(data.getScore(), playerTaskStatistic.getHighscore());
@@ -130,7 +142,7 @@ public class PlayerTaskStatisticService {
       calculateCompletedDungeon(dungeon, playerStatistic);
     }
 
-    //TODO:calculate unlocked areas
+    playerStatisticService.checkForUnlockedAreas(minigameTask.getArea(), playerStatistic);
 
     playerStatistic.addKnowledge(gainedKnowledge);
     playerstatisticRepository.save(playerStatistic);
@@ -173,17 +185,27 @@ public class PlayerTaskStatisticService {
     actionLog.setGainedKnowledge(gainedKnowledge);
     actionLog.setGame(data.getGame());
     actionLog.setConfigurationId(data.getConfigurationId());
-    playerTaskActionLogRepository.save(actionLog);
+    currentPlayerTaskStatistic.addActionLog(actionLog);
   }
 
+  /**
+   * This method calculates the knowledge out of the score and the highscore.
+   *
+   * You get all the points you gained above the high score.
+   * The points below the high score get multiplied by the RETRY_KNOWLEDGE constant.
+   * @param score score achieved in the game
+   * @param highscore high score achieved in the game
+   * @return knowledge to be added
+   */
   private long calculateKnowledge(final long score, final long highscore) {
     return (long) (
       MAX_KNOWLEDGE *
       (double) Math.max(0, score - highscore) /
       100 +
       MAX_KNOWLEDGE *
-      Math.max(0, score - Math.max(0, score - highscore)) *
-      RETRY_KNOWLEDGE
+      RETRY_KNOWLEDGE *
+      Math.max(0, score - Math.max(0, score - highscore)) /
+      100
     );
   }
 

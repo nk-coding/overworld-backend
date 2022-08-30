@@ -12,12 +12,17 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@Transactional
 public class PlayerNPCStatisticService {
 
   private static final long GAINED_KNOWLEDGE_PER_NPC = 100;
+
+  @Autowired
+  PlayerStatisticService playerStatisticService;
 
   @Autowired
   PlayerNPCStatisticMapper playerNPCStatisticMapper;
@@ -108,7 +113,11 @@ public class PlayerNPCStatisticService {
       newPlayerNPCStatistic.setNpc(npc);
       newPlayerNPCStatistic.setCourse(course);
       newPlayerNPCStatistic.setCompleted(data.isCompleted());
-      currentPlayerNPCStatistic = playerNPCStatisticRepository.save(newPlayerNPCStatistic);
+      playerStatistic.addPlayerNPCStatistic(newPlayerNPCStatistic);
+      currentPlayerNPCStatistic =
+        playerNPCStatisticRepository
+          .findByNpcIdAndCourseIdAndPlayerStatisticId(npc.getId(), course.getId(), playerStatistic.getId())
+          .get();
     } else {
       currentPlayerNPCStatistic = playerNPCStatistic.get();
       if (!playerNPCStatistic.get().isCompleted() && data.isCompleted()) {
@@ -119,7 +128,7 @@ public class PlayerNPCStatisticService {
 
     logData(course, currentPlayerNPCStatistic, gainedKnowledge);
 
-    // TODO: calculate unlocked areas
+    playerStatisticService.checkForUnlockedAreas(npc.getArea(), playerStatistic);
 
     playerStatistic.addKnowledge(gainedKnowledge);
     playerstatisticRepository.save(playerStatistic);
@@ -138,6 +147,6 @@ public class PlayerNPCStatisticService {
     actionLog.setPlayerNPCStatistic(currentPlayerNPCStatistic);
     actionLog.setCourse(course);
     actionLog.setGainedKnowledge(gainedKnowledge);
-    playerNPCActionLogRepository.save(actionLog);
+    currentPlayerNPCStatistic.addActionLog(actionLog);
   }
 }

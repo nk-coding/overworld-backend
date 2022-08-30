@@ -174,8 +174,10 @@ class NPCControllerTest {
   @Test
   void updateNPCTaskFromWorld() throws Exception {
     final List<String> newText = Arrays.asList("New text incoming");
+    final String newDescription = "NPC with new text";
     final NPC updateNPCDTO = new NPC();
     updateNPCDTO.setText(newText);
+    updateNPCDTO.setDescription(newDescription);
 
     final String bodyValue = objectMapper.writeValueAsString(updateNPCDTO);
 
@@ -188,6 +190,7 @@ class NPCControllerTest {
 
     assertEquals(initialNPCDTO.getId(), updatedNPCDTOResult.getId());
     assertEquals(newText, updatedNPCDTOResult.getText());
+    assertEquals(newDescription, updatedNPCDTOResult.getDescription());
     assertEquals(initialNPCDTO.getIndex(), updatedNPCDTOResult.getIndex());
   }
 

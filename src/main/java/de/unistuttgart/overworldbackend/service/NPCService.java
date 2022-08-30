@@ -10,9 +10,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@Transactional
 public class NPCService {
 
   @Autowired
@@ -101,6 +103,7 @@ public class NPCService {
     resetNPC(npcMapper.npcDTOToNPC(npcDTO));
     final NPC npc = getNPCFromWorld(courseId, worldIndex, npcIndex);
     npc.setText(npcDTO.getText());
+    npc.setDescription(npcDTO.getDescription());
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
   }
@@ -128,6 +131,7 @@ public class NPCService {
     resetNPC(npcMapper.npcDTOToNPC(npcDTO));
     final NPC npc = getNPCFromDungeon(courseId, worldIndex, dungeonIndex, npcIndex);
     npc.setText(npcDTO.getText());
+    npc.setDescription(npcDTO.getDescription());
     final NPC updatedNPC = npcRepository.save(npc);
     return npcMapper.npcToNPCDTO(updatedNPC);
   }

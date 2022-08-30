@@ -78,7 +78,7 @@ class PlayerNPCStatisticControllerTest {
   private PlayerStatistic initialPlayerStatistic;
   private PlayerStatisticDTO initialPlayerStatisticDTO;
 
-  private NPC initialNpc;
+  private NPC initialNPC;
 
   private NPCDTO initialNpcDTO;
 
@@ -116,30 +116,32 @@ class PlayerNPCStatisticControllerTest {
 
     final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
 
-    initialCourse = courseRepository.save(course);
-    initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
-
-    initialNpc = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
-    initialNpcDTO = npcMapper.npcToNPCDTO(initialNpc);
-
     final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setUserId("45h23o2j432");
     playerstatistic.setUsername("testUser");
-    playerstatistic.setCourse(initialCourse);
-    playerstatistic.setCurrentArea(initialCourse.getWorlds().stream().findFirst().get());
+    playerstatistic.setCourse(course);
+    playerstatistic.setCurrentArea(world);
     playerstatistic.setKnowledge(new Random(10).nextLong());
     playerstatistic.setUnlockedAreas(new ArrayList<>());
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
+    course.addPlayerStatistic(playerstatistic);
+
+    initialCourse = courseRepository.save(course);
+    initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
+
+    initialPlayerStatistic = course.getPlayerStatistics().stream().findAny().get();
     initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
+
+    initialNPC = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
+    initialNpcDTO = npcMapper.npcToNPCDTO(initialNPC);
 
     assertNotNull(initialCourse.getCourseName());
 
-    assertEquals(initialCourse.getId(), initialNpc.getCourse().getId());
+    assertEquals(initialCourse.getId(), initialNPC.getCourse().getId());
     assertEquals(initialCourse.getId(), initialPlayerStatistic.getCourse().getId());
 
-    assertEquals(initialCourse, initialNpc.getCourse());
-    assertEquals(initialCourse.getWorlds().stream().findFirst().get(), initialNpc.getArea());
+    assertEquals(initialCourse, initialNPC.getCourse());
+    assertEquals(initialCourse.getWorlds().stream().findFirst().get(), initialNPC.getArea());
 
     fullURL =
       String.format(
@@ -153,7 +155,7 @@ class PlayerNPCStatisticControllerTest {
   @Test
   void getNPCStatistics() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerStatistic.getUserId())
+      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc
@@ -170,7 +172,7 @@ class PlayerNPCStatisticControllerTest {
   @Test
   void getNPCStatistic() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerStatistic.getUserId())
+      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc
@@ -191,7 +193,7 @@ class PlayerNPCStatisticControllerTest {
   @Test
   void getNPCStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNpc.getId(), true, initialPlayerStatistic.getUserId())
+      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc

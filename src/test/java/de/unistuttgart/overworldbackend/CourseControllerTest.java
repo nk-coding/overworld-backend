@@ -11,6 +11,8 @@ import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
+import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +54,9 @@ class CourseControllerTest {
   private CourseRepository courseRepository;
 
   @Autowired
+  private PlayerStatisticRepository playerStatisticRepository;
+
+  @Autowired
   private CourseMapper courseMapper;
 
   private String fullURL;
@@ -59,25 +64,44 @@ class CourseControllerTest {
 
   private Course initialCourse;
   private CourseDTO initialCourseDTO;
+  private MinigameTask initialMinigameTask;
+  private NPC initialNPC;
 
   @BeforeEach
   public void createBasicData() {
     courseRepository.deleteAll();
 
     final Dungeon dungeon = new Dungeon();
+    dungeon.setIndex(1);
     dungeon.setStaticName("Dark Dungeon");
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
     dungeon.setNpcs(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
+    final Set<MinigameTask> minigameTasks = new HashSet<>();
+
+    final MinigameTask minigameTask = new MinigameTask();
+    minigameTask.setConfigurationId(UUID.randomUUID());
+    minigameTask.setGame("Bugfinder");
+    minigameTask.setIndex(1);
+    minigameTasks.add(minigameTask);
+
+    final List<String> npcText = new ArrayList<>();
+    npcText.add("NPCText");
+    final NPC npc = new NPC();
+    npc.setText(npcText);
+    npc.setIndex(1);
+    final Set<NPC> npcs = new HashSet<>();
+    npcs.add(npc);
 
     final World world = new World();
+    world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
-    world.setMinigameTasks(Set.of());
-    world.setNpcs(Set.of());
+    world.setMinigameTasks(minigameTasks);
+    world.setNpcs(npcs);
     world.setDungeons(dungeons);
     final List<World> worlds = new ArrayList<>();
     worlds.add(world);
@@ -85,6 +109,9 @@ class CourseControllerTest {
     final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
     initialCourse = courseRepository.save(course);
     initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
+
+    initialMinigameTask = course.getWorlds().stream().findFirst().get().getMinigameTasks().stream().findFirst().get();
+    initialNPC = course.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
 
     assertNotNull(initialCourse.getCourseName());
 
@@ -197,6 +224,76 @@ class CourseControllerTest {
       createdCourse.getDescription(),
       courseRepository.getReferenceById(createdCourse.getId()).getDescription()
     );
+  }
+
+  @Test
+  void deleteCourseWithPlayerStatistics() throws Exception {
+    // create playerstatstic
+    final Player newPlayer = new Player("n423l34213", "newPlayer");
+    mvc
+      .perform(
+        post(fullURL + "/" + initialCourseDTO.getId() + "/playerstatistics")
+          .content(objectMapper.writeValueAsString(newPlayer))
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    // submit a playertaskstatstic
+    final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+    playerTaskStatisticData.setUserId(newPlayer.getUserId());
+    playerTaskStatisticData.setGame(initialMinigameTask.getGame());
+    playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
+    playerTaskStatisticData.setScore(80);
+    mvc
+      .perform(
+        post("/internal/submit-game-pass")
+          .content(objectMapper.writeValueAsString(playerTaskStatisticData))
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    // submit a npc statistic
+    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    playerNPCStatisticData.setUserId(newPlayer.getUserId());
+    playerNPCStatisticData.setNpcId(initialNPC.getId());
+    playerNPCStatisticData.setCompleted(true);
+
+    Optional<PlayerStatistic> playerStatistic = playerStatisticRepository.findByCourseIdAndUserId(
+      initialCourse.getId(),
+      newPlayer.getUserId()
+    );
+
+    mvc
+      .perform(
+        post("/internal/submit-npc-pass")
+          .content(objectMapper.writeValueAsString(playerNPCStatisticData))
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    assertTrue(playerStatistic.isPresent());
+    assertFalse(playerStatistic.get().getPlayerTaskStatistics().isEmpty());
+    assertFalse(playerStatistic.get().getPlayerNPCStatistics().isEmpty());
+
+    final MvcResult result = mvc
+      .perform(delete(fullURL + "/" + initialCourseDTO.getId()).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    final CourseDTO courseDTOResult = objectMapper.readValue(
+      result.getResponse().getContentAsString(),
+      CourseDTO.class
+    );
+
+    assertEquals(initialCourseDTO, courseDTOResult);
+    assertEquals(initialCourseDTO.getId(), courseDTOResult.getId());
+    assertTrue(
+      playerStatisticRepository.findByCourseIdAndUserId(initialCourse.getId(), newPlayer.getUserId()).isEmpty()
+    );
+    assertTrue(courseRepository.findAll().isEmpty());
   }
 
   @Test

@@ -1,17 +1,18 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.OnDelete;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -39,9 +40,29 @@ public class PlayerStatistic {
   @NotNull
   String username;
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  Set<PlayerTaskStatistic> playerTaskStatistics = new HashSet<>();
+
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  Set<PlayerNPCStatistic> playerNPCStatistics = new HashSet<>();
+
   long knowledge = 0;
 
   public void addKnowledge(long gainedKnowledge) {
     knowledge += gainedKnowledge;
+  }
+
+  public void addPlayerTaskStatistic(final PlayerTaskStatistic playerTaskStatistic) {
+    this.playerTaskStatistics.add(playerTaskStatistic);
+  }
+
+  public void addPlayerNPCStatistic(final PlayerNPCStatistic playerNPCStatistic) {
+    this.playerNPCStatistics.add(playerNPCStatistic);
+  }
+
+  public void addUnlockedArea(final Area area) {
+    if(!this.unlockedAreas.contains(area)){
+      this.unlockedAreas.add(area);
+    }
   }
 }

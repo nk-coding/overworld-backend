@@ -11,6 +11,9 @@ import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.minigames.ChickenshockConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerNPCActionLogRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -19,12 +22,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@Transactional
 public class CourseService {
 
-  private static final boolean DEFAULT_IS_ACTIVE = false;
+  private static final boolean DEFAULT_IS_ACTIVE = true;
 
   CourseConfig configCourse;
 
@@ -99,7 +104,7 @@ public class CourseService {
       courseInit.getCourseName(),
       courseInit.getSemester(),
       courseInit.getDescription(),
-      false,
+      DEFAULT_IS_ACTIVE,
       worlds
     );
     courseRepository.save(course);

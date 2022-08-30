@@ -26,7 +26,7 @@ java -jar crossword-service-0.0.1-SNAPSHOT.jar
 ### Run with Docker-compose
 
 Start all dependencies with our docker-compose files.
-Check the [manual for docker-compose](https://github.com/Gamify-IT/docs/blob/main/dev-manuals/docker-compose/docker-compose.md).
+Check the [manual for docker-compose](https://github.com/Gamify-IT/docs/blob/main/dev-manuals/languages/docker/docker-compose.md).
 
 #### Single Container
 
