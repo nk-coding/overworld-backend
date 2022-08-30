@@ -212,19 +212,23 @@ public class CourseService {
   }
 
   private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
-    if (minigameTask.getGame() == null) {
+    if(minigameTask.getGame() == null) {
       return new MinigameTask(null, null, minigameTask.getIndex());
     }
-    if (minigameTask.getGame().equals(Minigame.NONE)) {
-      return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
+    switch (minigameTask.getGame()) {
+      case NONE:
+        return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
+      case CHICKENSHOCK:
+        ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
+        config.setId(null);
+        config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
+        config = chickenshockClient.postConfiguration(config);
+        return new MinigameTask(Minigame.CHICKENSHOCK, config.getId(), minigameTask.getIndex());
+      default:
+        throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "Minigame " + minigameTask.getGame() + "does not exist"
+        );
     }
-    if (minigameTask.getGame().equals(Minigame.CHICKENSHOCK)) {
-      ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
-      config.setId(null);
-      config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
-      config = chickenshockClient.postConfiguration(config);
-      return new MinigameTask(Minigame.CHICKENSHOCK, config.getId(), minigameTask.getIndex());
-    }
-    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Minigame " + minigameTask.getGame() + "does not exist");
   }
 }
