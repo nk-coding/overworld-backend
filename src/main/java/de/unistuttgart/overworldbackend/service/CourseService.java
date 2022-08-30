@@ -219,11 +219,27 @@ public class CourseService {
       case NONE:
         return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
       case CHICKENSHOCK:
-        ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
-        config.setId(null);
-        config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
-        config = chickenshockClient.postConfiguration(config);
-        return new MinigameTask(Minigame.CHICKENSHOCK, config.getId(), minigameTask.getIndex());
+        if(minigameTask.getConfigurationId() == null) {
+          return new MinigameTask(Minigame.CHICKENSHOCK, null, minigameTask.getIndex());
+        } else {
+          ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
+          config.setId(null);
+          config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
+          config = chickenshockClient.postConfiguration(config);
+          return new MinigameTask(Minigame.CHICKENSHOCK, config.getId(), minigameTask.getIndex());
+        }
+      case FINITEQUIZ:
+        if(minigameTask.getConfigurationId() == null) {
+          return new MinigameTask(Minigame.FINITEQUIZ, null, minigameTask.getIndex());
+        }
+      case CROSSWORDPUZZLE:
+        if(minigameTask.getConfigurationId() == null) {
+          return new MinigameTask(Minigame.CROSSWORDPUZZLE, null, minigameTask.getIndex());
+        }
+      case BUGFINDER:
+        if(minigameTask.getConfigurationId() == null) {
+          return new MinigameTask(Minigame.BUGFINDER, null, minigameTask.getIndex());
+        }
       default:
         throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST,
