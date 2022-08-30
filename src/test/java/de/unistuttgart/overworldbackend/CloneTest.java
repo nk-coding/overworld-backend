@@ -11,6 +11,7 @@ import de.unistuttgart.overworldbackend.data.CourseDTO;
 import de.unistuttgart.overworldbackend.data.CourseInitialData;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import java.io.File;
+import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -41,7 +43,9 @@ public class CloneTest {
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
-    System.out.println(compose.getContainerByServiceName("setup"));
+    //wait till setup has finished
+    ContainerState state = (ContainerState) compose.getContainerByServiceName("setup_1").get();
+    while (state.isRunning()) {}
     registry.add(
       "spring.datasource.url",
       () ->
