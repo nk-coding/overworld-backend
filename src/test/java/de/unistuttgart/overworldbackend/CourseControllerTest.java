@@ -6,13 +6,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
-import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,7 +84,7 @@ class CourseControllerTest {
 
     final MinigameTask minigameTask = new MinigameTask();
     minigameTask.setConfigurationId(UUID.randomUUID());
-    minigameTask.setGame("Bugfinder");
+    minigameTask.setGame(Minigame.BUGFINDER);
     minigameTask.setIndex(1);
     minigameTasks.add(minigameTask);
 

@@ -8,7 +8,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.OnDelete;
 
 @Entity
 @Getter
@@ -61,7 +60,7 @@ public class PlayerStatistic {
   }
 
   public void addUnlockedArea(final Area area) {
-    if(!this.unlockedAreas.contains(area)){
+    if (!this.unlockedAreas.contains(area)) {
       this.unlockedAreas.add(area);
     }
   }
