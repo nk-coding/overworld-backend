@@ -6,14 +6,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.data.Course;
 import de.unistuttgart.overworldbackend.data.CourseDTO;
 import de.unistuttgart.overworldbackend.data.CourseInitialData;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
-import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.io.File;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -38,10 +36,12 @@ public class CloneTest {
     new File("src/test/resources/docker-compose-test.yaml")
   )
     .withExposedService("overworld-db", 5432)
-    .withExposedService("reverse-proxy", 80);
+    .withExposedService("reverse-proxy", 80)
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80));
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
+    System.out.println(compose.getContainerByServiceName("setup"));
     registry.add(
       "spring.datasource.url",
       () ->
@@ -61,12 +61,6 @@ public class CloneTest {
   MockMvc mvc;
 
   @Autowired
-  private CourseRepository courseRepository;
-
-  @Autowired
-  private ChickenshockClient chickenshockClient;
-
-  @Autowired
   private CourseMapper courseMapper;
 
   private String fullURL;
@@ -76,17 +70,6 @@ public class CloneTest {
   public void createBasicData() {
     fullURL = "/courses";
     objectMapper = new ObjectMapper();
-
-    //wait till chickenshock-backend is ready
-    boolean completed = false;
-    while (!completed) {
-      try {
-        chickenshockClient.getConfiguration(UUID.fromString("70fcd00c-b67c-46f2-be73-961dc0bc8de1"));
-        completed = true;
-      } catch (Exception e) {
-        completed = false;
-      }
-    }
   }
 
   @Test
