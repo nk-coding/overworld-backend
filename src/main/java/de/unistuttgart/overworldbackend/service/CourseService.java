@@ -212,14 +212,14 @@ public class CourseService {
   }
 
   private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
-    if(minigameTask.getGame() == null) {
+    if (minigameTask.getGame() == null) {
       return new MinigameTask(null, null, minigameTask.getIndex());
     }
     switch (minigameTask.getGame()) {
       case NONE:
         return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
       case CHICKENSHOCK:
-        if(minigameTask.getConfigurationId() == null) {
+        if (minigameTask.getConfigurationId() == null) {
           return new MinigameTask(Minigame.CHICKENSHOCK, null, minigameTask.getIndex());
         } else {
           ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
@@ -229,15 +229,15 @@ public class CourseService {
           return new MinigameTask(Minigame.CHICKENSHOCK, config.getId(), minigameTask.getIndex());
         }
       case FINITEQUIZ:
-        if(minigameTask.getConfigurationId() == null) {
+        if (minigameTask.getConfigurationId() == null) {
           return new MinigameTask(Minigame.FINITEQUIZ, null, minigameTask.getIndex());
         }
       case CROSSWORDPUZZLE:
-        if(minigameTask.getConfigurationId() == null) {
+        if (minigameTask.getConfigurationId() == null) {
           return new MinigameTask(Minigame.CROSSWORDPUZZLE, null, minigameTask.getIndex());
         }
       case BUGFINDER:
-        if(minigameTask.getConfigurationId() == null) {
+        if (minigameTask.getConfigurationId() == null) {
           return new MinigameTask(Minigame.BUGFINDER, null, minigameTask.getIndex());
         }
       default:
