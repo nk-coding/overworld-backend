@@ -154,6 +154,7 @@ public class PlayerStatisticService {
       if (currentArea instanceof World currentWorld) {
         currentWorld.getDungeons().sort(Comparator.comparingInt(Area::getIndex));
 
+        // As we are in a world, try to unlock the first available dungeon
         for (Dungeon dungeon : currentWorld.getDungeons()) {
           if (dungeon.isActive()) {
             playerStatistic.addUnlockedArea(dungeon);
@@ -161,28 +162,23 @@ public class PlayerStatisticService {
           }
         }
 
+        // No dungeon was available - try to unlock the next world
         worldRepository
           .findByIndexAndCourseId(currentWorld.getIndex() + 1, courseId)
           .ifPresent(playerStatistic::addUnlockedArea);
       } else if (currentArea instanceof Dungeon currentDungeon) {
-        List<Dungeon> otherDungeons = currentDungeon
+        // First try to unlock the next available dungeon in the world, or if that fails try to unlock the next world
+        currentDungeon
           .getWorld()
           .getDungeons()
           .stream()
+          .filter(Dungeon::isActive)
           .filter(dungeon -> dungeon.getIndex() > currentDungeon.getIndex())
           .sorted(Comparator.comparingInt(Dungeon::getIndex))
-          .collect(Collectors.toList());
-
-        for (Dungeon dungeon : otherDungeons) {
-          if (dungeon.isActive()) {
-            playerStatistic.addUnlockedArea(dungeon);
-            return;
-          }
-        }
-
-        worldRepository
+          .findFirst()
+          .ifPresentOrElse(playerStatistic::addUnlockedArea, () -> worldRepository
           .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
-          .ifPresent(playerStatistic::addUnlockedArea);
+          .ifPresent(playerStatistic::addUnlockedArea))
       }
     }
   }
