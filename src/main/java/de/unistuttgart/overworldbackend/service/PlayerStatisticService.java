@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
@@ -200,7 +201,7 @@ public class PlayerStatisticService {
     return area
       .getMinigameTasks()
       .parallelStream()
-      .filter(minigameTask -> minigameTask.getGame() != null && !minigameTask.getGame().equals("NONE"))
+      .filter(minigameTask -> minigameTask.getGame() != null && minigameTask.getGame() != Minigame.NONE)
       .allMatch(minigameTask ->
         playerTaskStatistics
           .parallelStream()
