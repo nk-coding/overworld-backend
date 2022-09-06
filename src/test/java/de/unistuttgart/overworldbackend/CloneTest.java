@@ -37,7 +37,7 @@ public class CloneTest {
   public static DockerComposeContainer compose = new DockerComposeContainer(
     new File("src/test/resources/docker-compose-test.yaml")
   )
-    .withExposedService("overworld-db", 5432)
+    .withExposedService("overworld-db", 5432, Wait.forListeningPort())
     .withExposedService("reverse-proxy", 80)
     .waitingFor("reverse-proxy", Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80));
 
@@ -121,6 +121,46 @@ public class CloneTest {
         .findFirst()
         .get()
         .getGame()
+    );
+    assertEquals(
+            course
+                    .getWorlds()
+                    .get(0)
+                    .getMinigameTasks()
+                    .stream()
+                    .filter((minigameTask -> minigameTask.getIndex() == 2))
+                    .findFirst()
+                    .get()
+                    .getGame(),
+            cloneCourse
+                    .getWorlds()
+                    .get(0)
+                    .getMinigameTasks()
+                    .stream()
+                    .filter((minigameTask -> minigameTask.getIndex() == 2))
+                    .findFirst()
+                    .get()
+                    .getGame()
+    );
+    assertEquals(
+            course
+                    .getWorlds()
+                    .get(0)
+                    .getMinigameTasks()
+                    .stream()
+                    .filter((minigameTask -> minigameTask.getIndex() == 3))
+                    .findFirst()
+                    .get()
+                    .getGame(),
+            cloneCourse
+                    .getWorlds()
+                    .get(0)
+                    .getMinigameTasks()
+                    .stream()
+                    .filter((minigameTask -> minigameTask.getIndex() == 3))
+                    .findFirst()
+                    .get()
+                    .getGame()
     );
   }
 }

@@ -108,7 +108,7 @@ services:
       - OVERWORLD_URL=http://overworld-backend/api/v1
 
   finitequiz-backend:
-    image: ghcr.io/gamify-it/finitequiz-backend:latest
+    image: ghcr.io/gamify-it/finitequiz-backend:main
     pull_policy: always
     restart: always
     expose:
@@ -123,9 +123,8 @@ services:
 
   # reverse-proxy
   reverse-proxy:
-    build:
-      context: .
-      dockerfile: nginx.DOCKERFILE
+    image: ghcr.io/gamify-it/overworld-test-nginx:main
+    pull_policy: always
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
