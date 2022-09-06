@@ -6,12 +6,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.unistuttgart.overworldbackend.data.Course;
-import de.unistuttgart.overworldbackend.data.CourseDTO;
-import de.unistuttgart.overworldbackend.data.CourseInitialData;
+import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import java.io.File;
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,65 +111,67 @@ public class CloneTest {
       objectMapper.readValue(resultClone.getResponse().getContentAsString(), CourseDTO.class)
     );
 
-    assertEquals(
-      course
-        .getWorlds()
-        .get(0)
+    for (int i = 0; i < course.getWorlds().size(); i++) {
+      World world = course.getWorlds().get(i);
+      World cloneWorld = cloneCourse.getWorlds().get(i);
+      world
         .getMinigameTasks()
-        .stream()
-        .filter((minigameTask -> minigameTask.getIndex() == 1))
-        .findFirst()
-        .get()
-        .getGame(),
-      cloneCourse
-        .getWorlds()
-        .get(0)
-        .getMinigameTasks()
-        .stream()
-        .filter((minigameTask -> minigameTask.getIndex() == 1))
-        .findFirst()
-        .get()
-        .getGame()
-    );
-    assertEquals(
-      course
-        .getWorlds()
-        .get(0)
-        .getMinigameTasks()
-        .stream()
-        .filter((minigameTask -> minigameTask.getIndex() == 2))
-        .findFirst()
-        .get()
-        .getGame(),
-      cloneCourse
-        .getWorlds()
-        .get(0)
-        .getMinigameTasks()
-        .stream()
-        .filter((minigameTask -> minigameTask.getIndex() == 2))
-        .findFirst()
-        .get()
-        .getGame()
-    );
-    assertEquals(
-      course
-        .getWorlds()
-        .get(0)
-        .getMinigameTasks()
-        .stream()
-        .filter((minigameTask -> minigameTask.getIndex() == 3))
-        .findFirst()
-        .get()
-        .getGame(),
-      cloneCourse
-        .getWorlds()
-        .get(0)
-        .getMinigameTasks()
-        .stream()
-        .filter((minigameTask -> minigameTask.getIndex() == 3))
-        .findFirst()
-        .get()
-        .getGame()
-    );
+        .forEach(minigameTask -> {
+          MinigameTask cloneMinigameTask = cloneWorld
+            .getMinigameTasks()
+            .stream()
+            .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
+            .findAny()
+            .get();
+          assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
+          assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
+        });
+      world
+        .getNpcs()
+        .forEach(npc -> {
+          NPC cloneNpc = cloneWorld
+            .getNpcs()
+            .stream()
+            .filter(npc1 -> npc1.getIndex() == npc.getIndex())
+            .findAny()
+            .get();
+          AtomicInteger k = new AtomicInteger(0);
+          for (String text : npc.getText()) {
+            cloneNpc.getText().get(k.getAndIncrement());
+          }
+          assertEquals(npc.getDescription(), cloneNpc.getDescription());
+        });
+      for (int j = 0; j < world.getDungeons().size(); j++) {
+        Dungeon dungeon = world.getDungeons().get(i);
+        Dungeon cloneDungeon = cloneWorld.getDungeons().get(i);
+        dungeon
+          .getMinigameTasks()
+          .forEach(minigameTask -> {
+            MinigameTask cloneMinigameTask = cloneDungeon
+              .getMinigameTasks()
+              .stream()
+              .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
+              .findAny()
+              .get();
+            assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
+            assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
+          });
+        dungeon
+          .getNpcs()
+          .forEach(npc -> {
+            NPC cloneNpc = cloneDungeon
+              .getNpcs()
+              .stream()
+              .filter(npc1 -> npc1.getIndex() == npc.getIndex())
+              .findAny()
+              .get();
+            AtomicInteger k = new AtomicInteger(0);
+            for (String text : npc.getText()) {
+              cloneNpc.getText().get(k.getAndIncrement());
+            }
+            assertEquals(npc.getDescription(), cloneNpc.getDescription());
+          });
+      }
+    }
   }
 }

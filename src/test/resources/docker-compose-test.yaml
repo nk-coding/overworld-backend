@@ -123,8 +123,9 @@ services:
 
   # reverse-proxy
   reverse-proxy:
-    image: ghcr.io/gamify-it/overworld-test-nginx:main
-    pull_policy: always
+    build:
+      context: .
+      dockerfile: nginx.DOCKERFILE
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
