@@ -5,14 +5,16 @@ services:
   #databases
   setup:
     container_name: setup
-    image: ghcr.io/gamify-it/test-data:latest
+    image: ghcr.io/gamify-it/test-data:feature-clone-test-data
     pull_policy: always
     restart: on-failure
     environment:
       POSTGRES_SETUP: >
         login/default.sql
-        overworld/default.sql
-        chickenshock/default.sql
+        overworld/cloneTestData.sql
+        chickenshock/cloneTestData.sql
+        finitequiz/cloneTestData.sql
+        crosswordpuzzle/cloneTestData.sql
 
   login-db:
     container_name: login-db
@@ -54,6 +56,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  finitequiz-db:
+    container_name: finitequiz-db
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
   #backends
   login-backend:
@@ -109,6 +121,21 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
 
+  finitequiz-backend:
+    container_name: finitequiz-backend
+    image: ghcr.io/gamify-it/finitequiz-backend:latest
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - finitequiz-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
+      - OVERWORLD_URL=http://overworld-backend/api/v1
+
 
   #frontends
   login-frontend:
@@ -162,7 +189,24 @@ services:
 
   lecturer-interface:
     container_name: lecturer-interface
+    pull_policy: always
     image: ghcr.io/gamify-it/lecturer-interface:main
+    restart: always
+    expose:
+      - "80"
+
+  finitequiz:
+    container_name: finitequiz
+    image: ghcr.io/gamify-it/finitequiz:latest
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+
+  third-party-license-notice:
+    container_name: third-party-license-notice
+    image: ghcr.io/gamify-it/third-party-license-notice:latest
+    pull_policy: always
     restart: always
     expose:
       - "80"
