@@ -39,7 +39,9 @@ public class CloneTest {
   )
     .withExposedService("overworld-db", 5432, Wait.forListeningPort())
     .withExposedService("reverse-proxy", 80)
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80));
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80))
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80))
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80));
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
