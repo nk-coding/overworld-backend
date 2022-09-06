@@ -9,5 +9,7 @@ public class ChickenshockConfiguration {
 
   UUID id;
 
+  int time;
+
   Set<ChickenshockQuestion> questions;
 }
