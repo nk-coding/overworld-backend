@@ -1,16 +1,17 @@
-package de.unistuttgart.overworldbackend.data.minigames;
+package de.unistuttgart.overworldbackend.data.minigames.finitequiz;
 
-import java.util.Set;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChickenshockQuestion {
+public class FinitequizQuestion {
 
   UUID id;
 

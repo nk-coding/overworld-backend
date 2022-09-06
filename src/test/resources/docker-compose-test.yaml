@@ -12,6 +12,8 @@ services:
         login/default.sql
         overworld/cloneTestData.sql
         chickenshock/cloneTestData.sql
+        finitequiz/cloneTestData.sql
+        crosswordpuzzle/cloneTestData.sql
 
   login-db:
     image: postgres:14-alpine
@@ -53,6 +55,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  finitequiz-db:
+    container_name: finitequiz-db
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
   #backends
   login-backend:
@@ -80,6 +92,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://crosswordpuzzle-db:5432/postgres
+      - OVERWORLD_URL=http://overworld-backend/api/v1
 
   chickenshock-backend:
     image: ghcr.io/gamify-it/chickenshock-backend:main
@@ -93,6 +106,22 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
+      - OVERWORLD_URL=http://overworld-backend/api/v1
+
+  finitequiz-backend:
+    container_name: finitequiz-backend
+    image: ghcr.io/gamify-it/finitequiz-backend:latest
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - finitequiz-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
+      - OVERWORLD_URL=http://overworld-backend/api/v1
 
   # reverse-proxy
   reverse-proxy:

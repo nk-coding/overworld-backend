@@ -3,13 +3,18 @@ package de.unistuttgart.overworldbackend.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
+import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
+import de.unistuttgart.overworldbackend.client.FinitequizClient;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
-import de.unistuttgart.overworldbackend.data.minigames.ChickenshockConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizQuestion;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +37,12 @@ public class CourseService {
 
   @Autowired
   ChickenshockClient chickenshockClient;
+
+  @Autowired
+  FinitequizClient finitequizClient;
+
+  @Autowired
+  CrosswordpuzzleClient crosswordpuzzleClient;
 
   @Autowired
   private CourseRepository courseRepository;
@@ -206,37 +217,49 @@ public class CourseService {
   }
 
   private NPC cloneNPC(NPC npc) {
-    return new NPC(new ArrayList<>(npc.getText()), npc.getIndex());
+    return new NPC(new ArrayList<>(npc.getText()), npc.getDescription() , npc.getIndex());
   }
 
   private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
     if (minigameTask.getGame() == null) {
-      return new MinigameTask(null, null, minigameTask.getIndex());
+      return new MinigameTask(null, minigameTask.getDescription(), null, minigameTask.getIndex());
     }
     switch (minigameTask.getGame()) {
       case NONE:
         return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
       case CHICKENSHOCK:
         if (minigameTask.getConfigurationId() == null) {
-          return new MinigameTask(Minigame.CHICKENSHOCK, null, minigameTask.getIndex());
+          return new MinigameTask(Minigame.CHICKENSHOCK, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
           ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
           config.setId(null);
           config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
           config = chickenshockClient.postConfiguration(config);
-          return new MinigameTask(Minigame.CHICKENSHOCK, config.getId(), minigameTask.getIndex());
+          return new MinigameTask(Minigame.CHICKENSHOCK, minigameTask.getDescription(),config.getId(), minigameTask.getIndex());
         }
       case FINITEQUIZ:
         if (minigameTask.getConfigurationId() == null) {
-          return new MinigameTask(Minigame.FINITEQUIZ, null, minigameTask.getIndex());
+          return new MinigameTask(Minigame.FINITEQUIZ, minigameTask.getDescription(), null, minigameTask.getIndex());
+        } else {
+          FinitequizConfiguration config = finitequizClient.getConfiguration(minigameTask.getConfigurationId());
+          config.setId(null);
+          config.getQuestions().forEach(finitequizQuestion -> finitequizQuestion.setId(null));
+          config = finitequizClient.postConfiguration(config);
+          return new MinigameTask(Minigame.FINITEQUIZ, minigameTask.getDescription(),config.getId(), minigameTask.getIndex());
         }
       case CROSSWORDPUZZLE:
         if (minigameTask.getConfigurationId() == null) {
-          return new MinigameTask(Minigame.CROSSWORDPUZZLE, null, minigameTask.getIndex());
+          return new MinigameTask(Minigame.CROSSWORDPUZZLE, minigameTask.getDescription(), null, minigameTask.getIndex());
+        } else {
+          CrosswordpuzzleConfiguration config = crosswordpuzzleClient.getConfiguration(minigameTask.getConfigurationId());
+          config.setId(null);
+          config.getQuestions().forEach(crosswordpuzzleQuestion -> crosswordpuzzleQuestion.setId(null));
+          config = crosswordpuzzleClient.postConfiguration(config);
+          return new MinigameTask(Minigame.CROSSWORDPUZZLE, minigameTask.getDescription(),config.getId(), minigameTask.getIndex());
         }
       case BUGFINDER:
         if (minigameTask.getConfigurationId() == null) {
-          return new MinigameTask(Minigame.BUGFINDER, null, minigameTask.getIndex());
+          return new MinigameTask(Minigame.BUGFINDER, minigameTask.getDescription(), null, minigameTask.getIndex());
         }
       default:
         throw new ResponseStatusException(
