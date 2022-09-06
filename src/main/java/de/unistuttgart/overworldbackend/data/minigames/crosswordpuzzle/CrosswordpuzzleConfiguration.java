@@ -2,7 +2,6 @@ package de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle;
 
 import java.util.Set;
 import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -11,9 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CrosswordpuzzleConfiguration {
 
-    UUID id;
+  UUID id;
 
-    String name;
+  String name;
 
-    Set<CrosswordpuzzleQuestion> questions;
+  Set<CrosswordpuzzleQuestion> questions;
 }

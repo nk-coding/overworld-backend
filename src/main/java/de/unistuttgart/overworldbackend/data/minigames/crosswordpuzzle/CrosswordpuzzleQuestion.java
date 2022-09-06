@@ -7,14 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CrosswordpuzzleQuestion {
 
-    UUID id;
+  UUID id;
 
-    String questionText;
+  String questionText;
 
-    String answer;
+  String answer;
 }

@@ -61,6 +61,14 @@ public class CloneTest {
       "chickenshock.url",
       () -> String.format("http://%s/minigames/chickenshock/api/v1", compose.getServiceHost("reverse-proxy", 80))
     );
+    registry.add(
+      "finitequiz.url",
+      () -> String.format("http://%s/minigames/finitequiz/api/v1", compose.getServiceHost("reverse-proxy", 80))
+    );
+    registry.add(
+      "crosswordpuzzle.url",
+      () -> String.format("http://%s/minigames/crosswordpuzzle/api/v1", compose.getServiceHost("reverse-proxy", 80))
+    );
   }
 
   @Autowired
@@ -125,44 +133,44 @@ public class CloneTest {
         .getGame()
     );
     assertEquals(
-            course
-                    .getWorlds()
-                    .get(0)
-                    .getMinigameTasks()
-                    .stream()
-                    .filter((minigameTask -> minigameTask.getIndex() == 2))
-                    .findFirst()
-                    .get()
-                    .getGame(),
-            cloneCourse
-                    .getWorlds()
-                    .get(0)
-                    .getMinigameTasks()
-                    .stream()
-                    .filter((minigameTask -> minigameTask.getIndex() == 2))
-                    .findFirst()
-                    .get()
-                    .getGame()
+      course
+        .getWorlds()
+        .get(0)
+        .getMinigameTasks()
+        .stream()
+        .filter((minigameTask -> minigameTask.getIndex() == 2))
+        .findFirst()
+        .get()
+        .getGame(),
+      cloneCourse
+        .getWorlds()
+        .get(0)
+        .getMinigameTasks()
+        .stream()
+        .filter((minigameTask -> minigameTask.getIndex() == 2))
+        .findFirst()
+        .get()
+        .getGame()
     );
     assertEquals(
-            course
-                    .getWorlds()
-                    .get(0)
-                    .getMinigameTasks()
-                    .stream()
-                    .filter((minigameTask -> minigameTask.getIndex() == 3))
-                    .findFirst()
-                    .get()
-                    .getGame(),
-            cloneCourse
-                    .getWorlds()
-                    .get(0)
-                    .getMinigameTasks()
-                    .stream()
-                    .filter((minigameTask -> minigameTask.getIndex() == 3))
-                    .findFirst()
-                    .get()
-                    .getGame()
+      course
+        .getWorlds()
+        .get(0)
+        .getMinigameTasks()
+        .stream()
+        .filter((minigameTask -> minigameTask.getIndex() == 3))
+        .findFirst()
+        .get()
+        .getGame(),
+      cloneCourse
+        .getWorlds()
+        .get(0)
+        .getMinigameTasks()
+        .stream()
+        .filter((minigameTask -> minigameTask.getIndex() == 3))
+        .findFirst()
+        .get()
+        .getGame()
     );
   }
 }

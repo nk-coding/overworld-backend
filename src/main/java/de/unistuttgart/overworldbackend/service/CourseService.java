@@ -217,7 +217,7 @@ public class CourseService {
   }
 
   private NPC cloneNPC(NPC npc) {
-    return new NPC(new ArrayList<>(npc.getText()), npc.getDescription() , npc.getIndex());
+    return new NPC(new ArrayList<>(npc.getText()), npc.getDescription(), npc.getIndex());
   }
 
   private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
@@ -235,7 +235,12 @@ public class CourseService {
           config.setId(null);
           config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
           config = chickenshockClient.postConfiguration(config);
-          return new MinigameTask(Minigame.CHICKENSHOCK, minigameTask.getDescription(),config.getId(), minigameTask.getIndex());
+          return new MinigameTask(
+            Minigame.CHICKENSHOCK,
+            minigameTask.getDescription(),
+            config.getId(),
+            minigameTask.getIndex()
+          );
         }
       case FINITEQUIZ:
         if (minigameTask.getConfigurationId() == null) {
@@ -245,17 +250,34 @@ public class CourseService {
           config.setId(null);
           config.getQuestions().forEach(finitequizQuestion -> finitequizQuestion.setId(null));
           config = finitequizClient.postConfiguration(config);
-          return new MinigameTask(Minigame.FINITEQUIZ, minigameTask.getDescription(),config.getId(), minigameTask.getIndex());
+          return new MinigameTask(
+            Minigame.FINITEQUIZ,
+            minigameTask.getDescription(),
+            config.getId(),
+            minigameTask.getIndex()
+          );
         }
       case CROSSWORDPUZZLE:
         if (minigameTask.getConfigurationId() == null) {
-          return new MinigameTask(Minigame.CROSSWORDPUZZLE, minigameTask.getDescription(), null, minigameTask.getIndex());
+          return new MinigameTask(
+            Minigame.CROSSWORDPUZZLE,
+            minigameTask.getDescription(),
+            null,
+            minigameTask.getIndex()
+          );
         } else {
-          CrosswordpuzzleConfiguration config = crosswordpuzzleClient.getConfiguration(minigameTask.getConfigurationId());
+          CrosswordpuzzleConfiguration config = crosswordpuzzleClient.getConfiguration(
+            minigameTask.getConfigurationId()
+          );
           config.setId(null);
           config.getQuestions().forEach(crosswordpuzzleQuestion -> crosswordpuzzleQuestion.setId(null));
           config = crosswordpuzzleClient.postConfiguration(config);
-          return new MinigameTask(Minigame.CROSSWORDPUZZLE, minigameTask.getDescription(),config.getId(), minigameTask.getIndex());
+          return new MinigameTask(
+            Minigame.CROSSWORDPUZZLE,
+            minigameTask.getDescription(),
+            config.getId(),
+            minigameTask.getIndex()
+          );
         }
       case BUGFINDER:
         if (minigameTask.getConfigurationId() == null) {
