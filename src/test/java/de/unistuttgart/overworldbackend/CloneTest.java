@@ -1,14 +1,25 @@
 package de.unistuttgart.overworldbackend;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.overworldbackend.client.ChickenshockClient;
+import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
+import de.unistuttgart.overworldbackend.client.FinitequizClient;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
+import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockQuestion;
+import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleQuestion;
+import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizQuestion;
 import java.io.File;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,9 +54,6 @@ public class CloneTest {
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
-    //wait till setup has finished
-    ContainerState state = (ContainerState) compose.getContainerByServiceName("setup_1").get();
-    while (state.isRunning()) {}
     registry.add(
       "spring.datasource.url",
       () ->
@@ -71,6 +79,15 @@ public class CloneTest {
 
   @Autowired
   MockMvc mvc;
+
+  @Autowired
+  ChickenshockClient chickenshockClient;
+
+  @Autowired
+  CrosswordpuzzleClient crosswordpuzzleClient;
+
+  @Autowired
+  FinitequizClient finitequizClient;
 
   @Autowired
   private CourseMapper courseMapper;
@@ -124,6 +141,7 @@ public class CloneTest {
             .get();
           assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
           assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
+          compareMinigame(minigameTask, cloneMinigameTask);
         });
       world
         .getNpcs()
@@ -154,6 +172,7 @@ public class CloneTest {
               .get();
             assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
             assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
+            compareMinigame(minigameTask, cloneMinigameTask);
           });
         dungeon
           .getNpcs()
@@ -169,6 +188,65 @@ public class CloneTest {
               cloneNpc.getText().get(k.getAndIncrement());
             }
             assertEquals(npc.getDescription(), cloneNpc.getDescription());
+          });
+      }
+    }
+  }
+
+  private void compareMinigame(MinigameTask minigameTask1, MinigameTask minigameTask2) {
+    if (minigameTask1 == null) {
+      return;
+    }
+    if (minigameTask1.getGame() == null) {
+      return;
+    }
+    switch (minigameTask1.getGame()) {
+      case CHICKENSHOCK -> {
+        ChickenshockConfiguration config1 = chickenshockClient.getConfiguration(minigameTask1.getConfigurationId());
+        ChickenshockConfiguration config2 = chickenshockClient.getConfiguration(minigameTask2.getConfigurationId());
+        config1
+          .getQuestions()
+          .forEach(chickenshockQuestion -> {
+            Optional<ChickenshockQuestion> question = config2
+              .getQuestions()
+              .stream()
+              .filter(chickenshockQuestion1 -> chickenshockQuestion1.getText().equals(chickenshockQuestion.getText()))
+              .findAny();
+            assertFalse(question.isEmpty());
+          });
+      }
+      case CROSSWORDPUZZLE -> {
+        CrosswordpuzzleConfiguration config1 = crosswordpuzzleClient.getConfiguration(
+          minigameTask1.getConfigurationId()
+        );
+        CrosswordpuzzleConfiguration config2 = crosswordpuzzleClient.getConfiguration(
+          minigameTask2.getConfigurationId()
+        );
+        config1
+          .getQuestions()
+          .forEach(crosswordpuzzleQuestion -> {
+            Optional<CrosswordpuzzleQuestion> question = config2
+              .getQuestions()
+              .stream()
+              .filter(crosswordpuzzleQuestion1 ->
+                crosswordpuzzleQuestion1.getQuestionText().equals(crosswordpuzzleQuestion.getQuestionText())
+              )
+              .findAny();
+            assertFalse(question.isEmpty());
+          });
+      }
+      case FINITEQUIZ -> {
+        FinitequizConfiguration config1 = finitequizClient.getConfiguration(minigameTask1.getConfigurationId());
+        FinitequizConfiguration config2 = finitequizClient.getConfiguration(minigameTask2.getConfigurationId());
+        config1
+          .getQuestions()
+          .forEach(finitequizQuestion -> {
+            Optional<FinitequizQuestion> question = config2
+              .getQuestions()
+              .stream()
+              .filter(finitequizQuestion1 -> finitequizQuestion1.getText().equals(finitequizQuestion.getText()))
+              .findAny();
+            assertFalse(question.isEmpty());
           });
       }
     }
