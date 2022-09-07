@@ -54,6 +54,9 @@ public class CloneTest {
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
+    //wait till setup has finished
+    ContainerState state = (ContainerState) compose.getContainerByServiceName("setup_1").get();
+    while (state.isRunning()) {System.out.println("Test");}
     registry.add(
       "spring.datasource.url",
       () ->
