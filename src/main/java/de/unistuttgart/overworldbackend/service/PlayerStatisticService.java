@@ -154,36 +154,38 @@ public class PlayerStatisticService {
     int courseId = playerStatistic.getCourse().getId();
 
     if (isAreaCompleted(currentArea, playerTaskStatistics)) {
+      //if world -> unlock next dungeon or if not possible next world
       if (currentArea instanceof World currentWorld) {
-        currentWorld.getDungeons().sort(Comparator.comparingInt(Area::getIndex));
-
-        // As we are in a world, try to unlock the first available dungeon
-        for (Dungeon dungeon : currentWorld.getDungeons()) {
-          if (dungeon.isActive()) {
-            playerStatistic.addUnlockedArea(dungeon);
-            return;
-          }
-        }
-
-        // No dungeon was available - try to unlock the next world
-        worldRepository
-          .findByIndexAndCourseId(currentWorld.getIndex() + 1, courseId)
-          .ifPresent(playerStatistic::addUnlockedArea);
+        currentWorld
+            .getDungeons()
+            .sort(Comparator.comparingInt(Area::getIndex))
+            .stream()
+            .findFirst()
+            .filter(Dungeon::isConfigured)
+            .ifPresentOrElse(
+                playerStatistic::addUnlockedArea,
+                () ->
+                    worldRepository
+                        .findByIndexAndCourseId(currentWorld.getIndex() + 1, courseId)
+                        .filter(world -> world.isConfigured)
+                        .ifPresent(playerStatistic::addUnlockedArea)
+          );
+      //if dungeon -> unlock next dungeon or if not possible next world
       } else if (currentArea instanceof Dungeon currentDungeon) {
-        // First try to unlock the next available dungeon in the world, or if that fails try to unlock the next world
         currentDungeon
           .getWorld()
           .getDungeons()
+          .sort(Comparator.comparingInt(Dungeon::getIndex))
           .stream()
-          .filter(Dungeon::isActive)
           .filter(dungeon -> dungeon.getIndex() > currentDungeon.getIndex())
-          .sorted(Comparator.comparingInt(Dungeon::getIndex))
           .findFirst()
+          .filter(Dungeon::isConfigured)
           .ifPresentOrElse(
             playerStatistic::addUnlockedArea,
             () ->
               worldRepository
                 .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
+                .filter(world -> world.isConfigured)
                 .ifPresent(playerStatistic::addUnlockedArea)
           );
       }
