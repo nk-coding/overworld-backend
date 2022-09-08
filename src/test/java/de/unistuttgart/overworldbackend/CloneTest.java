@@ -50,13 +50,14 @@ public class CloneTest {
     .withExposedService("reverse-proxy", 80)
     .waitingFor("reverse-proxy", Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80))
     .waitingFor("reverse-proxy", Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80))
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80));
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80))
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/bugfinder/api/v1/configurations").forPort(80));
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
     //wait till setup has finished
     ContainerState state = (ContainerState) compose.getContainerByServiceName("setup_1").get();
-    while (state.isRunning()) {System.out.println("Test");}
+    while (state.isRunning()) {}
     registry.add(
       "spring.datasource.url",
       () ->
@@ -77,6 +78,10 @@ public class CloneTest {
     registry.add(
       "crosswordpuzzle.url",
       () -> String.format("http://%s/minigames/crosswordpuzzle/api/v1", compose.getServiceHost("reverse-proxy", 80))
+    );
+    registry.add(
+      "bugfinder.url",
+      () -> String.format("http://%s/minigames/bugfinder/api/v1", compose.getServiceHost("reverse-proxy", 80))
     );
   }
 

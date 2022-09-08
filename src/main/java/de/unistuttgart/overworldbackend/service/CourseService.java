@@ -2,6 +2,7 @@ package de.unistuttgart.overworldbackend.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.overworldbackend.client.BugfinderClient;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
 import de.unistuttgart.overworldbackend.client.FinitequizClient;
@@ -11,6 +12,7 @@ import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
+import de.unistuttgart.overworldbackend.data.minigames.bugfinder.BugfinderConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
@@ -43,6 +45,9 @@ public class CourseService {
 
   @Autowired
   CrosswordpuzzleClient crosswordpuzzleClient;
+
+  @Autowired
+  BugfinderClient bugfinderClient;
 
   @Autowired
   private CourseRepository courseRepository;
@@ -282,6 +287,22 @@ public class CourseService {
       case BUGFINDER:
         if (minigameTask.getConfigurationId() == null) {
           return new MinigameTask(Minigame.BUGFINDER, minigameTask.getDescription(), null, minigameTask.getIndex());
+        } else {
+          BugfinderConfiguration config = bugfinderClient.getConfiguration(minigameTask.getConfigurationId());
+          config.setId(null);
+          config
+            .getCodes()
+            .forEach(bugfinderCode -> {
+              bugfinderCode.setId(null);
+              bugfinderCode.getWords().forEach(bugfinderWord -> bugfinderWord.setId(null));
+            });
+          config = bugfinderClient.postConfiguration(config);
+          return new MinigameTask(
+            Minigame.BUGFINDER,
+            minigameTask.getDescription(),
+            config.getId(),
+            minigameTask.getIndex()
+          );
         }
       default:
         throw new ResponseStatusException(

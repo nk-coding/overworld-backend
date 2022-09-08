@@ -14,6 +14,7 @@ services:
         chickenshock/cloneTestData.sql
         finitequiz/cloneTestData.sql
         crosswordpuzzle/cloneTestData.sql
+        bugfinder/cloneTestData.sql
 
   login-db:
     image: postgres:14-alpine
@@ -56,6 +57,16 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   finitequiz-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  bugfinder-db:
     image: postgres:14-alpine
     pull_policy: always
     restart: always
@@ -120,6 +131,20 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
+
+  bugfinder-backend:
+    image: ghcr.io/gamify-it/bugfinder-backend:feature-bugfinder-backend
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - bugfinder-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://bugfinder-db:5432/postgres
+
 
   # reverse-proxy
   reverse-proxy:
