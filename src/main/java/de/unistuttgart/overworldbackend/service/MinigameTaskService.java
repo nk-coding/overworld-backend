@@ -167,8 +167,8 @@ public class MinigameTaskService {
       dungeonIndex,
       taskIndex
     );
-    boolean configuredBefore = isMinigameConfigured(minigameTask.getConfigurationId());
-    boolean configuredAfter = isMinigameConfigured(taskDTO.getConfigurationId());
+    boolean configuredBefore = isMinigameConfigured(minigameTask.getConfigurationId().toString());
+    boolean configuredAfter = isMinigameConfigured(taskDTO.getConfigurationId().toString());
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());
     minigameTask.setDescription(taskDTO.getDescription());
@@ -189,7 +189,7 @@ public class MinigameTaskService {
    * @param configurationId the configurationId of the minigame
    * @return true if minigame is configured, false otherwise
    */
-  private boolean isMinigameConfigured(final UUID configurationId)
+  private boolean isMinigameConfigured(final String configurationId)
   {
     return !((configurationId == null) || (configurationId == "NONE"));
   }
@@ -269,7 +269,7 @@ public class MinigameTaskService {
     int amountOfConfiguredMinigames = 0;
     for(MinigameTask minigame : minigames)
     {
-      if(isMinigameConfigured(minigame.getConfigurationId()))
+      if(isMinigameConfigured(minigame.getConfigurationId().toString()))
       {
         amountOfConfiguredMinigames++;
       }
