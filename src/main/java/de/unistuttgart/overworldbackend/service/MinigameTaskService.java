@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.Dungeon;
+import de.unistuttgart.overworldbackend.data.DungeonDTO;
 import de.unistuttgart.overworldbackend.data.MinigameTask;
 import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import de.unistuttgart.overworldbackend.data.World;
@@ -165,7 +166,7 @@ public class MinigameTaskService {
       dungeonIndex,
       taskIndex
     );
-    boolean configuredBefore = isMinigameConfigured(minigameTask.taskDTO.getConfigurationId());
+    boolean configuredBefore = isMinigameConfigured(minigameTask.getConfigurationId());
     boolean configuredAfter = isMinigameConfigured(taskDTO.getConfigurationId());
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());
@@ -187,7 +188,7 @@ public class MinigameTaskService {
    * @param configurationId the configurationId of the minigame
    * @return true if minigame is configured, false otherwise
    */
-  private boolean isMinigameConfigured(final String configurationId)
+  private boolean isMinigameConfigured(final UUID configurationId)
   {
     return !((configurationId == null) || (configurationId == "NONE"));
   }
@@ -212,12 +213,12 @@ public class MinigameTaskService {
     }
     else
     {
-      Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex);
+      Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex.get());
       if(!dungeon.isConfigured())
       {
         DungeonDTO dungeonDTO = new DungeonDTO(dungeon);
         dungeonDTO.setConfigured(true);
-        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex, dungeonDTO);
+        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
       }
     }
   }
@@ -245,14 +246,14 @@ public class MinigameTaskService {
     }
     else
     {
-      Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex);
+      Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex.get());
       minigames = dungeon.getMinigameTasks();
       int amountOfConfiguredMinigames = getAmountOfConfiguredMinigames(minigames);
       if(amountOfConfiguredMinigames <= 0)
       {
         dungeon.setConfigured(false);
         DungeonDTO dungeonDTO = new DungeonDTO(dungeon);
-        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex, dungeonDTO);
+        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
       }
     }
   }
@@ -267,7 +268,7 @@ public class MinigameTaskService {
     int amountOfConfiguredMinigames = 0;
     for(MinigameTask minigame : minigames)
     {
-      if(isMinigameConfigured(minigame.getConfigurationId))
+      if(isMinigameConfigured(minigame.getConfigurationId()))
       {
         amountOfConfiguredMinigames++;
       }
