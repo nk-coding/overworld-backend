@@ -8,6 +8,7 @@ import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
+import de.unistuttgart.overworldbackend.repositories.AreaBaseRepository;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -26,6 +27,9 @@ public class MinigameTaskService {
 
   @Autowired
   private WorldService worldService;
+
+  @Autowired
+  private AreaBaseRepository areaBaseRepository;
 
   @Autowired
   private DungeonService dungeonService;
@@ -207,9 +211,8 @@ public class MinigameTaskService {
       World world = worldService.getWorldByIndexFromCourse(courseId, worldIndex);
       if(!world.isConfigured())
       {
-        WorldDTO worldDTO = new WorldDTO(world);
-        worldDTO.setConfigured(true);
-        worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
+        world.setConfigured(true);
+        areaBaseRepository.save(world);
       }
     }
     else
@@ -217,9 +220,8 @@ public class MinigameTaskService {
       Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex.get());
       if(!dungeon.isConfigured())
       {
-        DungeonDTO dungeonDTO = new DungeonDTO(dungeon);
-        dungeonDTO.setConfigured(true);
-        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
+        dungeon.setConfigured(true);
+        areaBaseRepository.save(dungeon);
       }
     }
   }
@@ -241,8 +243,7 @@ public class MinigameTaskService {
       if(amountOfConfiguredMinigames <= 0)
       {
         world.setConfigured(false);
-        WorldDTO worldDTO = new WorldDTO(world);
-        worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
+        areaBaseRepository.save(world);
       }
     }
     else
@@ -253,8 +254,7 @@ public class MinigameTaskService {
       if(amountOfConfiguredMinigames <= 0)
       {
         dungeon.setConfigured(false);
-        DungeonDTO dungeonDTO = new DungeonDTO(dungeon);
-        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
+        areaBaseRepository.save(dungeon);
       }
     }
   }
