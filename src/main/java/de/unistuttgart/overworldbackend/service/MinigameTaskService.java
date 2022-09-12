@@ -176,11 +176,11 @@ public class MinigameTaskService {
       taskIndex
     );
     boolean configuredBefore = isMinigameConfigured(minigameTask.getConfigurationId());
-    boolean configuredAfter = isMinigameConfigured(taskDTO.getConfigurationId());
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());
     minigameTask.setDescription(taskDTO.getDescription());
     final MinigameTask updatedMinigameTask = minigameTaskRepository.save(minigameTask);
+    boolean configuredAfter = isMinigameConfigured(updatedMinigameTask.getConfigurationId());
     if(configuredAfter && !configuredBefore)
     {
       minigameAdded(courseId, worldIndex, dungeonIndex);
