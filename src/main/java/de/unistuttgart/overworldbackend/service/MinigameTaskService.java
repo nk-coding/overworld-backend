@@ -36,7 +36,7 @@ public class MinigameTaskService {
   private DungeonService dungeonService;
 
   @Autowired
-  private DungeonRepository DungeonRepository;
+  private DungeonRepository dungeonRepository;
 
   @Autowired
   private MinigameTaskMapper minigameTaskMapper;
