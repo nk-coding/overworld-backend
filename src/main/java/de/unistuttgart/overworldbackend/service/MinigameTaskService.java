@@ -29,10 +29,13 @@ public class MinigameTaskService {
   private WorldService worldService;
 
   @Autowired
-  private AreaBaseRepository areaBaseRepository;
+  private WorldRepository worldRepository;
 
   @Autowired
   private DungeonService dungeonService;
+
+  @Autowired
+  private DungeonRepository DungeonRepository;
 
   @Autowired
   private MinigameTaskMapper minigameTaskMapper;
@@ -212,7 +215,7 @@ public class MinigameTaskService {
       if(!world.isConfigured())
       {
         world.setConfigured(true);
-        areaBaseRepository.save(world);
+        worldRepository.save(world);
       }
     }
     else
@@ -221,7 +224,7 @@ public class MinigameTaskService {
       if(!dungeon.isConfigured())
       {
         dungeon.setConfigured(true);
-        areaBaseRepository.save(dungeon);
+        dungeonRepository.save(dungeon);
       }
     }
   }
@@ -243,7 +246,7 @@ public class MinigameTaskService {
       if(amountOfConfiguredMinigames <= 0)
       {
         world.setConfigured(false);
-        areaBaseRepository.save(world);
+        worldRepository.save(world);
       }
     }
     else
@@ -254,7 +257,7 @@ public class MinigameTaskService {
       if(amountOfConfiguredMinigames <= 0)
       {
         dungeon.setConfigured(false);
-        areaBaseRepository.save(dungeon);
+        dungeonRepository.save(dungeon);
       }
     }
   }
