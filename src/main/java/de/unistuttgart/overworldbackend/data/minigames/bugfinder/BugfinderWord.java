@@ -1,21 +1,18 @@
-package de.unistuttgart.overworldbackend.data.minigames;
+package de.unistuttgart.overworldbackend.data.minigames.bugfinder;
 
-import java.util.Set;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChickenshockQuestion {
+public class BugfinderWord {
 
   UUID id;
-
-  String text;
-  String rightAnswer;
-
-  Set<String> wrongAnswers;
+  String word;
 }

@@ -5,14 +5,16 @@ services:
   #databases
   setup:
     container_name: setup
-    image: ghcr.io/gamify-it/test-data:latest
+    image: ghcr.io/gamify-it/test-data:feature-clone-test-data
     pull_policy: always
     restart: on-failure
     environment:
       POSTGRES_SETUP: >
         keycloak/default.sql
-        overworld/default.sql
-        chickenshock/default.sql
+        overworld/cloneTestData.sql
+        chickenshock/cloneTestData.sql
+        finitequiz/cloneTestData.sql
+        crosswordpuzzle/cloneTestData.sql
 
   keycloak-db:
     container_name: keycloak-db
@@ -54,6 +56,26 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  finitequiz-db:
+    container_name: finitequiz-db
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  bugfinder-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
   #backends
   keycloak:
@@ -90,6 +112,10 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://overworld-db:5432/postgres
       - CHICKENSHOCK_URL=http://chickenshock-backend/api/v1
+      - CROSSWORDPUZZLE_URL=http://crosswordpuzzle-backend/api/v1
+      - FINITEQUIZ_URL=http://finitequiz-backend/api/v1
+      - BUGFINDER_URL=http://bugfinder-backend/api/v1
+
 
   crosswordpuzzle-backend:
     container_name:   crosswordpuzzle-backend
@@ -116,6 +142,34 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
+
+  finitequiz-backend:
+    container_name: finitequiz-backend
+    image: ghcr.io/gamify-it/finitequiz-backend:main
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - finitequiz-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
+      - OVERWORLD_URL=http://overworld-backend/api/v1
+
+  bugfinder-backend:
+    image: ghcr.io/gamify-it/bugfinder-backend:feature-bugfinder-backend
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - bugfinder-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://bugfinder-db:5432/postgres
 
 
   #frontends
@@ -171,7 +225,24 @@ services:
 
   lecturer-interface:
     container_name: lecturer-interface
+    pull_policy: always
     image: ghcr.io/gamify-it/lecturer-interface:main
+    restart: always
+    expose:
+      - "80"
+
+  finitequiz:
+    container_name: finitequiz
+    image: ghcr.io/gamify-it/finitequiz:main
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+
+  third-party-license-notice:
+    container_name: third-party-license-notice
+    image: ghcr.io/gamify-it/third-party-license-notice:latest
+    pull_policy: always
     restart: always
     expose:
       - "80"

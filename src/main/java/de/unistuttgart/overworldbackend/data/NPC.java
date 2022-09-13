@@ -43,4 +43,10 @@ public class NPC {
     this.text = text;
     this.index = index;
   }
+
+  public NPC(final List<String> text, String description, final int index) {
+    this.text = text;
+    this.index = index;
+    this.description = description;
+  }
 }

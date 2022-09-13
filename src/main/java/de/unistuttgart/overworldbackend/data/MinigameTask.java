@@ -43,4 +43,11 @@ public class MinigameTask {
     this.configurationId = configurationId;
     this.index = index;
   }
+
+  public MinigameTask(final Minigame game, String description, final UUID configurationId, final int index) {
+    this.game = game;
+    this.configurationId = configurationId;
+    this.index = index;
+    this.description = description;
+  }
 }
