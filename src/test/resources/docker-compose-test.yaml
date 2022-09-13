@@ -4,27 +4,15 @@ services:
 
   #databases
   setup:
-    image: ghcr.io/gamify-it/test-data:feature-unlocking-logic
+    image: ghcr.io/gamify-it/test-data:feature-clone-test-data
     pull_policy: always
     restart: on-failure
     environment:
       POSTGRES_SETUP: >
-        login/default.sql
         overworld/cloneTestData.sql
         chickenshock/cloneTestData.sql
         finitequiz/cloneTestData.sql
         crosswordpuzzle/cloneTestData.sql
-        bugfinder/cloneTestData.sql
-
-  login-db:
-    image: postgres:14-alpine
-    pull_policy: always
-    restart: always
-    expose:
-      - "5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
 
   overworld-db:
     image: postgres:14-alpine
@@ -77,19 +65,6 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   #backends
-  login-backend:
-    image: ghcr.io/gamify-it/login-backend:main
-    pull_policy: always
-    restart: always
-    expose:
-      - "80"
-    depends_on:
-      - login-db
-    environment:
-      - JWT_KEY=SecretKEY
-      - JWT_VALIDITY_DURATION=720h
-      - POSTGRES_URL=postgresql://postgres:postgres@login-db:5432/
-
   crosswordpuzzle-backend:
     image: ghcr.io/gamify-it/crosswordpuzzle-backend:main
     pull_policy: always
