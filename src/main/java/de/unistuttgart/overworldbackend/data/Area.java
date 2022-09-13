@@ -30,6 +30,7 @@ public class Area {
   String topicName;
 
   boolean active;
+  boolean configured;
 
   @OneToMany(cascade = CascadeType.ALL)
   Set<MinigameTask> minigameTasks;
