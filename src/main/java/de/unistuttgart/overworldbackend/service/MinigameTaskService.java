@@ -6,10 +6,10 @@ import de.unistuttgart.overworldbackend.data.MinigameTask;
 import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
+import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
+import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
-import de.unistuttgart.overworldbackend.repositories.WorldRepository;
-import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -30,13 +30,13 @@ public class MinigameTaskService {
   private WorldService worldService;
 
   @Autowired
-  private WorldRepository worldRepository;
+  private WorldMapper worldMapper;
 
   @Autowired
   private DungeonService dungeonService;
 
   @Autowired
-  private DungeonRepository dungeonRepository;
+  private DungeonMapper dungeonMapper;
 
   @Autowired
   private MinigameTaskMapper minigameTaskMapper;
@@ -227,7 +227,8 @@ public class MinigameTaskService {
       if(!world.isConfigured())
       {
         world.setConfigured(true);
-        worldRepository.save(world);
+        WorldDTO worldDTO = worldMapper.worldToWorldDTO(world);
+        worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
       }
     }
     else
@@ -236,7 +237,8 @@ public class MinigameTaskService {
       if(!dungeon.isConfigured())
       {
         dungeon.setConfigured(true);
-        dungeonRepository.save(dungeon);
+        DungeonDTO dungeonDTO = dungeonMapper.dungeonToDungeonDTO(dungeon);
+        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
       }
     }
   }
@@ -258,7 +260,8 @@ public class MinigameTaskService {
       if(amountOfConfiguredMinigames <= 0)
       {
         world.setConfigured(false);
-        worldRepository.save(world);
+        WorldDTO worldDTO = worldMapper.worldToWorldDTO(world);
+        worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
       }
     }
     else
@@ -269,7 +272,8 @@ public class MinigameTaskService {
       if(amountOfConfiguredMinigames <= 0)
       {
         dungeon.setConfigured(false);
-        dungeonRepository.save(dungeon);
+        DungeonDTO dungeonDTO = dungeonMapper.dungeonToDungeonDTO(dungeon);
+        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
       }
     }
   }
