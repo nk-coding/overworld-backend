@@ -96,9 +96,9 @@ class MinigameTaskControllerTest {
     minigameTask2.setIndex(2);
 
     final MinigameTask minigameTask3 = new MinigameTask();
-    minigameTask2.setConfigurationId(UUID.randomUUID());
-    minigameTask2.setGame(Minigame.CROSSWORDPUZZLE);
-    minigameTask2.setIndex(3);
+    minigameTask3.setConfigurationId(UUID.randomUUID());
+    minigameTask3.setGame(Minigame.CROSSWORDPUZZLE);
+    minigameTask3.setIndex(3);
 
     final Dungeon dungeon = new Dungeon();
     dungeon.setIndex(1);
@@ -294,7 +294,7 @@ class MinigameTaskControllerTest {
     final Minigame newGame = Minigame.CHICKENSHOCK;
     final String newDescription = "New Chickenshock game";
     final UUID newConfigurationId = UUID.randomUUID();
-    final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
+    final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
     updateMinigameTaskDTO.setGame(newGame);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
     updateMinigameTaskDTO.setDescription(newDescription);
