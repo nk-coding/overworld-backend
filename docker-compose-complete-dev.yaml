@@ -126,7 +126,7 @@ services:
 
   finitequiz-backend:
     container_name: finitequiz-backend
-    image: ghcr.io/gamify-it/finitequiz-backend:latest
+    image: ghcr.io/gamify-it/finitequiz-backend:main
     pull_policy: always
     restart: always
     expose:
@@ -219,7 +219,7 @@ services:
 
   finitequiz:
     container_name: finitequiz
-    image: ghcr.io/gamify-it/finitequiz:latest
+    image: ghcr.io/gamify-it/finitequiz:main
     pull_policy: always
     restart: always
     expose:

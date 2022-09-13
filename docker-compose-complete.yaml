@@ -104,6 +104,10 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://overworld-db:5432/postgres
       - CHICKENSHOCK_URL=http://chickenshock-backend/api/v1
+      - CROSSWORDPUZZLE_URL=http://crosswordpuzzle-backend/api/v1
+      - FINITEQUIZ_URL=http://finitequiz-backend/api/v1
+      - BUGFINDER_URL=http://bugfinder-backend/api/v1
+
 
   crosswordpuzzle-backend:
     container_name:   crosswordpuzzle-backend
@@ -133,7 +137,7 @@ services:
 
   finitequiz-backend:
     container_name: finitequiz-backend
-    image: ghcr.io/gamify-it/finitequiz-backend:latest
+    image: ghcr.io/gamify-it/finitequiz-backend:main
     pull_policy: always
     restart: always
     expose:
@@ -220,7 +224,7 @@ services:
 
   finitequiz:
     container_name: finitequiz
-    image: ghcr.io/gamify-it/finitequiz:latest
+    image: ghcr.io/gamify-it/finitequiz:main
     pull_policy: always
     restart: always
     expose:
