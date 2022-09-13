@@ -71,6 +71,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  bugfinder-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
   #backends
   login-backend:
     container_name: login-backend
@@ -128,6 +138,19 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
+
+  bugfinder-backend:
+    image: ghcr.io/gamify-it/bugfinder-backend:feature-bugfinder-backend
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - bugfinder-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://bugfinder-db:5432/postgres
 
   #frontends
   login-frontend:
