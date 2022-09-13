@@ -27,6 +27,7 @@ public class AreaDTO {
   String topicName;
 
   boolean active;
+  boolean configured;
 
   Set<MinigameTaskDTO> minigameTasks;
   Set<NPCDTO> npcs;
