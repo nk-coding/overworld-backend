@@ -48,10 +48,10 @@ public class CloneTest {
   )
     .withExposedService("overworld-db", 5432, Wait.forListeningPort())
     .withExposedService("reverse-proxy", 80)
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80))
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80))
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80))
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/bugfinder/api/v1/configurations").forPort(80));
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80).forStatusCode(400))
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(400))
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80).forStatusCode(400))
+    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/bugfinder/api/v1/configurations").forPort(80).forStatusCode(400));
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
@@ -210,8 +210,8 @@ public class CloneTest {
     }
     switch (minigameTask1.getGame()) {
       case CHICKENSHOCK -> {
-        ChickenshockConfiguration config1 = chickenshockClient.getConfiguration(minigameTask1.getConfigurationId());
-        ChickenshockConfiguration config2 = chickenshockClient.getConfiguration(minigameTask2.getConfigurationId());
+        ChickenshockConfiguration config1 = chickenshockClient.getConfiguration("", minigameTask1.getConfigurationId());
+        ChickenshockConfiguration config2 = chickenshockClient.getConfiguration("", minigameTask2.getConfigurationId());
         config1
           .getQuestions()
           .forEach(chickenshockQuestion -> {
@@ -225,9 +225,11 @@ public class CloneTest {
       }
       case CROSSWORDPUZZLE -> {
         CrosswordpuzzleConfiguration config1 = crosswordpuzzleClient.getConfiguration(
+"",
           minigameTask1.getConfigurationId()
         );
         CrosswordpuzzleConfiguration config2 = crosswordpuzzleClient.getConfiguration(
+"",
           minigameTask2.getConfigurationId()
         );
         config1
@@ -244,8 +246,8 @@ public class CloneTest {
           });
       }
       case FINITEQUIZ -> {
-        FinitequizConfiguration config1 = finitequizClient.getConfiguration(minigameTask1.getConfigurationId());
-        FinitequizConfiguration config2 = finitequizClient.getConfiguration(minigameTask2.getConfigurationId());
+        FinitequizConfiguration config1 = finitequizClient.getConfiguration("", minigameTask1.getConfigurationId());
+        FinitequizConfiguration config2 = finitequizClient.getConfiguration("", minigameTask2.getConfigurationId());
         config1
           .getQuestions()
           .forEach(finitequizQuestion -> {
