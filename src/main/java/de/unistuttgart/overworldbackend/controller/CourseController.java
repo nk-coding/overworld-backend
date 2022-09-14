@@ -71,8 +71,12 @@ public class CourseController {
   )
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("/{id}/clone")
-  public CourseDTO cloneCourse(@PathVariable int id, @Valid @RequestBody CourseInitialData course) {
+  public CourseDTO cloneCourse(
+    @CookieValue("access_token") final String accessToken,
+    @PathVariable int id,
+    @Valid @RequestBody CourseInitialData course
+  ) {
     log.debug("clone course {}", id);
-    return courseService.cloneCourse(id, course);
+    return courseService.cloneCourse(id, course, accessToken);
   }
 }

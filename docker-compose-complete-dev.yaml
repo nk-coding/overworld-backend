@@ -5,7 +5,7 @@ services:
   #databases
   setup:
     container_name: setup
-    image: ghcr.io/gamify-it/test-data:latest
+    image: ghcr.io/gamify-it/test-data:main
     pull_policy: always
     restart: on-failure
     environment:
@@ -116,6 +116,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://crosswordpuzzle-db:5432/postgres
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   chickenshock-backend:
     container_name:   chickenshock-backend
@@ -130,6 +132,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   finitequiz-backend:
     container_name: finitequiz-backend
@@ -145,6 +149,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   bugfinder-backend:
     image: ghcr.io/gamify-it/bugfinder-backend:feature-bugfinder-backend

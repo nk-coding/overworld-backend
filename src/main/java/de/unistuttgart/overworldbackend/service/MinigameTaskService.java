@@ -13,7 +13,6 @@ import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import java.util.Optional;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

@@ -55,6 +55,8 @@ public class CourseService {
   @Autowired
   private CourseMapper courseMapper;
 
+  private String currentAccessToken;
+
   public CourseService() {
     configCourse = new CourseConfig();
     ObjectMapper mapper = new ObjectMapper();
@@ -171,7 +173,8 @@ public class CourseService {
     return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, dungeonId);
   }
 
-  public CourseDTO cloneCourse(int id, CourseInitialData courseInitialData) {
+  public CourseDTO cloneCourse(int id, CourseInitialData courseInitialData, final String accessToken) {
+    currentAccessToken = accessToken;
     Course course = getCourse(id);
     Course cloneCourse = new Course(
       courseInitialData.getCourseName(),
@@ -236,10 +239,13 @@ public class CourseService {
         if (minigameTask.getConfigurationId() == null) {
           return new MinigameTask(Minigame.CHICKENSHOCK, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
-          ChickenshockConfiguration config = chickenshockClient.getConfiguration(minigameTask.getConfigurationId());
+          ChickenshockConfiguration config = chickenshockClient.getConfiguration(
+            currentAccessToken,
+            minigameTask.getConfigurationId()
+          );
           config.setId(null);
           config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
-          config = chickenshockClient.postConfiguration(config);
+          config = chickenshockClient.postConfiguration(currentAccessToken, config);
           return new MinigameTask(
             Minigame.CHICKENSHOCK,
             minigameTask.getDescription(),
@@ -251,10 +257,13 @@ public class CourseService {
         if (minigameTask.getConfigurationId() == null) {
           return new MinigameTask(Minigame.FINITEQUIZ, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
-          FinitequizConfiguration config = finitequizClient.getConfiguration(minigameTask.getConfigurationId());
+          FinitequizConfiguration config = finitequizClient.getConfiguration(
+            currentAccessToken,
+            minigameTask.getConfigurationId()
+          );
           config.setId(null);
           config.getQuestions().forEach(finitequizQuestion -> finitequizQuestion.setId(null));
-          config = finitequizClient.postConfiguration(config);
+          config = finitequizClient.postConfiguration(currentAccessToken, config);
           return new MinigameTask(
             Minigame.FINITEQUIZ,
             minigameTask.getDescription(),
@@ -272,11 +281,12 @@ public class CourseService {
           );
         } else {
           CrosswordpuzzleConfiguration config = crosswordpuzzleClient.getConfiguration(
+            currentAccessToken,
             minigameTask.getConfigurationId()
           );
           config.setId(null);
           config.getQuestions().forEach(crosswordpuzzleQuestion -> crosswordpuzzleQuestion.setId(null));
-          config = crosswordpuzzleClient.postConfiguration(config);
+          config = crosswordpuzzleClient.postConfiguration(currentAccessToken, config);
           return new MinigameTask(
             Minigame.CROSSWORDPUZZLE,
             minigameTask.getDescription(),
@@ -288,7 +298,10 @@ public class CourseService {
         if (minigameTask.getConfigurationId() == null) {
           return new MinigameTask(Minigame.BUGFINDER, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
-          BugfinderConfiguration config = bugfinderClient.getConfiguration(minigameTask.getConfigurationId());
+          BugfinderConfiguration config = bugfinderClient.getConfiguration(
+            currentAccessToken,
+            minigameTask.getConfigurationId()
+          );
           config.setId(null);
           config
             .getCodes()
@@ -296,7 +309,7 @@ public class CourseService {
               bugfinderCode.setId(null);
               bugfinderCode.getWords().forEach(bugfinderWord -> bugfinderWord.setId(null));
             });
-          config = bugfinderClient.postConfiguration(config);
+          config = bugfinderClient.postConfiguration(currentAccessToken, config);
           return new MinigameTask(
             Minigame.BUGFINDER,
             minigameTask.getDescription(),
