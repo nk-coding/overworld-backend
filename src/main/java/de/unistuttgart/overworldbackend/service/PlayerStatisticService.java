@@ -6,16 +6,15 @@ import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.WorldRepository;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -55,17 +54,17 @@ public class PlayerStatisticService {
    */
   public PlayerStatistic getPlayerStatisticFromCourse(final int courseId, final String userId) {
     return playerstatisticRepository
-            .findByCourseIdAndUserId(courseId, userId)
-            .orElseThrow(() ->
-                    new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
-                            String.format(
-                                    "There is no playerstatistic from player with userId %s in course with id %s.",
-                                    userId,
-                                    courseId
-                            )
-                    )
-            );
+      .findByCourseIdAndUserId(courseId, userId)
+      .orElseThrow(() ->
+        new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          String.format(
+            "There is no playerstatistic from player with userId %s in course with id %s.",
+            userId,
+            courseId
+          )
+        )
+      );
   }
 
   /**
@@ -79,13 +78,13 @@ public class PlayerStatisticService {
    */
   public PlayerStatisticDTO createPlayerStatisticInCourse(final int courseId, final Player player) {
     final Optional<PlayerStatistic> existingPlayerstatistic = playerstatisticRepository.findByCourseIdAndUserId(
-            courseId,
-            player.getUserId()
+      courseId,
+      player.getUserId()
     );
     if (existingPlayerstatistic.isPresent()) {
       throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST,
-              String.format("There is already a playerstatistic for userId %s in course %s", player.getUserId(), courseId)
+        HttpStatus.BAD_REQUEST,
+        String.format("There is already a playerstatistic for userId %s in course %s", player.getUserId(), courseId)
       );
     }
     final Course course = courseService.getCourse(courseId);
@@ -120,9 +119,9 @@ public class PlayerStatisticService {
    *                                 (400) when combination of world and dungeon in currentLocation does not exist
    */
   public PlayerStatisticDTO updatePlayerStatisticInCourse(
-          final int courseId,
-          final String playerId,
-          final PlayerStatisticDTO playerstatisticDTO
+    final int courseId,
+    final String playerId,
+    final PlayerStatisticDTO playerstatisticDTO
   ) {
     final PlayerStatistic playerstatistic = getPlayerStatisticFromCourse(courseId, playerId);
 
@@ -132,7 +131,7 @@ public class PlayerStatisticService {
 
     try {
       playerstatistic.setCurrentArea(
-              areaService.getAreaFromAreaLocationDTO(courseId, playerstatisticDTO.getCurrentArea())
+        areaService.getAreaFromAreaLocationDTO(courseId, playerstatisticDTO.getCurrentArea())
       );
     } catch (ResponseStatusException exception) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Specified area does not exist");
@@ -149,7 +148,7 @@ public class PlayerStatisticService {
    */
   public void checkForUnlockedAreas(Area currentArea, PlayerStatistic playerStatistic) {
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
-            playerStatistic.getId()
+      playerStatistic.getId()
     );
 
     int courseId = playerStatistic.getCourse().getId();
@@ -158,36 +157,35 @@ public class PlayerStatisticService {
       if (currentArea instanceof World currentWorld) {
         //if world -> unlock next dungeon or if not possible next world
         currentWorld
-                .getDungeons()
-                .parallelStream()
-                .min(Comparator.comparingInt(Area::getIndex))
-                .filter(Dungeon::isConfigured)
-                .ifPresentOrElse(
-                        playerStatistic::addUnlockedArea,
-                        () ->
-                                worldRepository
-                                        .findByIndexAndCourseId(currentWorld.getIndex() + 1, courseId)
-                                        .filter(Area::isConfigured)
-                                        .ifPresent(playerStatistic::addUnlockedArea)
-                );
-
+          .getDungeons()
+          .parallelStream()
+          .min(Comparator.comparingInt(Area::getIndex))
+          .filter(Dungeon::isConfigured)
+          .ifPresentOrElse(
+            playerStatistic::addUnlockedArea,
+            () ->
+              worldRepository
+                .findByIndexAndCourseId(currentWorld.getIndex() + 1, courseId)
+                .filter(Area::isConfigured)
+                .ifPresent(playerStatistic::addUnlockedArea)
+          );
       } else if (currentArea instanceof Dungeon currentDungeon) {
         //if dungeon -> unlock next dungeon or if not possible next world
         currentDungeon
-                .getWorld()
-                .getDungeons()
-                .parallelStream()
-                .filter(dungeon -> dungeon.getIndex() > currentDungeon.getIndex())
-                .min(Comparator.comparingInt(Dungeon::getIndex))
-                .filter(Dungeon::isConfigured)
-                .ifPresentOrElse(
-                        playerStatistic::addUnlockedArea,
-                        () ->
-                                worldRepository
-                                        .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
-                                        .filter(Area::isConfigured)
-                                        .ifPresent(playerStatistic::addUnlockedArea)
-                );
+          .getWorld()
+          .getDungeons()
+          .parallelStream()
+          .filter(dungeon -> dungeon.getIndex() > currentDungeon.getIndex())
+          .min(Comparator.comparingInt(Dungeon::getIndex))
+          .filter(Dungeon::isConfigured)
+          .ifPresentOrElse(
+            playerStatistic::addUnlockedArea,
+            () ->
+              worldRepository
+                .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
+                .filter(Area::isConfigured)
+                .ifPresent(playerStatistic::addUnlockedArea)
+          );
       }
     }
   }
@@ -201,15 +199,15 @@ public class PlayerStatisticService {
    */
   private boolean isAreaCompleted(final Area area, final List<PlayerTaskStatistic> playerTaskStatistics) {
     return area
-            .getMinigameTasks()
-            .parallelStream()
-            .filter(minigameTask -> minigameTask.getGame() != null && minigameTask.getGame() != Minigame.NONE)
-            .allMatch(minigameTask ->
-                    playerTaskStatistics
-                            .parallelStream()
-                            .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
-                            .anyMatch(PlayerTaskStatistic::isCompleted)
-            );
+      .getMinigameTasks()
+      .parallelStream()
+      .filter(minigameTask -> Minigame.isConfigured(minigameTask.getGame()))
+      .allMatch(minigameTask ->
+        playerTaskStatistics
+          .parallelStream()
+          .filter(playerTaskStatistic -> playerTaskStatistic.getMinigameTask().equals(minigameTask))
+          .anyMatch(PlayerTaskStatistic::isCompleted)
+      );
   }
 
   private World getFirstWorld(final int courseId) {

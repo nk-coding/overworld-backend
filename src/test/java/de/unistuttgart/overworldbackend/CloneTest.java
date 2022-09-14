@@ -110,7 +110,7 @@ public class CloneTest {
   }
 
   @Test
-  public void cloneCourseTest() throws Exception {
+  void cloneCourseTest() throws Exception {
     final MvcResult resultGet = mvc
       .perform(get(fullURL + "/1").contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
