@@ -201,7 +201,7 @@ public class PlayerStatisticService {
     return area
       .getMinigameTasks()
       .parallelStream()
-      .filter(minigameTask -> minigameTask.getGame() != null && minigameTask.getGame() != Minigame.NONE)
+      .filter(minigameTask -> Minigame.isConfigured(minigameTask.getGame()))
       .allMatch(minigameTask ->
         playerTaskStatistics
           .parallelStream()

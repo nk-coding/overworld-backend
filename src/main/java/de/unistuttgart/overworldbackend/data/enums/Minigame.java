@@ -5,5 +5,14 @@ public enum Minigame {
   CHICKENSHOCK,
   BUGFINDER,
   CROSSWORDPUZZLE,
-  FINITEQUIZ,
+  FINITEQUIZ;
+
+  /**
+   * Checks if a minigame is configured
+   * @param minigame minigame to be checked
+   * @return true if minigame is configured, false otherwise
+   */
+  public static boolean isConfigured(final Minigame minigame) {
+    return minigame != null && minigame != Minigame.NONE;
+  }
 }
