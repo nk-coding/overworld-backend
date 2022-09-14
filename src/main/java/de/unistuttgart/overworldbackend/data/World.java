@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -30,5 +31,19 @@ public class World extends Area {
   ) {
     super(staticName, topicName, active, minigameTasks, npcs, index);
     this.dungeons = dungeons;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    World world = (World) o;
+    return Objects.equals(dungeons, world.dungeons);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), dungeons);
   }
 }

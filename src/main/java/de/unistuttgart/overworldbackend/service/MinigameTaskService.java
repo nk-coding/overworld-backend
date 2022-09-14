@@ -6,10 +6,10 @@ import de.unistuttgart.overworldbackend.data.MinigameTask;
 import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
-import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import java.util.Optional;
 import java.util.Set;
@@ -182,12 +182,9 @@ public class MinigameTaskService {
     minigameTask.setDescription(taskDTO.getDescription());
     final MinigameTask updatedMinigameTask = minigameTaskRepository.save(minigameTask);
     boolean configuredAfter = isMinigameConfigured(updatedMinigameTask.getGame());
-    if(configuredAfter && !configuredBefore)
-    {
+    if (configuredAfter && !configuredBefore) {
       minigameAdded(courseId, worldIndex, dungeonIndex);
-    }
-    else if(!configuredAfter && configuredBefore)
-    {
+    } else if (!configuredAfter && configuredBefore) {
       minigameRemoved(courseId, worldIndex, dungeonIndex);
     }
     return minigameTaskMapper.minigameTaskToMinigameTaskDTO(updatedMinigameTask);
@@ -198,8 +195,7 @@ public class MinigameTaskService {
    * @param configurationId the configurationId of the minigame
    * @return true if minigame is configured, false otherwise
    */
-  private boolean isMinigameConfigured(final Minigame minigame)
-  {
+  private boolean isMinigameConfigured(final Minigame minigame) {
     return minigame != null && minigame != Minigame.NONE;
   }
 
@@ -209,23 +205,17 @@ public class MinigameTaskService {
    * @param worldIndex the index of the world the minigame is in
    * @param dungeonIndex the index of the dungeon the minigame is in
    */
-  private void minigameAdded(final int courseId, final int worldIndex, final Optional<Integer> dungeonIndex)
-  {
-    if(dungeonIndex.isEmpty())
-    {
+  private void minigameAdded(final int courseId, final int worldIndex, final Optional<Integer> dungeonIndex) {
+    if (dungeonIndex.isEmpty()) {
       World world = worldService.getWorldByIndexFromCourse(courseId, worldIndex);
-      if(!world.isConfigured())
-      {
+      if (!world.isConfigured()) {
         world.setConfigured(true);
         WorldDTO worldDTO = worldMapper.worldToWorldDTO(world);
         worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
       }
-    }
-    else
-    {
+    } else {
       Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex.get());
-      if(!dungeon.isConfigured())
-      {
+      if (!dungeon.isConfigured()) {
         dungeon.setConfigured(true);
         DungeonDTO dungeonDTO = dungeonMapper.dungeonToDungeonDTO(dungeon);
         dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
@@ -239,28 +229,22 @@ public class MinigameTaskService {
    * @param worldIndex the index of the world the minigame is in
    * @param dungeonIndex the index of the dungeon the minigame is in
    */
-  private void minigameRemoved(final int courseId, final int worldIndex, final Optional<Integer> dungeonIndex)
-  {
+  private void minigameRemoved(final int courseId, final int worldIndex, final Optional<Integer> dungeonIndex) {
     Set<MinigameTask> minigames;
-    if(dungeonIndex.isEmpty())
-    {
+    if (dungeonIndex.isEmpty()) {
       World world = worldService.getWorldByIndexFromCourse(courseId, worldIndex);
       minigames = world.getMinigameTasks();
       int amountOfConfiguredMinigames = getAmountOfConfiguredMinigames(minigames);
-      if(amountOfConfiguredMinigames <= 0)
-      {
+      if (amountOfConfiguredMinigames <= 0) {
         world.setConfigured(false);
         WorldDTO worldDTO = worldMapper.worldToWorldDTO(world);
         worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
       }
-    }
-    else
-    {
+    } else {
       Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex.get());
       minigames = dungeon.getMinigameTasks();
       int amountOfConfiguredMinigames = getAmountOfConfiguredMinigames(minigames);
-      if(amountOfConfiguredMinigames <= 0)
-      {
+      if (amountOfConfiguredMinigames <= 0) {
         dungeon.setConfigured(false);
         DungeonDTO dungeonDTO = dungeonMapper.dungeonToDungeonDTO(dungeon);
         dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
@@ -273,13 +257,10 @@ public class MinigameTaskService {
    * @param minigames the minigames to check
    * @return the amount of configured minigames
    */
-  private int getAmountOfConfiguredMinigames(Set<MinigameTask> minigames)
-  {
+  private int getAmountOfConfiguredMinigames(Set<MinigameTask> minigames) {
     int amountOfConfiguredMinigames = 0;
-    for(MinigameTask minigame : minigames)
-    {
-      if(isMinigameConfigured(minigame.getGame()))
-      {
+    for (MinigameTask minigame : minigames) {
+      if (isMinigameConfigured(minigame.getGame())) {
         amountOfConfiguredMinigames++;
       }
     }
