@@ -42,6 +42,6 @@ public class Dungeon extends Area {
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), world);
+    return Objects.hash(super.hashCode());
   }
 }
