@@ -13,6 +13,7 @@ services:
         chickenshock/cloneTestData.sql
         finitequiz/cloneTestData.sql
         crosswordpuzzle/cloneTestData.sql
+        bugfinder/cloneTestData.sql
 
   overworld-db:
     image: postgres:14-alpine
