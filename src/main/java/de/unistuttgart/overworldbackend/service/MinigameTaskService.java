@@ -9,6 +9,7 @@ import de.unistuttgart.overworldbackend.data.WorldDTO;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import java.util.Optional;
 import java.util.Set;
@@ -175,12 +176,12 @@ public class MinigameTaskService {
       dungeonIndex,
       taskIndex
     );
-    boolean configuredBefore = isMinigameConfigured(minigameTask.getConfigurationId());
+    boolean configuredBefore = isMinigameConfigured(minigameTask.getGame());
     minigameTask.setGame(taskDTO.getGame());
     minigameTask.setConfigurationId(taskDTO.getConfigurationId());
     minigameTask.setDescription(taskDTO.getDescription());
     final MinigameTask updatedMinigameTask = minigameTaskRepository.save(minigameTask);
-    boolean configuredAfter = isMinigameConfigured(updatedMinigameTask.getConfigurationId());
+    boolean configuredAfter = isMinigameConfigured(updatedMinigameTask.getGame());
     if(configuredAfter && !configuredBefore)
     {
       minigameAdded(courseId, worldIndex, dungeonIndex);
@@ -197,20 +198,9 @@ public class MinigameTaskService {
    * @param configurationId the configurationId of the minigame
    * @return true if minigame is configured, false otherwise
    */
-  private boolean isMinigameConfigured(final UUID configurationId)
+  private boolean isMinigameConfigured(final Minigame minigame)
   {
-    if(configurationId == null)
-    {
-      return false;
-    }
-    else if(configurationId.toString() == "NONE")
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }
+    return minigame != null && minigame != Minigame.NONE;
   }
 
   /**
@@ -288,7 +278,7 @@ public class MinigameTaskService {
     int amountOfConfiguredMinigames = 0;
     for(MinigameTask minigame : minigames)
     {
-      if(isMinigameConfigured(minigame.getConfigurationId()))
+      if(isMinigameConfigured(minigame.getGame()))
       {
         amountOfConfiguredMinigames++;
       }
