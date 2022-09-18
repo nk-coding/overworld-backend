@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.net.URIBuilder;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
 import de.unistuttgart.overworldbackend.client.FinitequizClient;
@@ -19,11 +20,18 @@ import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.Crossword
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizQuestion;
 import java.io.File;
+import java.net.URI;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -31,6 +39,10 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -48,10 +60,30 @@ public class CloneTest {
   )
     .withExposedService("overworld-db", 5432, Wait.forListeningPort())
     .withExposedService("reverse-proxy", 80)
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80).forStatusCode(400))
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(400))
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80).forStatusCode(400))
-    .waitingFor("reverse-proxy", Wait.forHttp("/minigames/bugfinder/api/v1/configurations").forPort(80).forStatusCode(400));
+    .waitingFor(
+      "reverse-proxy",
+      Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80).forStatusCode(400)
+    )
+    .waitingFor(
+      "reverse-proxy",
+      Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(200)
+    )
+    .waitingFor(
+      "reverse-proxy",
+      Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80).forStatusCode(400)
+    )
+    .waitingFor(
+      "reverse-proxy",
+      Wait.forHttp("/minigames/bugfinder/api/v1/configurations").forPort(80).forStatusCode(200)
+    )
+    .waitingFor(
+      "reverse-proxy",
+      Wait
+        .forHttp("/keycloak/realms/Gamify-IT/.well-known/openid-configuration")
+        .forPort(80)
+        .forStatusCode(200)
+        .withStartupTimeout(Duration.ofSeconds(120))
+    );
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
@@ -111,6 +143,30 @@ public class CloneTest {
 
   @Test
   void cloneCourseTest() throws Exception {
+    URI authorizationURI = new URIBuilder(
+      compose.getServiceHost("reverse-proxy", 80) + "/keycloak/realms/Gamify-IT/protocol/openid-connect/token"
+    )
+      .build();
+    WebClient webclient = WebClient.builder().build();
+    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+    formData.put("grant_type", Collections.singletonList("password"));
+    formData.put("client_id", Collections.singletonList("game"));
+    formData.put("username", Collections.singletonList("lecturer"));
+    formData.put("password", Collections.singletonList("lecturer"));
+
+    String result = webclient
+      .post()
+      .uri(authorizationURI)
+      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+      .body(BodyInserters.fromFormData(formData))
+      .retrieve()
+      .bodyToMono(String.class)
+      .block();
+
+    JacksonJsonParser jsonParser = new JacksonJsonParser();
+
+    String access_token = jsonParser.parseMap(result).get("access_token").toString();
+
     final MvcResult resultGet = mvc
       .perform(get(fullURL + "/1").contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
@@ -120,6 +176,8 @@ public class CloneTest {
       objectMapper.readValue(resultGet.getResponse().getContentAsString(), CourseDTO.class)
     );
 
+    final Cookie cookie = new Cookie("access_token", access_token);
+
     CourseInitialData initialData = new CourseInitialData();
     initialData.setCourseName("CloneCourse");
     initialData.setDescription("CloneDescription");
@@ -128,7 +186,7 @@ public class CloneTest {
     final String bodyValue = objectMapper.writeValueAsString(initialData);
 
     final MvcResult resultClone = mvc
-      .perform(post(fullURL + "/1/clone").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(fullURL + "/1/clone").content(bodyValue).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
     final Course cloneCourse = courseMapper.courseDTOToCourse(
@@ -149,7 +207,7 @@ public class CloneTest {
             .get();
           assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
           assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
-          compareMinigame(minigameTask, cloneMinigameTask);
+          compareMinigame(minigameTask, cloneMinigameTask, access_token);
         });
       world
         .getNpcs()
@@ -180,7 +238,7 @@ public class CloneTest {
               .get();
             assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
             assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
-            compareMinigame(minigameTask, cloneMinigameTask);
+            compareMinigame(minigameTask, cloneMinigameTask, access_token);
           });
         dungeon
           .getNpcs()
@@ -201,7 +259,7 @@ public class CloneTest {
     }
   }
 
-  private void compareMinigame(MinigameTask minigameTask1, MinigameTask minigameTask2) {
+  private void compareMinigame(MinigameTask minigameTask1, MinigameTask minigameTask2, String access_token) {
     if (minigameTask1 == null) {
       return;
     }
@@ -210,8 +268,14 @@ public class CloneTest {
     }
     switch (minigameTask1.getGame()) {
       case CHICKENSHOCK -> {
-        ChickenshockConfiguration config1 = chickenshockClient.getConfiguration("", minigameTask1.getConfigurationId());
-        ChickenshockConfiguration config2 = chickenshockClient.getConfiguration("", minigameTask2.getConfigurationId());
+        ChickenshockConfiguration config1 = chickenshockClient.getConfiguration(
+          access_token,
+          minigameTask1.getConfigurationId()
+        );
+        ChickenshockConfiguration config2 = chickenshockClient.getConfiguration(
+          access_token,
+          minigameTask2.getConfigurationId()
+        );
         config1
           .getQuestions()
           .forEach(chickenshockQuestion -> {
@@ -225,11 +289,11 @@ public class CloneTest {
       }
       case CROSSWORDPUZZLE -> {
         CrosswordpuzzleConfiguration config1 = crosswordpuzzleClient.getConfiguration(
-"",
+          access_token,
           minigameTask1.getConfigurationId()
         );
         CrosswordpuzzleConfiguration config2 = crosswordpuzzleClient.getConfiguration(
-"",
+          access_token,
           minigameTask2.getConfigurationId()
         );
         config1
@@ -246,8 +310,14 @@ public class CloneTest {
           });
       }
       case FINITEQUIZ -> {
-        FinitequizConfiguration config1 = finitequizClient.getConfiguration("", minigameTask1.getConfigurationId());
-        FinitequizConfiguration config2 = finitequizClient.getConfiguration("", minigameTask2.getConfigurationId());
+        FinitequizConfiguration config1 = finitequizClient.getConfiguration(
+          access_token,
+          minigameTask1.getConfigurationId()
+        );
+        FinitequizConfiguration config2 = finitequizClient.getConfiguration(
+          access_token,
+          minigameTask2.getConfigurationId()
+        );
         config1
           .getQuestions()
           .forEach(finitequizQuestion -> {

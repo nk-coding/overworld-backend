@@ -4,16 +4,26 @@ services:
 
   #databases
   setup:
-    image: ghcr.io/gamify-it/test-data:main
+    image: ghcr.io/gamify-it/test-data:maintenance-keycloak-clone-test-data
     pull_policy: always
     restart: on-failure
     environment:
       POSTGRES_SETUP: >
+        keycloak/cloneTestData.sql
         overworld/cloneTestData.sql
         chickenshock/cloneTestData.sql
         finitequiz/cloneTestData.sql
         crosswordpuzzle/cloneTestData.sql
         bugfinder/cloneTestData.sql
+
+  keycloak-db:
+    image: postgres:14-alpine
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
   overworld-db:
     image: postgres:14-alpine
@@ -66,6 +76,26 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   #backends
+  keycloak:
+    expose:
+      - "80"
+    image: quay.io/keycloak/keycloak:19.0
+    command:
+      - "start-dev"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/postgres
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+
+      KC_HOSTNAME_STRICT: "false"
+      KC_PROXY: edge
+      KC_HTTP_RELATIVE_PATH: /keycloak
+      KC_HTTP_PORT: 80
+
   crosswordpuzzle-backend:
     image: ghcr.io/gamify-it/crosswordpuzzle-backend:main
     pull_policy: always
@@ -79,6 +109,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://crosswordpuzzle-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   chickenshock-backend:
     image: ghcr.io/gamify-it/chickenshock-backend:main
@@ -93,6 +125,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   finitequiz-backend:
     image: ghcr.io/gamify-it/finitequiz-backend:main
@@ -107,6 +141,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   bugfinder-backend:
     image: ghcr.io/gamify-it/bugfinder-backend:feature-bugfinder-backend
@@ -120,6 +156,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://bugfinder-db:5432/postgres
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
 
   # reverse-proxy
