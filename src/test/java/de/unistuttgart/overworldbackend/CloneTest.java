@@ -58,6 +58,7 @@ public class CloneTest {
   public static DockerComposeContainer compose = new DockerComposeContainer(
     new File("src/test/resources/docker-compose-test.yaml")
   )
+    .withLocalCompose(true)
     .withExposedService("overworld-db", 5432, Wait.forListeningPort())
     .withExposedService("reverse-proxy", 80)
     .waitingFor(
