@@ -22,9 +22,7 @@ import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizQues
 import java.io.File;
 import java.net.URI;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.Cookie;
@@ -59,7 +57,7 @@ public class CloneTest {
     new File("src/test/resources/docker-compose-test.yaml")
   )
     .withPull(true)
-    .withRemoveImages(DockerComposeContainer.RemoveImages.ALL)
+    .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
     .withExposedService("overworld-db", 5432, Wait.forListeningPort())
     .withExposedService("reverse-proxy", 80)
     .waitingFor(
