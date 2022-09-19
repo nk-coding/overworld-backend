@@ -109,7 +109,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://crosswordpuzzle-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
-      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_ISSUER=http://${LOCAL_URL}/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   chickenshock-backend:
@@ -125,7 +125,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
-      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_ISSUER=http://${LOCAL_URL}/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   finitequiz-backend:
@@ -141,7 +141,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
-      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_ISSUER=http://${LOCAL_URL}/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   bugfinder-backend:
@@ -156,7 +156,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://bugfinder-db:5432/postgres
-      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_ISSUER=http://${LOCAL_URL}/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
 

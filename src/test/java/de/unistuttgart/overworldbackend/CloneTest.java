@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.net.URIBuilder;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
@@ -43,6 +44,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -53,11 +56,18 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class CloneTest {
 
   @Container
+  public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
+          .withDatabaseName("postgres")
+          .withUsername("postgres")
+          .withPassword("postgres");
+
+  @Container
   public static DockerComposeContainer compose = new DockerComposeContainer(
     new File("src/test/resources/docker-compose-test.yaml")
   )
     .withPull(true)
     .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
+    .withEnv("LOCAL_URL", postgresDB.getHost())
     .withExposedService("overworld-db", 5432, Wait.forListeningPort())
     .withExposedService("reverse-proxy", 80)
     .waitingFor(
