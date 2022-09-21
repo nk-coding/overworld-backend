@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(value = "bugfinderClient", url = "${bugfinder.url}/configuration")
+@FeignClient(value = "bugfinderClient", url = "${bugfinder.url}/configurations")
 public interface BugfinderClient {
   @GetMapping("/{id}")
   BugfinderConfiguration getConfiguration(
