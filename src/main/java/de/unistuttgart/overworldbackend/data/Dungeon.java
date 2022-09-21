@@ -10,6 +10,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * A dungeon is an instance of an Area.
+ * <p>
+ * A dungeon can be accessed through a world and contains multiple minigame tasks and NPCs to interact with.
+ * @see Area
+ */
 @Entity
 @Getter
 @Setter

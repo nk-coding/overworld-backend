@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Data Transfer Object which contains the basic data to create a course.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -11,6 +11,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
 
+/**
+ * A NPC has a list of text to talk to a player in an area.
+ *
+ * A NPC is located in an area and a player can interact with it.
+ */
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "index", "area_id", "course_id" }) })
 @Data

@@ -9,6 +9,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
 
+/**
+ * Data Transfer Object for PlayerStatistic.
+ *
+ * @see PlayerStatistic
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

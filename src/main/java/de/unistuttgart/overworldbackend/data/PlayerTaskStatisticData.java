@@ -11,6 +11,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Data Transfer Object to communicate a change of a minigame run from a player.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

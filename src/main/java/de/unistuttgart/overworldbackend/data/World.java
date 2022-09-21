@@ -9,6 +9,12 @@ import javax.persistence.OneToMany;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * A world is an instance of an Area.
+ * <p>
+ * In addition to the functionality offered by dungeons, a world can also hold several dungeons as "sub-levels".
+ * @see Dungeon
+ */
 @Entity
 @Getter
 @Setter

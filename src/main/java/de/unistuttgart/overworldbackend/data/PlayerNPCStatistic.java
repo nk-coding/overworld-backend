@@ -7,6 +7,12 @@ import javax.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Store the progress of a player with its player statistic of an interaction with a npc.
+ *
+ * @see PlayerStatistic
+ * @see NPC
+ */
 @Entity
 @Getter
 @Setter

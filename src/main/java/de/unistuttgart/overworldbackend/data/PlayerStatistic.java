@@ -9,6 +9,12 @@ import javax.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * The statistic of a player in a course.
+ *
+ * It contains informations about unlocked areas, completed dungeons, current area,
+ * statistics of minigames and statistics of npcs.
+ */
 @Entity
 @Getter
 @Setter

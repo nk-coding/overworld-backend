@@ -8,6 +8,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
+/**
+ * An action log to log a player's minigame run.
+ */
 @Entity
 @Getter
 @Setter

@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
 
+/**
+ * A minigame tasks stores the information about a task which game type is played and with which configuration.
+ *
+ * A minigame task is located in an area and a player can walk in such a minigame spot to start the minigame.
+ */
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "index", "area_id", "course_id" }) })
 @Data

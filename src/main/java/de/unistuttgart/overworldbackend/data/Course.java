@@ -12,6 +12,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * A course is the highest-level entity:
+ * It contains everything, all worlds and dungeons, minigames, NPCs, and player statistics.<br>
+ * When multiple courses exist, no data will be shared between them.
+ */
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "courseName", "semester" }) })
 @Data

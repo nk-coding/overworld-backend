@@ -7,6 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Data Transfer Object for World.
+ *
+ * @see World
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

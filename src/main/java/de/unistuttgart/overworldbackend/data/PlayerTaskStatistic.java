@@ -9,6 +9,12 @@ import javax.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Store the progress of a player with its player statistic of a minigame task.
+ *
+ * @see PlayerStatistic
+ * @see MinigameTask
+ */
 @Entity
 @Getter
 @Setter

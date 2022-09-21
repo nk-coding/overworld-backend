@@ -10,6 +10,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
+/**
+ * An action log to log a player's interaction with NPCs.
+ */
 @Entity
 @Getter
 @Setter
