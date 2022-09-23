@@ -107,6 +107,7 @@ class MinigameTaskControllerTest {
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of(minigameTask3));
     dungeon.setNpcs(Set.of());
+    dungeon.setBooks(Set.of());
 
     final World world = new World();
     world.setIndex(1);
@@ -115,6 +116,7 @@ class MinigameTaskControllerTest {
     world.setActive(true);
     world.setMinigameTasks(Set.of(minigameTask1, minigameTask2));
     world.setNpcs(Set.of());
+    world.setBooks(Set.of());
     world.setDungeons(Arrays.asList(dungeon));
 
     final Course course = new Course(
