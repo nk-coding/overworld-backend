@@ -37,7 +37,7 @@ public class NPCService {
    *
    * @throws ResponseStatusException (404) if npc not found
    * @param courseId the id of the course
-   * @param worldIndex the index of the word
+   * @param worldIndex the index of the world
    * @param npcIndex the index of the npc
    * @return the found npc
    */
@@ -61,7 +61,7 @@ public class NPCService {
    *
    * @throws ResponseStatusException (404) if npc not found
    * @param courseId the id of the course
-   * @param worldIndex the index of the word
+   * @param worldIndex the index of the world
    * @param dungeonIndex the index of the dungeon
    * @param npcIndex the index of the npc
    * @return the found npc
@@ -90,14 +90,14 @@ public class NPCService {
   /**
    * Update a npc by its id from a course and an area.
    *
-   * Only the text is updatable.
+   * Only the text and description is updatable.
    *
    * @throws ResponseStatusException (404) if npc not found
    * @param courseId the id of the course the npc should be part of
    * @param worldIndex the index of the world
    * @param npcIndex the index of the npc
    * @param npcDTO the updated parameters
-   * @return the npc area as DTO
+   * @return the updated npc as DTO
    */
   public NPCDTO updateNPCFromWorld(final int courseId, final int worldIndex, final int npcIndex, final NPCDTO npcDTO) {
     resetNPC(npcMapper.npcDTOToNPC(npcDTO));
@@ -111,7 +111,7 @@ public class NPCService {
   /**
    * Update a npc by its id from a course and an area.
    *
-   * Only the text is updatable.
+   * Only the text and description is updatable.
    *
    * @throws ResponseStatusException (404) if npc not found
    * @param courseId the id of the course the npc should be part of
@@ -119,7 +119,7 @@ public class NPCService {
    * @param dungeonIndex the index of the dungeon
    * @param npcIndex the index of the npc
    * @param npcDTO the updated parameters
-   * @return the npc area as DTO
+   * @return the updated npc area as DTO
    */
   public NPCDTO updateNPCFromDungeon(
     final int courseId,

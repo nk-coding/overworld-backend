@@ -13,4 +13,5 @@ public class WorldConfig {
   String staticName;
   int numberOfMinigames;
   int numberOfNPCs;
+  int numberOfBooks;
 }

@@ -76,6 +76,12 @@ public class Course {
           npc.setCourse(this);
           npc.setArea(world);
         });
+      world
+        .getBooks()
+        .forEach(book -> {
+          book.setCourse(this);
+          book.setArea(world);
+        });
       for (final Dungeon dungeon : world.getDungeons()) {
         dungeon.setWorld(world);
         dungeon.setCourse(this);
@@ -90,6 +96,12 @@ public class Course {
           .forEach(npc -> {
             npc.setCourse(this);
             npc.setArea(dungeon);
+          });
+        dungeon
+          .getBooks()
+          .forEach(book -> {
+            book.setCourse(this);
+            book.setArea(dungeon);
           });
       }
     });

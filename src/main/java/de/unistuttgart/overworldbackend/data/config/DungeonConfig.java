@@ -11,4 +11,5 @@ public class DungeonConfig {
   String staticName;
   int numberOfMinigames;
   int numberOfNPCs;
+  int numberOfBooks;
 }
