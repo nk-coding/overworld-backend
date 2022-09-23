@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import java.util.UUID;
 import javax.persistence.*;
@@ -37,9 +38,11 @@ public class MinigameTask {
   @Nullable
   String description;
 
+  @JsonBackReference(value = "course-minigames")
   @ManyToOne
   Course course;
 
+  @JsonBackReference(value = "area-minigames")
   @ManyToOne
   Area area;
 

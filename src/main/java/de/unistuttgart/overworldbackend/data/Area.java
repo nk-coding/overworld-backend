@@ -55,13 +55,15 @@ public class Area {
    */
   boolean configured;
 
+  @JsonManagedReference(value = "area-minigames")
   @OneToMany(cascade = CascadeType.ALL)
   Set<MinigameTask> minigameTasks;
 
-  @JsonManagedReference
+  @JsonManagedReference(value = "area-npcs")
   @OneToMany(cascade = CascadeType.ALL)
   Set<NPC> npcs;
 
+  @JsonManagedReference(value = "area-books")
   @OneToMany(cascade = CascadeType.ALL)
   Set<Book> books;
 
