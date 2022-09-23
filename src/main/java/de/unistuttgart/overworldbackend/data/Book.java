@@ -3,6 +3,8 @@ package de.unistuttgart.overworldbackend.data;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.UUID;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,11 +36,9 @@ public class Book {
   @Nullable
   String description;
 
-  @JsonBackReference
   @ManyToOne
   Course course;
 
-  @JsonBackReference
   @ManyToOne
   Area area;
 

@@ -74,6 +74,7 @@ class WorldControllerTest {
     world.setActive(true);
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of());
+    world.setBooks(Set.of());
     world.setDungeons(Arrays.asList());
 
     final Course course = new Course(

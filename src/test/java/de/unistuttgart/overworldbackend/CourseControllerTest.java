@@ -79,6 +79,7 @@ class CourseControllerTest {
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
     dungeon.setNpcs(Set.of());
+    dungeon.setBooks(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
     final Set<MinigameTask> minigameTasks = new HashSet<>();
 
@@ -104,6 +105,7 @@ class CourseControllerTest {
     world.setMinigameTasks(minigameTasks);
     world.setNpcs(npcs);
     world.setDungeons(dungeons);
+    world.setBooks(Set.of());
     final List<World> worlds = new ArrayList<>();
     worlds.add(world);
 

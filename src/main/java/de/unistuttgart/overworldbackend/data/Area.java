@@ -62,7 +62,6 @@ public class Area {
   @OneToMany(cascade = CascadeType.ALL)
   Set<NPC> npcs;
 
-  @JsonManagedReference
   @OneToMany(cascade = CascadeType.ALL)
   Set<Book> books;
 

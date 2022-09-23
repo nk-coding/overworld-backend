@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,7 +42,7 @@ public class NPC {
   @ManyToOne
   Course course;
 
-  @JsonBackReference
+  @JsonManagedReference
   @ManyToOne
   Area area;
 
