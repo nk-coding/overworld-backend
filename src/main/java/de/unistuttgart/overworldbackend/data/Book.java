@@ -30,6 +30,7 @@ public class Book {
 
   int index;
 
+  @Column(length = 1000000)
   String text;
 
   @Nullable
