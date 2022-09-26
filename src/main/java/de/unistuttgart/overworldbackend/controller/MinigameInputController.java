@@ -25,7 +25,10 @@ public class MinigameInputController {
 
   @Operation(summary = "Submit statistics from a minigame run")
   @PostMapping("/submit-game-pass")
-  public PlayerTaskStatisticDTO inputData(@Valid @RequestBody PlayerTaskStatisticData data, @CookieValue("access_token") final String accessToken) {
+  public PlayerTaskStatisticDTO inputData(
+    @Valid @RequestBody PlayerTaskStatisticData data,
+    @CookieValue("access_token") final String accessToken
+  ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("submitted data from game run {}", data);
     return playerTaskStatisticService.submitData(data);

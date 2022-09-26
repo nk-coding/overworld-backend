@@ -190,7 +190,7 @@ public class CloneTest {
     String access_token = jsonParser.parseMap(result).get("access_token").toString();
 
     final MvcResult resultGet = mvc
-      .perform(get(fullURL + "/1").contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/1").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
