@@ -32,9 +32,10 @@ public class Dungeon extends Area {
     final boolean active,
     final Set<MinigameTask> minigameTasks,
     final Set<NPC> npcs,
+    final Set<Book> books,
     final int index
   ) {
-    super(staticName, topicName, active, minigameTasks, npcs, index);
+    super(staticName, topicName, active, minigameTasks, npcs, books, index);
   }
 
   @Override

@@ -57,9 +57,9 @@ public class CloneTest {
 
   @Container
   public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-          .withDatabaseName("postgres")
-          .withUsername("postgres")
-          .withPassword("postgres");
+    .withDatabaseName("postgres")
+    .withUsername("postgres")
+    .withPassword("postgres");
 
   @Container
   public static DockerComposeContainer compose = new DockerComposeContainer(

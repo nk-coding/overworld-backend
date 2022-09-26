@@ -7,13 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.mapper.BookMapper;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
-import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +32,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Transactional
 @SpringBootTest
 @Testcontainers
-class NPCControllerTest {
+class BookControllerTest {
 
   @Container
   public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
@@ -62,7 +60,7 @@ class NPCControllerTest {
   private DungeonMapper dungeonMapper;
 
   @Autowired
-  private NPCMapper npcMapper;
+  private BookMapper bookMapper;
 
   private String fullURL;
   private String fullDungeonURL;
@@ -74,32 +72,22 @@ class NPCControllerTest {
   private Dungeon initialDungoen;
   private DungeonDTO initialDungeonDTO;
 
-  private NPC initialNPC;
-  private NPCDTO initialNPCDTO;
-  private NPC initialDungeonNPC;
-  private NPCDTO initialDungeonNPCDTO;
+  private Book initialBook;
+  private BookDTO initialBookDTO;
+  private Book initialDungeonBook;
+  private BookDTO initialDungeonBookDTO;
 
   @BeforeEach
   public void createBasicData() {
     courseRepository.deleteAll();
 
-    final List<String> npcText = new ArrayList<>();
-    npcText.add("You want to learn PSE?");
-    npcText.add("This is so cool");
-    npcText.add("Let's go!");
+    final Book book = new Book();
+    book.setText("A large text");
+    book.setIndex(1);
 
-    final NPC npc = new NPC();
-    npc.setText(npcText);
-    npc.setIndex(1);
-
-    final List<String> dungeonNPCText = new ArrayList<>();
-    dungeonNPCText.add("You want to learn DSA?");
-    dungeonNPCText.add("This is so cool");
-    dungeonNPCText.add("Let's go!");
-
-    final NPC dungeonNPC = new NPC();
-    dungeonNPC.setText(dungeonNPCText);
-    dungeonNPC.setIndex(1);
+    final Book dungeonBook = new Book();
+    dungeonBook.setText("A much bigger text for a dungeon");
+    dungeonBook.setIndex(1);
 
     final Dungeon dungeon = new Dungeon();
     dungeon.setIndex(1);
@@ -107,8 +95,8 @@ class NPCControllerTest {
     dungeon.setTopicName("Dark UML");
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
-    dungeon.setNpcs(Set.of(dungeonNPC));
-    dungeon.setBooks(Set.of());
+    dungeon.setNpcs(Set.of());
+    dungeon.setBooks(Set.of(dungeonBook));
 
     final World world = new World();
     world.setIndex(1);
@@ -116,9 +104,9 @@ class NPCControllerTest {
     world.setTopicName("UML Winter");
     world.setActive(true);
     world.setMinigameTasks(Set.of());
-    world.setNpcs(Set.of(npc));
+    world.setNpcs(Set.of());
+    world.setBooks(Set.of(book));
     world.setDungeons(Arrays.asList(dungeon));
-    world.setBooks(Set.of());
 
     final Course course = new Course(
       "PSE",
@@ -135,25 +123,25 @@ class NPCControllerTest {
     initialDungoen = initialWorld.getDungeons().stream().findFirst().get();
     initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungoen);
 
-    initialNPC = initialWorld.getNpcs().stream().findFirst().get();
-    initialNPCDTO = npcMapper.npcToNPCDTO(initialNPC);
+    initialBook = initialWorld.getBooks().stream().findFirst().get();
+    initialBookDTO = bookMapper.bookToBookDTO(initialBook);
 
-    initialDungeonNPC = initialDungoen.getNpcs().stream().findFirst().get();
-    initialDungeonNPCDTO = npcMapper.npcToNPCDTO(initialDungeonNPC);
+    initialDungeonBook = initialDungoen.getBooks().stream().findFirst().get();
+    initialDungeonBookDTO = bookMapper.bookToBookDTO(initialDungeonBook);
 
     assertNotNull(initialWorld.getId());
     assertNotNull(initialWorldDTO.getId());
 
-    assertNotNull(initialNPC.getId());
-    assertNotNull(initialNPCDTO.getId());
+    assertNotNull(initialBook.getId());
+    assertNotNull(initialBookDTO.getId());
 
-    assertNotNull(initialDungeonNPC.getId());
-    assertNotNull(initialDungeonNPCDTO.getId());
+    assertNotNull(initialDungeonBook.getId());
+    assertNotNull(initialDungeonBookDTO.getId());
 
-    fullURL = String.format("/courses/%d/worlds/%d/npcs", initialCourse.getId(), initialWorld.getIndex());
+    fullURL = String.format("/courses/%d/worlds/%d/books", initialCourse.getId(), initialWorld.getIndex());
     fullDungeonURL =
       String.format(
-        "/courses/%d/worlds/%d/dungeons/%d/npcs",
+        "/courses/%d/worlds/%d/dungeons/%d/books",
         initialCourse.getId(),
         initialWorld.getIndex(),
         initialDungoen.getIndex()
@@ -163,10 +151,10 @@ class NPCControllerTest {
   }
 
   @Test
-  void updateNPCFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
-    final NPCDTO npcDTO = new NPCDTO();
-    npcDTO.setText(Arrays.asList("Hey ho"));
-    final String bodyValue = objectMapper.writeValueAsString(npcDTO);
+  void updateBookFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
+    final BookDTO bookDTO = new BookDTO();
+    bookDTO.setText("Hey ho");
+    final String bodyValue = objectMapper.writeValueAsString(bookDTO);
     mvc
       .perform(put(fullURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
@@ -174,33 +162,38 @@ class NPCControllerTest {
   }
 
   @Test
-  void updateNPCTaskFromWorld() throws Exception {
-    final List<String> newText = Arrays.asList("New text incoming");
-    final String newDescription = "NPC with new text";
-    final NPC updateNPCDTO = new NPC();
-    updateNPCDTO.setText(newText);
-    updateNPCDTO.setDescription(newDescription);
+  void updateBookFromWorld() throws Exception {
+    final String newText = "New text incoming";
+    final String newDescription = "Book with new text";
+    final BookDTO updateBookDTO = new BookDTO();
+    updateBookDTO.setText(newText);
+    updateBookDTO.setDescription(newDescription);
 
-    final String bodyValue = objectMapper.writeValueAsString(updateNPCDTO);
+    final String bodyValue = objectMapper.writeValueAsString(updateBookDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialNPCDTO.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialBookDTO.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
-    final NPCDTO updatedNPCDTOResult = objectMapper.readValue(result.getResponse().getContentAsString(), NPCDTO.class);
+    final BookDTO updatedBookDTOResult = objectMapper.readValue(
+      result.getResponse().getContentAsString(),
+      BookDTO.class
+    );
 
-    assertEquals(initialNPCDTO.getId(), updatedNPCDTOResult.getId());
-    assertEquals(newText, updatedNPCDTOResult.getText());
-    assertEquals(newDescription, updatedNPCDTOResult.getDescription());
-    assertEquals(initialNPCDTO.getIndex(), updatedNPCDTOResult.getIndex());
+    assertEquals(initialBookDTO.getId(), updatedBookDTOResult.getId());
+    assertEquals(newText, updatedBookDTOResult.getText());
+    assertEquals(newDescription, updatedBookDTOResult.getDescription());
+    assertEquals(initialBookDTO.getIndex(), updatedBookDTOResult.getIndex());
   }
 
   @Test
-  void updateNPCFromDungeon_DoesNotExist_ThrowsNotFound() throws Exception {
-    final NPCDTO npcDTO = new NPCDTO();
-    npcDTO.setText(Arrays.asList("Hey ho"));
-    final String bodyValue = objectMapper.writeValueAsString(npcDTO);
+  void updateBookFromDungeon_DoesNotExist_ThrowsNotFound() throws Exception {
+    final BookDTO bookDTO = new BookDTO();
+    bookDTO.setText("Hey ho");
+    final String bodyValue = objectMapper.writeValueAsString(bookDTO);
     mvc
       .perform(put(fullDungeonURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
@@ -208,26 +201,32 @@ class NPCControllerTest {
   }
 
   @Test
-  void updateNPCTaskFromDungeon() throws Exception {
-    final List<String> newText = Arrays.asList("New text incoming");
-    final NPC updateNPCDTO = new NPC();
-    updateNPCDTO.setText(newText);
+  void updateBookFromDungeon() throws Exception {
+    final String newText = "New text incoming";
+    final String newDescription = "Book with new text";
+    final BookDTO updateBookDTO = new BookDTO();
+    updateBookDTO.setText(newText);
+    updateBookDTO.setDescription(newDescription);
 
-    final String bodyValue = objectMapper.writeValueAsString(updateNPCDTO);
+    final String bodyValue = objectMapper.writeValueAsString(updateBookDTO);
 
     final MvcResult result = mvc
       .perform(
-        put(fullDungeonURL + "/" + initialDungeonNPCDTO.getIndex())
+        put(fullDungeonURL + "/" + initialDungeonBookDTO.getIndex())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
 
-    final NPCDTO updatedNPCDTOResult = objectMapper.readValue(result.getResponse().getContentAsString(), NPCDTO.class);
+    final BookDTO updatedBookDTOResult = objectMapper.readValue(
+      result.getResponse().getContentAsString(),
+      BookDTO.class
+    );
 
-    assertEquals(initialDungeonNPCDTO.getId(), updatedNPCDTOResult.getId());
-    assertEquals(newText, updatedNPCDTOResult.getText());
-    assertEquals(initialDungeonNPCDTO.getIndex(), updatedNPCDTOResult.getIndex());
+    assertEquals(initialDungeonBookDTO.getId(), updatedBookDTOResult.getId());
+    assertEquals(newText, updatedBookDTOResult.getText());
+    assertEquals(newDescription, updatedBookDTOResult.getDescription());
+    assertEquals(initialDungeonBookDTO.getIndex(), updatedBookDTOResult.getIndex());
   }
 }

@@ -115,6 +115,8 @@ services:
       - CROSSWORDPUZZLE_URL=http://crosswordpuzzle-backend/api/v1
       - FINITEQUIZ_URL=http://finitequiz-backend/api/v1
       - BUGFINDER_URL=http://bugfinder-backend/api/v1
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
 
   crosswordpuzzle-backend:
@@ -129,6 +131,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://crosswordpuzzle-db:5432/postgres
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
+      - OVERWORLD_URL=http://overworld-backend/api/v1
 
   chickenshock-backend:
     container_name:   chickenshock-backend
@@ -145,6 +150,7 @@ services:
       - OVERWORLD_URL=http://overworld-backend/api/v1
       - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
+      - OVERWORLD_URL=http://overworld-backend/api/v1
 
   finitequiz-backend:
     container_name: finitequiz-backend
@@ -175,6 +181,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://bugfinder-db:5432/postgres
+      - OVERWORLD_URL=http://overworld-backend/api/v1
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
 
   #frontends

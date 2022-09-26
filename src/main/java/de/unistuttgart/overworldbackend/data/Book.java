@@ -1,7 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import de.unistuttgart.overworldbackend.data.enums.Minigame;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.AccessLevel;
@@ -12,9 +12,9 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
 
 /**
- * A minigame tasks stores the information about a task which game type is played and with which configuration.
+ * A Book has a (large) text.
  *
- * A minigame task is located in an area and a player can walk in such a minigame spot to start the minigame.
+ * A Book is located in an area and a player can read it.
  */
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "index", "area_id", "course_id" }) })
@@ -22,7 +22,7 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MinigameTask {
+public class Book {
 
   @Id
   @GeneratedValue(generator = "uuid")
@@ -30,31 +30,27 @@ public class MinigameTask {
 
   int index;
 
-  @Enumerated(EnumType.STRING)
-  Minigame game;
-
-  UUID configurationId;
+  @Column(length = 1000000)
+  String text;
 
   @Nullable
   String description;
 
-  @JsonBackReference(value = "course-minigames")
+  @JsonBackReference(value = "course-books")
   @ManyToOne
   Course course;
 
-  @JsonBackReference(value = "area-minigames")
+  @JsonBackReference(value = "area-books")
   @ManyToOne
   Area area;
 
-  public MinigameTask(final Minigame game, final UUID configurationId, final int index) {
-    this.game = game;
-    this.configurationId = configurationId;
+  public Book(final String text, final int index) {
+    this.text = text;
     this.index = index;
   }
 
-  public MinigameTask(final Minigame game, String description, final UUID configurationId, final int index) {
-    this.game = game;
-    this.configurationId = configurationId;
+  public Book(final String text, String description, final int index) {
+    this.text = text;
     this.index = index;
     this.description = description;
   }
