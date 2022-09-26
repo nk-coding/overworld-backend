@@ -89,6 +89,7 @@ class DungeonControllerTest {
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
     dungeon.setNpcs(Set.of());
+    dungeon.setBooks(Set.of());
 
     final World world = new World();
     world.setIndex(1);
@@ -98,6 +99,7 @@ class DungeonControllerTest {
     world.setMinigameTasks(Set.of());
     world.setNpcs(Set.of());
     world.setDungeons(Arrays.asList(dungeon));
+    world.setBooks(Set.of());
 
     final Course course = new Course(
       "PSE",

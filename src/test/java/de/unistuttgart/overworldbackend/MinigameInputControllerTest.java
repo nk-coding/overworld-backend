@@ -131,6 +131,7 @@ class MinigameInputControllerTest {
     dungeon.setActive(true);
     dungeon.setMinigameTasks(dungeonMinigameTasks);
     dungeon.setNpcs(Set.of());
+    dungeon.setBooks(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
     dungeons.add(dungeon);
 
@@ -148,6 +149,7 @@ class MinigameInputControllerTest {
     world.setActive(true);
     world.setMinigameTasks(minigameTasks);
     world.setNpcs(Set.of());
+    world.setBooks(Set.of());
     world.setDungeons(dungeons);
     final List<World> worlds = new ArrayList<>();
     worlds.add(world);

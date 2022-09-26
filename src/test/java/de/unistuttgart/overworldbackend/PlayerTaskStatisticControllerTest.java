@@ -129,6 +129,7 @@ class PlayerTaskStatisticControllerTest {
     dungeon.setActive(true);
     dungeon.setMinigameTasks(dungeonMinigameTasks);
     dungeon.setNpcs(Set.of());
+    dungeon.setBooks(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
 
     final World world = new World();
@@ -138,6 +139,7 @@ class PlayerTaskStatisticControllerTest {
     world.setMinigameTasks(worldMinigameTasks);
     world.setNpcs(Set.of());
     world.setDungeons(dungeons);
+    world.setBooks(Set.of());
     List<World> worlds = new ArrayList<>();
     worlds.add(world);
 

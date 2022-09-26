@@ -142,6 +142,7 @@ public class CourseService {
   private void configureWorld(List<World> worlds, int worldId, WorldConfig worldConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
+    Set<Book> books = new HashSet<>();
     List<Dungeon> dungeons = new ArrayList<>();
     AtomicInteger dungeonId = new AtomicInteger(1);
     worldConfig
@@ -155,13 +156,18 @@ public class CourseService {
       NPC npc = new NPC(new ArrayList<>(), npcIndex);
       npcs.add(npc);
     }
-    World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, dungeons, worldId);
+    for (int bookIndex = 1; bookIndex <= worldConfig.getNumberOfBooks(); bookIndex++) {
+      Book book = new Book("", bookIndex);
+      books.add(book);
+    }
+    World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, books, dungeons, worldId);
     worlds.add(world);
   }
 
   private Dungeon configureDungeon(int dungeonId, DungeonConfig dungeonConfig) {
     Set<MinigameTask> minigames = new HashSet<>();
     Set<NPC> npcs = new HashSet<>();
+    Set<Book> books = new HashSet<>();
     for (int minigameIndex = 1; minigameIndex <= dungeonConfig.getNumberOfMinigames(); minigameIndex++) {
       MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);
@@ -170,7 +176,11 @@ public class CourseService {
       NPC npc = new NPC(new ArrayList<>(), npcIndex);
       npcs.add(npc);
     }
-    return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, dungeonId);
+    for (int bookIndex = 1; bookIndex <= dungeonConfig.getNumberOfBooks(); bookIndex++) {
+      Book book = new Book("", bookIndex);
+      books.add(book);
+    }
+    return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, books, dungeonId);
   }
 
   public CourseDTO cloneCourse(int id, CourseInitialData courseInitialData, final String accessToken) {
@@ -199,6 +209,7 @@ public class CourseService {
         .map(this::cloneMinigameTask)
         .collect(Collectors.toCollection(HashSet::new)),
       oldWorld.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
+      oldWorld.getBooks().parallelStream().map(this::cloneBook).collect(Collectors.toCollection(HashSet::new)),
       oldWorld
         .getDungeons()
         .parallelStream()
@@ -220,12 +231,17 @@ public class CourseService {
         .map(this::cloneMinigameTask)
         .collect(Collectors.toCollection(HashSet::new)),
       oldDungeon.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
+      oldDungeon.getBooks().parallelStream().map(this::cloneBook).collect(Collectors.toCollection(HashSet::new)),
       oldDungeon.getIndex()
     );
   }
 
   private NPC cloneNPC(NPC npc) {
     return new NPC(new ArrayList<>(npc.getText()), npc.getDescription(), npc.getIndex());
+  }
+
+  private Book cloneBook(Book book) {
+    return new Book(book.getText(), book.getDescription(), book.getIndex());
   }
 
   private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {

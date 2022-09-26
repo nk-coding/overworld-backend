@@ -55,12 +55,17 @@ public class Area {
    */
   boolean configured;
 
+  @JsonManagedReference(value = "area-minigames")
   @OneToMany(cascade = CascadeType.ALL)
   Set<MinigameTask> minigameTasks;
 
-  @JsonManagedReference
+  @JsonManagedReference(value = "area-npcs")
   @OneToMany(cascade = CascadeType.ALL)
   Set<NPC> npcs;
+
+  @JsonManagedReference(value = "area-books")
+  @OneToMany(cascade = CascadeType.ALL)
+  Set<Book> books;
 
   @ManyToOne
   Course course;
@@ -71,6 +76,7 @@ public class Area {
     final boolean active,
     final Set<MinigameTask> minigameTasks,
     final Set<NPC> npcs,
+    final Set<Book> books,
     final int index
   ) {
     this.staticName = staticName;
@@ -78,6 +84,7 @@ public class Area {
     this.active = active;
     this.minigameTasks = minigameTasks;
     this.npcs = npcs;
+    this.books = books;
     this.index = index;
   }
 

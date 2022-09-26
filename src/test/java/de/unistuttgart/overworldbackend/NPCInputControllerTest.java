@@ -112,6 +112,7 @@ class NPCInputControllerTest {
     dungeon.setActive(true);
     dungeon.setMinigameTasks(Set.of());
     dungeon.setNpcs(Set.of());
+    dungeon.setBooks(Set.of());
     final List<Dungeon> dungeons = new ArrayList<>();
 
     final List<String> npcText = new ArrayList<>();
@@ -130,6 +131,7 @@ class NPCInputControllerTest {
     world.setActive(true);
     world.setMinigameTasks(Set.of());
     world.setNpcs(npcs);
+    world.setBooks(Set.of());
     world.setDungeons(dungeons);
     final List<World> worlds = new ArrayList<>();
     worlds.add(world);

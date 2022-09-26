@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
@@ -36,11 +37,11 @@ public class NPC {
   @Nullable
   String description;
 
-  @JsonBackReference
+  @JsonBackReference(value = "course-npcs")
   @ManyToOne
   Course course;
 
-  @JsonBackReference
+  @JsonBackReference(value = "area-npcs")
   @ManyToOne
   Area area;
 
