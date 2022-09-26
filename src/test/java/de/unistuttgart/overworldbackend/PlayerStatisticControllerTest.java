@@ -155,7 +155,7 @@ class PlayerStatisticControllerTest {
     objectMapper = new ObjectMapper();
 
     doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
-    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn(initialPlayerStatistic.getUserId());
   }
 
   @Test
@@ -172,6 +172,26 @@ class PlayerStatisticControllerTest {
     final PlayerStatisticDTO playerStatisticDTOResult = objectMapper.readValue(
       result.getResponse().getContentAsString(),
       PlayerStatisticDTO.class
+    );
+
+    assertEquals(initialPlayerStatisticDTO, playerStatisticDTOResult);
+    assertEquals(initialPlayerStatisticDTO.getId(), playerStatisticDTOResult.getId());
+  }
+
+  @Test
+  void getOwnPlayerStatistic() throws Exception {
+    final MvcResult result = mvc
+            .perform(
+                    get(fullURL)
+                            .cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andReturn();
+
+    final PlayerStatisticDTO playerStatisticDTOResult = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerStatisticDTO.class
     );
 
     assertEquals(initialPlayerStatisticDTO, playerStatisticDTOResult);

@@ -80,6 +80,7 @@ class PlayerNPCStatisticControllerTest {
   private NPCMapper npcMapper;
 
   private String fullURL;
+  private String fullURLWithoutPlayerId;
   private ObjectMapper objectMapper;
 
   private Course initialCourse;
@@ -157,14 +158,19 @@ class PlayerNPCStatisticControllerTest {
 
     fullURL =
       String.format(
-        "/courses/%d/playerstatistics/" + initialPlayerStatistic.getUserId() + "/player-npc-statistics",
-        initialCourse.getId()
+        "/courses/%d/playerstatistics/%s/player-npc-statistics",
+        initialCourse.getId(), initialPlayerStatistic.getUserId()
       );
+    fullURLWithoutPlayerId =
+            String.format(
+                    "/courses/%d/playerstatistics/player-npc-statistics",
+                    initialCourse.getId()
+            );
 
     objectMapper = new ObjectMapper();
 
     doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
-    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn(initialPlayerStatistic.getUserId());
   }
 
   @Test
@@ -185,6 +191,23 @@ class PlayerNPCStatisticControllerTest {
   }
 
   @Test
+  void getOwnNPCStatistics() throws Exception {
+    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+    );
+
+    final MvcResult result = mvc
+            .perform(get(fullURLWithoutPlayerId).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
+            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
+    );
+    assertEquals(statistic, playerNPCStatisticDTOs.get(0));
+  }
+
+  @Test
   void getNPCStatistic() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
       new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
@@ -198,6 +221,27 @@ class PlayerNPCStatisticControllerTest {
     final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
       result.getResponse().getContentAsString(),
       PlayerNPCStatisticDTO.class
+    );
+    assertEquals(statistic, playerNPCStatisticDTO);
+    assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
+    assertNotNull(playerNPCStatisticDTO.getNpc().getArea());
+    assertEquals(initialNpcDTO.getArea(), playerNPCStatisticDTO.getNpc().getArea());
+  }
+
+  @Test
+  void getOwnNPCStatistic() throws Exception {
+    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+    );
+
+    final MvcResult result = mvc
+            .perform(get(fullURLWithoutPlayerId + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerNPCStatisticDTO.class
     );
     assertEquals(statistic, playerNPCStatisticDTO);
     assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());

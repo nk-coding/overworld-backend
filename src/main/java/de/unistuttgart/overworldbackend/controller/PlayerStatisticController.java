@@ -42,7 +42,21 @@ public class PlayerStatisticController {
     );
   }
 
-  @Operation(summary = "Create a playerStatistic in a course by playerId ")
+  @Operation(summary = "Get own playerStatistic in a course of a player and courseId, player id is read from cookie")
+  @GetMapping("")
+  public PlayerStatisticDTO getOwnPlayerstatistic(
+    @PathVariable int courseId,
+    @CookieValue("access_token") final String accessToken
+  ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
+    String playerId = jwtValidatorService.extractUserId(accessToken);
+    log.debug("get statistics from player by cookie {} in course {}", playerId, courseId);
+    return playerStatisticMapper.playerStatisticToPlayerstatisticDTO(
+      playerStatisticService.getPlayerStatisticFromCourse(courseId, playerId)
+    );
+  }
+
+  @Operation(summary = "Create a playerStatistic in a course by playerId")
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
   public PlayerStatisticDTO createPlayerstatistic(
@@ -55,7 +69,7 @@ public class PlayerStatisticController {
     return playerStatisticService.createPlayerStatisticInCourse(courseId, player);
   }
 
-  @Operation(summary = "Update a playerStatistic in a course by playerId ")
+  @Operation(summary = "Update a playerStatistic in a course by playerId")
   @PutMapping("/{playerId}")
   public PlayerStatisticDTO updatePlayerStatistic(
     @PathVariable int courseId,
