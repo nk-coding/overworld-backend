@@ -1,9 +1,11 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import de.unistuttgart.overworldbackend.service.MinigameTaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +19,19 @@ import org.springframework.web.bind.annotation.*;
 public class MinigameTaskController {
 
   @Autowired
+  JWTValidatorService jwtValidatorService;
+
+  @Autowired
   private MinigameTaskService minigameTaskService;
 
   @Operation(summary = "Get all task from a world")
   @GetMapping("/minigame-tasks")
-  public Set<MinigameTaskDTO> getMinigameTasksFromWorld(@PathVariable int courseId, @PathVariable int worldIndex) {
+  public Set<MinigameTaskDTO> getMinigameTasksFromWorld(
+    @PathVariable int courseId,
+    @PathVariable int worldIndex,
+    @CookieValue("access_token") final String accessToken
+  ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get tasks of world {} of course {}", worldIndex, courseId);
     return minigameTaskService.getMinigameTasksFromArea(courseId, worldIndex);
   }
@@ -31,8 +41,10 @@ public class MinigameTaskController {
   public Set<MinigameTaskDTO> getMinigameTasksFromDungeon(
     @PathVariable int courseId,
     @PathVariable int worldIndex,
-    @PathVariable int dungeonIndex
+    @PathVariable int dungeonIndex,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get tasks of dungeon {} from world {} of course {}", dungeonIndex, worldIndex, courseId);
     return minigameTaskService.getMinigameTasksFromArea(courseId, worldIndex, dungeonIndex);
   }
@@ -42,8 +54,10 @@ public class MinigameTaskController {
   public MinigameTaskDTO getMinigameTaskFromWorld(
     @PathVariable int courseId,
     @PathVariable int worldIndex,
-    @PathVariable int taskIndex
+    @PathVariable int taskIndex,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get task {} of world {} of course {}", taskIndex, worldIndex, courseId);
     return minigameTaskService.getMinigameTaskFromArea(courseId, worldIndex, Optional.empty(), taskIndex);
   }
@@ -54,8 +68,10 @@ public class MinigameTaskController {
     @PathVariable int courseId,
     @PathVariable int worldIndex,
     @PathVariable int dungoenIndex,
-    @PathVariable int taskIndex
+    @PathVariable int taskIndex,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get task {} of dungeon {} from world {} of course {}", taskIndex, dungoenIndex, worldIndex, courseId);
     return minigameTaskService.getMinigameTaskFromArea(courseId, worldIndex, Optional.of(dungoenIndex), taskIndex);
   }
@@ -66,8 +82,11 @@ public class MinigameTaskController {
     @PathVariable int courseId,
     @PathVariable int worldIndex,
     @PathVariable int taskIndex,
-    @RequestBody MinigameTaskDTO minigameTaskDTO
+    @RequestBody MinigameTaskDTO minigameTaskDTO,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
+    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
     log.debug("update task {} of world {} of course {} with {}", taskIndex, worldIndex, courseId, minigameTaskDTO);
     return minigameTaskService.updateMinigameTaskFromArea(
       courseId,
@@ -85,8 +104,11 @@ public class MinigameTaskController {
     @PathVariable int worldIndex,
     @PathVariable int dungeonIndex,
     @PathVariable int taskIndex,
-    @RequestBody MinigameTaskDTO minigameTaskDTO
+    @RequestBody MinigameTaskDTO minigameTaskDTO,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
+    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
     log.debug(
       "update task {} of dungeon {} from world {} of course {} with {}",
       taskIndex,

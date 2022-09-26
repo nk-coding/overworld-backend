@@ -2,6 +2,8 @@ package de.unistuttgart.overworldbackend;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -9,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.net.URIBuilder;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
 import de.unistuttgart.overworldbackend.client.FinitequizClient;
@@ -33,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -57,9 +61,9 @@ public class CloneTest {
 
   @Container
   public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-          .withDatabaseName("postgres")
-          .withUsername("postgres")
-          .withPassword("postgres");
+    .withDatabaseName("postgres")
+    .withUsername("postgres")
+    .withPassword("postgres");
 
   @Container
   public static DockerComposeContainer compose = new DockerComposeContainer(
@@ -130,6 +134,11 @@ public class CloneTest {
   @Autowired
   MockMvc mvc;
 
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
+
   @Autowired
   ChickenshockClient chickenshockClient;
 
@@ -149,6 +158,9 @@ public class CloneTest {
   public void createBasicData() {
     fullURL = "/courses";
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
@@ -196,7 +208,13 @@ public class CloneTest {
     final String bodyValue = objectMapper.writeValueAsString(initialData);
 
     final MvcResult resultClone = mvc
-      .perform(post(fullURL + "/1/clone").content(bodyValue).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/1/clone")
+          .cookie(cookie)
+          .content(bodyValue)
+          .cookie(cookie)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isCreated())
       .andReturn();
     final Course cloneCourse = courseMapper.courseDTOToCourse(

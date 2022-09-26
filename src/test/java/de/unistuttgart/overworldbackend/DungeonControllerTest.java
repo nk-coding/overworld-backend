@@ -1,22 +1,27 @@
 package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.Arrays;
 import java.util.Set;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -48,6 +53,11 @@ class DungeonControllerTest {
 
   @Autowired
   private MockMvc mvc;
+
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
 
   @Autowired
   private CourseRepository courseRepository;
@@ -113,12 +123,15 @@ class DungeonControllerTest {
     fullURL = String.format("/courses/%d/worlds/%d/dungeons", initialCourse.getId(), initialWorld.getIndex());
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
   void getDungeonsFromWorld() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -134,7 +147,7 @@ class DungeonControllerTest {
   @Test
   void getDungeonFromWorld() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialDungeon.getIndex()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialDungeon.getIndex()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -147,7 +160,7 @@ class DungeonControllerTest {
   @Test
   void getDungeonFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/" + Integer.MAX_VALUE).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + Integer.MAX_VALUE).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -163,7 +176,10 @@ class DungeonControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialDungeon.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        put(fullURL + "/" + initialDungeon.getIndex())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
@@ -196,7 +212,10 @@ class DungeonControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialDungeon.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        put(fullURL + "/" + initialDungeon.getIndex())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();

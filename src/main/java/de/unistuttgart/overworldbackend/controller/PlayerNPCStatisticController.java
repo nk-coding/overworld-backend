@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.PlayerNPCStatisticDTO;
 import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,10 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Player statistic", description = "Get NPC statistics for a player")
 @RestController
@@ -20,11 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlayerNPCStatisticController {
 
   @Autowired
+  JWTValidatorService jwtValidatorService;
+
+  @Autowired
   private PlayerNPCStatisticService playerNPCStatisticService;
 
   @Operation(summary = "Get all NPC statistics of a player")
   @GetMapping("")
-  public List<PlayerNPCStatisticDTO> getPlayerNPCStatistics(@PathVariable int courseId, @PathVariable String playerId) {
+  public List<PlayerNPCStatisticDTO> getPlayerNPCStatistics(
+    @PathVariable int courseId,
+    @PathVariable String playerId,
+    @CookieValue("access_token") final String accessToken
+  ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get statistics of player {} in the course {}", playerId, courseId);
     return playerNPCStatisticService.getAllStatisticsOfPlayer(courseId, playerId);
   }
@@ -34,8 +40,10 @@ public class PlayerNPCStatisticController {
   public PlayerNPCStatisticDTO getPlayerNPCStatistic(
     @PathVariable int courseId,
     @PathVariable String playerId,
-    @PathVariable UUID statisticId
+    @PathVariable UUID statisticId,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get statistic {}", statisticId);
     return playerNPCStatisticService.getStatisticOfPlayer(courseId, playerId, statisticId);
   }

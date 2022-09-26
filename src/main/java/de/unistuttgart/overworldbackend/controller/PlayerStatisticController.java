@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.Player;
 import de.unistuttgart.overworldbackend.data.PlayerStatisticDTO;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 public class PlayerStatisticController {
 
   @Autowired
+  JWTValidatorService jwtValidatorService;
+
+  @Autowired
   private PlayerStatisticService playerStatisticService;
 
   @Autowired
@@ -26,7 +30,12 @@ public class PlayerStatisticController {
 
   @Operation(summary = "Get a playerStatistic from a player in a course by playerId and courseId")
   @GetMapping("/{playerId}")
-  public PlayerStatisticDTO getPlayerstatistic(@PathVariable int courseId, @PathVariable String playerId) {
+  public PlayerStatisticDTO getPlayerstatistic(
+    @PathVariable int courseId,
+    @PathVariable String playerId,
+    @CookieValue("access_token") final String accessToken
+  ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get statistics from player {} in course {}", playerId, courseId);
     return playerStatisticMapper.playerStatisticToPlayerstatisticDTO(
       playerStatisticService.getPlayerStatisticFromCourse(courseId, playerId)
@@ -36,7 +45,12 @@ public class PlayerStatisticController {
   @Operation(summary = "Create a playerStatistic in a course by playerId ")
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
-  public PlayerStatisticDTO createPlayerstatistic(@PathVariable int courseId, @Valid @RequestBody Player player) {
+  public PlayerStatisticDTO createPlayerstatistic(
+    @PathVariable int courseId,
+    @Valid @RequestBody Player player,
+    @CookieValue("access_token") final String accessToken
+  ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("create playerstatistic for userId {} in course {}", player, courseId);
     return playerStatisticService.createPlayerStatisticInCourse(courseId, player);
   }
@@ -46,8 +60,10 @@ public class PlayerStatisticController {
   public PlayerStatisticDTO updatePlayerStatistic(
     @PathVariable int courseId,
     @PathVariable String playerId,
-    @RequestBody PlayerStatisticDTO playerstatisticDTO
+    @RequestBody PlayerStatisticDTO playerstatisticDTO,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("update playerStatistic for userId {} in course {} with {}", playerId, courseId, playerstatisticDTO);
     return playerStatisticService.updatePlayerStatisticInCourse(courseId, playerId, playerstatisticDTO);
   }

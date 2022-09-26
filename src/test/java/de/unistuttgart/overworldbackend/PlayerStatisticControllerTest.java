@@ -2,10 +2,13 @@ package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
@@ -14,12 +17,14 @@ import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import java.util.*;
+import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -50,6 +55,11 @@ class PlayerStatisticControllerTest {
 
   @Autowired
   private MockMvc mvc;
+
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
 
   @Autowired
   private CourseRepository courseRepository;
@@ -141,12 +151,19 @@ class PlayerStatisticControllerTest {
     fullURL = "/courses/" + initialCourseDTO.getId() + "/playerstatistics";
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
   void getPlayerStatistic() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialPlayerStatisticDTO.getUserId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        get(fullURL + "/" + initialPlayerStatisticDTO.getUserId())
+          .cookie(cookie)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -162,7 +179,7 @@ class PlayerStatisticControllerTest {
   @Test
   void getPlayerStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + UUID.randomUUID()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -173,7 +190,7 @@ class PlayerStatisticControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(newPlayer);
 
     final MvcResult result = mvc
-      .perform(post(fullURL).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(fullURL).content(bodyValue).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
 
@@ -202,6 +219,7 @@ class PlayerStatisticControllerTest {
     final MvcResult result = mvc
       .perform(
         put(fullURL + "/" + initialPlayerStatisticDTO.getUserId())
+          .cookie(cookie)
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -232,6 +250,7 @@ class PlayerStatisticControllerTest {
     mvc
       .perform(
         put(fullURL + "/" + initialPlayerStatisticDTO.getUserId())
+          .cookie(cookie)
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
