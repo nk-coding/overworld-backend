@@ -47,7 +47,7 @@ class PlayerNPCStatisticControllerTest {
     .withPassword("postgres");
 
   @DynamicPropertySource
-  public static void properties(DynamicPropertyRegistry registry) {
+  public static void properties(final DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
     registry.add("spring.datasource.username", postgresDB::getUsername);
     registry.add("spring.datasource.password", postgresDB::getPassword);
@@ -124,7 +124,7 @@ class PlayerNPCStatisticControllerTest {
     world.setNpcs(npcs);
     world.setDungeons(dungeons);
     world.setBooks(Set.of());
-    List<World> worlds = new ArrayList<>();
+    final List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
     final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
@@ -172,7 +172,7 @@ class PlayerNPCStatisticControllerTest {
 
   @Test
   void getNPCStatistics() throws Exception {
-    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
       new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
@@ -189,7 +189,7 @@ class PlayerNPCStatisticControllerTest {
 
   @Test
   void getOwnNPCStatistics() throws Exception {
-    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
       new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
@@ -206,7 +206,7 @@ class PlayerNPCStatisticControllerTest {
 
   @Test
   void getNPCStatistic() throws Exception {
-    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
       new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
@@ -227,7 +227,7 @@ class PlayerNPCStatisticControllerTest {
 
   @Test
   void getOwnNPCStatistic() throws Exception {
-    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
       new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
@@ -250,7 +250,7 @@ class PlayerNPCStatisticControllerTest {
 
   @Test
   void getNPCStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
-    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
       new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 

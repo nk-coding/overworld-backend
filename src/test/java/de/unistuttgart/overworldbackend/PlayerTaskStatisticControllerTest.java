@@ -49,7 +49,7 @@ class PlayerTaskStatisticControllerTest {
     .withPassword("postgres");
 
   @DynamicPropertySource
-  public static void properties(DynamicPropertyRegistry registry) {
+  public static void properties(final DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
     registry.add("spring.datasource.username", postgresDB::getUsername);
     registry.add("spring.datasource.password", postgresDB::getPassword);
@@ -141,7 +141,7 @@ class PlayerTaskStatisticControllerTest {
     world.setNpcs(Set.of());
     world.setDungeons(dungeons);
     world.setBooks(Set.of());
-    List<World> worlds = new ArrayList<>();
+    final List<World> worlds = new ArrayList<>();
     worlds.add(world);
 
     final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
@@ -185,7 +185,7 @@ class PlayerTaskStatisticControllerTest {
 
   @Test
   void getTaskStatistics() throws Exception {
-    PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
+    final PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
       new PlayerTaskStatisticData(
         initialMinigameTask.getGame(),
         initialMinigameTask.getConfigurationId(),
@@ -207,7 +207,7 @@ class PlayerTaskStatisticControllerTest {
 
   @Test
   void getOwnTaskStatistics() throws Exception {
-    PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
+    final PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
       new PlayerTaskStatisticData(
         initialMinigameTask.getGame(),
         initialMinigameTask.getConfigurationId(),
@@ -229,7 +229,7 @@ class PlayerTaskStatisticControllerTest {
 
   @Test
   void getTaskStatistic() throws Exception {
-    PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
+    final PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
       new PlayerTaskStatisticData(
         initialMinigameTask.getGame(),
         initialMinigameTask.getConfigurationId(),
@@ -255,7 +255,7 @@ class PlayerTaskStatisticControllerTest {
 
   @Test
   void getOwnTaskStatistic() throws Exception {
-    PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
+    final PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
       new PlayerTaskStatisticData(
         initialMinigameTask.getGame(),
         initialMinigameTask.getConfigurationId(),

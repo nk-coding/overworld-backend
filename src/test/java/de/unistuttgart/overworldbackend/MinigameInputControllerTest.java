@@ -47,7 +47,7 @@ class MinigameInputControllerTest {
     .withPassword("postgres");
 
   @DynamicPropertySource
-  public static void properties(DynamicPropertyRegistry registry) {
+  public static void properties(final DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
     registry.add("spring.datasource.username", postgresDB::getUsername);
     registry.add("spring.datasource.password", postgresDB::getPassword);
@@ -121,7 +121,7 @@ class MinigameInputControllerTest {
     dungeonMinigameTask2.setGame(Minigame.CHICKENSHOCK);
     dungeonMinigameTask2.setIndex(2);
 
-    Set<MinigameTask> dungeonMinigameTasks = new HashSet<>();
+    final Set<MinigameTask> dungeonMinigameTasks = new HashSet<>();
     dungeonMinigameTasks.add(dungeonMinigameTask1);
     dungeonMinigameTasks.add(dungeonMinigameTask2);
 
@@ -174,7 +174,7 @@ class MinigameInputControllerTest {
     playerstatistic.setCourse(initialCourse);
     playerstatistic.setCurrentArea(initialWorld);
     playerstatistic.setKnowledge(new Random(10).nextLong());
-    List<Area> unlockedAreas = new ArrayList<>();
+    final List<Area> unlockedAreas = new ArrayList<>();
     unlockedAreas.add(initialWorld);
     playerstatistic.setUnlockedAreas(unlockedAreas);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
@@ -217,6 +217,7 @@ class MinigameInputControllerTest {
     );
     assertEquals(playerTaskStatisticData.getScore(), playerTaskStatisticDTO.getHighscore());
     assertEquals(2, initialDungeon.getMinigameTasks().size());
+    assert initialPlayerStatisticDTO.getId() != null;
     final PlayerStatistic playerstatistic = playerstatisticRepository.findById(initialPlayerStatisticDTO.getId()).get();
     assertSame(0, playerstatistic.getCompletedDungeons().size());
 
@@ -256,6 +257,7 @@ class MinigameInputControllerTest {
         .andExpect(status().isOk());
     }
 
+    assert initialPlayerStatisticDTO.getId() != null;
     final PlayerStatistic playerstatistic = playerstatisticRepository.findById(initialPlayerStatisticDTO.getId()).get();
     assertSame(1, playerstatistic.getCompletedDungeons().size());
   }
@@ -296,7 +298,7 @@ class MinigameInputControllerTest {
 
   @Test
   void createLectureAndSubmitMinigameData() throws Exception {
-    String currentUrl = "/courses";
+    final String currentUrl = "/courses";
     final CourseInitialData toCreateCourse = new CourseInitialData("testName", "SS-22", "testDescription");
     final String bodyValueCourse = objectMapper.writeValueAsString(toCreateCourse);
 
@@ -310,9 +312,9 @@ class MinigameInputControllerTest {
       CourseDTO.class
     );
 
-    WorldDTO createdWorld = createdCourse.getWorlds().get(0);
+    final WorldDTO createdWorld = createdCourse.getWorlds().get(0);
 
-    MinigameTaskDTO updateMinigameTaskDTO = createdWorld.getMinigameTasks().stream().findFirst().get();
+    final MinigameTaskDTO updateMinigameTaskDTO = createdWorld.getMinigameTasks().stream().findFirst().get();
     final UUID newConfigurationId = UUID.randomUUID();
     updateMinigameTaskDTO.setGame(Minigame.CROSSWORDPUZZLE);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);

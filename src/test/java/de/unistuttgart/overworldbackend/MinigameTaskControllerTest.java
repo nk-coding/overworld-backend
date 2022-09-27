@@ -48,7 +48,7 @@ class MinigameTaskControllerTest {
     .withPassword("postgres");
 
   @DynamicPropertySource
-  public static void properties(DynamicPropertyRegistry registry) {
+  public static void properties(final DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
     registry.add("spring.datasource.username", postgresDB::getUsername);
     registry.add("spring.datasource.password", postgresDB::getPassword);
@@ -283,7 +283,6 @@ class MinigameTaskControllerTest {
 
   @Test
   void updateMinigameTaskFromWorld() throws Exception {
-    final String newGame = "Crosswordpuzzle";
     final String newDescription = "New Crosswordpuzzle game";
     final UUID newConfigurationId = UUID.randomUUID();
     final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);

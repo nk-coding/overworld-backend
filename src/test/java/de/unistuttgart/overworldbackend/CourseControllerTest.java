@@ -14,9 +14,6 @@ import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +44,7 @@ class CourseControllerTest {
     .withPassword("postgres");
 
   @DynamicPropertySource
-  public static void properties(DynamicPropertyRegistry registry) {
+  public static void properties(final DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
     registry.add("spring.datasource.username", postgresDB::getUsername);
     registry.add("spring.datasource.password", postgresDB::getPassword);
@@ -278,12 +275,12 @@ class CourseControllerTest {
       .andReturn();
 
     // submit a npc statistic
-    PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+    final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
     playerNPCStatisticData.setUserId(newPlayer.getUserId());
     playerNPCStatisticData.setNpcId(initialNPC.getId());
     playerNPCStatisticData.setCompleted(true);
 
-    Optional<PlayerStatistic> playerStatistic = playerStatisticRepository.findByCourseIdAndUserId(
+    final Optional<PlayerStatistic> playerStatistic = playerStatisticRepository.findByCourseIdAndUserId(
       initialCourse.getId(),
       newPlayer.getUserId()
     );
