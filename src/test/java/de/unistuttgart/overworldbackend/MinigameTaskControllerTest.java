@@ -321,4 +321,94 @@ class MinigameTaskControllerTest {
     assertEquals(newConfigurationId, updatedMinigameTaskDTOResult.getConfigurationId());
     assertEquals(newDescription, updatedMinigameTaskDTOResult.getDescription());
   }
+
+  @Test
+  void removeMinigame_RemoveConfiguredFlag() throws Exception
+  {
+    final Minigame newGame = Minigame.NONE;
+    final String newDescription = "";
+    final UUID newConfigurationId = null;
+    final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
+    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
+    final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
+
+    final MvcResult result = mvc
+      .perform(
+        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    assertEquals(initialDungeon.isConfigured(), false);
+  }
+
+  @Test
+  void removeMinigame_NotRemoveConfiguredFlag() throws Exception
+  {
+    final Minigame newGame = Minigame.NONE;
+    final String newDescription = "";
+    final UUID newConfigurationId = null;
+    final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
+    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
+    final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
+
+    final MvcResult result = mvc
+      .perform(
+        put(fullURL + "/minigame-tasks/" + initialTask1.getIndex())
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    assertEquals(initialWorld.isConfigured(), true);
+  }
+
+  @Test
+  void addMinigame_SetConfiguredFlag() throws Exception
+  {
+    Minigame newGame = Minigame.NONE;
+    String newDescription = "";
+    UUID newConfigurationId = null;
+    MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
+    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
+    String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
+
+    MvcResult result = mvc
+      .perform(
+        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    newGame = Minigame.CHICKENSHOCK;
+    newDescription = "New Chickenshock game";
+    newConfigurationId = UUID.randomUUID();
+    updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
+    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
+    bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
+
+    result = mvc
+      .perform(
+        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    assertEquals(initialWorld.isConfigured(), true);
+  }
 }
