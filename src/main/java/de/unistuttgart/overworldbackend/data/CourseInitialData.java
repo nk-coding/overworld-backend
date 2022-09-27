@@ -17,11 +17,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseInitialData {
 
-  @NotNull
-  String courseName;
+    @NotNull
+    String courseName;
 
-  @Pattern(regexp = Course.SEMESTER_PATTERN)
-  String semester;
+    @Pattern(regexp = Course.SEMESTER_PATTERN)
+    String semester;
 
-  String description;
+    String description;
 }

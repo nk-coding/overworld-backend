@@ -8,13 +8,13 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface AreaLocationMapper {
-  default AreaLocationDTO areaToAreaLocationDTO(final Area area) {
-    return area instanceof Dungeon dungeon
-      ? new AreaLocationDTO(dungeon.getWorld().getIndex(), dungeon.getIndex())
-      : new AreaLocationDTO(area.getIndex(), null);
-  }
+    default AreaLocationDTO areaToAreaLocationDTO(final Area area) {
+        return area instanceof Dungeon dungeon
+            ? new AreaLocationDTO(dungeon.getWorld().getIndex(), dungeon.getIndex())
+            : new AreaLocationDTO(area.getIndex(), null);
+    }
 
-  default List<AreaLocationDTO> areaToAreaLocationDTOs(final List<Area> areaLocations) {
-    return areaLocations.parallelStream().map(this::areaToAreaLocationDTO).toList();
-  }
+    default List<AreaLocationDTO> areaToAreaLocationDTOs(final List<Area> areaLocations) {
+        return areaLocations.parallelStream().map(this::areaToAreaLocationDTO).toList();
+    }
 }

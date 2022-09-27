@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(value = "finitequizClient", url = "${finitequiz.url}/configurations")
 public interface FinitequizClient {
-  @GetMapping("/{id}")
-  FinitequizConfiguration getConfiguration(
-    @CookieValue("access_token") final String accessToken,
-    @PathVariable("id") UUID id
-  );
+    @GetMapping("/{id}")
+    FinitequizConfiguration getConfiguration(
+        @CookieValue("access_token") final String accessToken,
+        @PathVariable("id") UUID id
+    );
 
-  @PostMapping("/")
-  FinitequizConfiguration postConfiguration(
-    @CookieValue("access_token") final String accessToken,
-    FinitequizConfiguration finitequizConfiguration
-  );
+    @PostMapping("/")
+    FinitequizConfiguration postConfiguration(
+        @CookieValue("access_token") final String accessToken,
+        FinitequizConfiguration finitequizConfiguration
+    );
 }

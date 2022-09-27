@@ -20,13 +20,13 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NPCDTO {
 
-  @Nullable
-  UUID id;
+    @Nullable
+    UUID id;
 
-  AreaLocationDTO area;
-  int index;
-  List<String> text;
+    AreaLocationDTO area;
+    int index;
+    List<String> text;
 
-  @Nullable
-  String description;
+    @Nullable
+    String description;
 }

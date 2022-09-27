@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WorldRepository extends JpaRepository<World, UUID> {
-  Optional<World> findByIndexAndCourseId(int index, int courseId);
+    Optional<World> findByIndexAndCourseId(int index, int courseId);
 
-  Set<World> findAllByCourseId(int courseId);
+    Set<World> findAllByCourseId(int courseId);
 }

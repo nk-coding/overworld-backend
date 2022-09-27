@@ -10,9 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CrosswordpuzzleConfiguration {
 
-  UUID id;
+    UUID id;
 
-  String name;
+    String name;
 
-  Set<CrosswordpuzzleQuestion> questions;
+    Set<CrosswordpuzzleQuestion> questions;
 }

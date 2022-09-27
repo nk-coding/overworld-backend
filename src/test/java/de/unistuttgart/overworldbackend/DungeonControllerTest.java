@@ -38,203 +38,208 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class DungeonControllerTest {
 
-  @Container
-  public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-    .withDatabaseName("postgres")
-    .withUsername("postgres")
-    .withPassword("postgres");
+    @Container
+    public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
+        .withDatabaseName("postgres")
+        .withUsername("postgres")
+        .withPassword("postgres");
 
-  @DynamicPropertySource
-  public static void properties(final DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
-    registry.add("spring.datasource.username", postgresDB::getUsername);
-    registry.add("spring.datasource.password", postgresDB::getPassword);
-  }
+    @DynamicPropertySource
+    public static void properties(final DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
+        registry.add("spring.datasource.username", postgresDB::getUsername);
+        registry.add("spring.datasource.password", postgresDB::getPassword);
+    }
 
-  @Autowired
-  private MockMvc mvc;
+    @Autowired
+    private MockMvc mvc;
 
-  @MockBean
-  JWTValidatorService jwtValidatorService;
+    @MockBean
+    JWTValidatorService jwtValidatorService;
 
-  final Cookie cookie = new Cookie("access_token", "testToken");
+    final Cookie cookie = new Cookie("access_token", "testToken");
 
-  @Autowired
-  private CourseRepository courseRepository;
+    @Autowired
+    private CourseRepository courseRepository;
 
-  @Autowired
-  private WorldMapper worldMapper;
+    @Autowired
+    private WorldMapper worldMapper;
 
-  @Autowired
-  private DungeonMapper dungeonMapper;
+    @Autowired
+    private DungeonMapper dungeonMapper;
 
-  private String fullURL;
-  private ObjectMapper objectMapper;
+    private String fullURL;
+    private ObjectMapper objectMapper;
 
-  private Course initialCourse;
-  private World initialWorld;
-  private WorldDTO initialWorldDTO;
+    private Course initialCourse;
+    private World initialWorld;
+    private WorldDTO initialWorldDTO;
 
-  private Dungeon initialDungeon;
-  private DungeonDTO initialDungeonDTO;
+    private Dungeon initialDungeon;
+    private DungeonDTO initialDungeonDTO;
 
-  @BeforeEach
-  public void createBasicData() {
-    courseRepository.deleteAll();
+    @BeforeEach
+    public void createBasicData() {
+        courseRepository.deleteAll();
 
-    final Dungeon dungeon = new Dungeon();
-    dungeon.setIndex(1);
-    dungeon.setStaticName("Dark Dungeon");
-    dungeon.setTopicName("Dark UML");
-    dungeon.setActive(true);
-    dungeon.setMinigameTasks(Set.of());
-    dungeon.setNpcs(Set.of());
-    dungeon.setBooks(Set.of());
+        final Dungeon dungeon = new Dungeon();
+        dungeon.setIndex(1);
+        dungeon.setStaticName("Dark Dungeon");
+        dungeon.setTopicName("Dark UML");
+        dungeon.setActive(true);
+        dungeon.setMinigameTasks(Set.of());
+        dungeon.setNpcs(Set.of());
+        dungeon.setBooks(Set.of());
 
-    final World world = new World();
-    world.setIndex(1);
-    world.setStaticName("Winter Wonderland");
-    world.setTopicName("UML Winter");
-    world.setActive(true);
-    world.setMinigameTasks(Set.of());
-    world.setNpcs(Set.of());
-    world.setDungeons(Arrays.asList(dungeon));
-    world.setBooks(Set.of());
+        final World world = new World();
+        world.setIndex(1);
+        world.setStaticName("Winter Wonderland");
+        world.setTopicName("UML Winter");
+        world.setActive(true);
+        world.setMinigameTasks(Set.of());
+        world.setNpcs(Set.of());
+        world.setDungeons(Arrays.asList(dungeon));
+        world.setBooks(Set.of());
 
-    final Course course = new Course(
-      "PSE",
-      "SS-22",
-      "Basic lecture of computer science students",
-      true,
-      Arrays.asList(world)
-    );
-    initialCourse = courseRepository.save(course);
+        final Course course = new Course(
+            "PSE",
+            "SS-22",
+            "Basic lecture of computer science students",
+            true,
+            Arrays.asList(world)
+        );
+        initialCourse = courseRepository.save(course);
 
-    initialWorld = initialCourse.getWorlds().stream().findFirst().get();
-    initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
+        initialWorld = initialCourse.getWorlds().stream().findFirst().get();
+        initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
 
-    initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
-    initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
+        initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
+        initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
 
-    assertNotNull(initialWorld.getId());
-    assertNotNull(initialWorldDTO.getId());
+        assertNotNull(initialWorld.getId());
+        assertNotNull(initialWorldDTO.getId());
 
-    assertNotNull(initialDungeon.getId());
-    assertNotNull(initialDungeonDTO.getId());
+        assertNotNull(initialDungeon.getId());
+        assertNotNull(initialDungeonDTO.getId());
 
-    fullURL = String.format("/courses/%d/worlds/%d/dungeons", initialCourse.getId(), initialWorld.getIndex());
+        fullURL = String.format("/courses/%d/worlds/%d/dungeons", initialCourse.getId(), initialWorld.getIndex());
 
-    objectMapper = new ObjectMapper();
+        objectMapper = new ObjectMapper();
 
-    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
-    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
-  }
+        doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+        when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
+    }
 
-  @Test
-  void getDungeonsFromWorld() throws Exception {
-    final MvcResult result = mvc
-      .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-      .andExpect(status().isOk())
-      .andReturn();
+    @Test
+    void getDungeonsFromWorld() throws Exception {
+        final MvcResult result = mvc
+            .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final Set<DungeonDTO> dungeons = Set.of(
-      objectMapper.readValue(result.getResponse().getContentAsString(), DungeonDTO[].class)
-    );
-    final DungeonDTO dungeon = dungeons.stream().findFirst().get();
-    assertSame(1, dungeons.size());
-    assertEquals(initialDungeonDTO.getId(), dungeon.getId());
-    assertEquals(initialDungeonDTO, dungeon);
-  }
+        final Set<DungeonDTO> dungeons = Set.of(
+            objectMapper.readValue(result.getResponse().getContentAsString(), DungeonDTO[].class)
+        );
+        final DungeonDTO dungeon = dungeons.stream().findFirst().get();
+        assertSame(1, dungeons.size());
+        assertEquals(initialDungeonDTO.getId(), dungeon.getId());
+        assertEquals(initialDungeonDTO, dungeon);
+    }
 
-  @Test
-  void getDungeonFromWorld() throws Exception {
-    final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialDungeon.getIndex()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-      .andExpect(status().isOk())
-      .andReturn();
+    @Test
+    void getDungeonFromWorld() throws Exception {
+        final MvcResult result = mvc
+            .perform(
+                get(fullURL + "/" + initialDungeon.getIndex()).cookie(cookie).contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final DungeonDTO dungeonDTO = objectMapper.readValue(result.getResponse().getContentAsString(), DungeonDTO.class);
+        final DungeonDTO dungeonDTO = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            DungeonDTO.class
+        );
 
-    assertEquals(initialDungeonDTO.getId(), dungeonDTO.getId());
-    assertEquals(initialDungeonDTO, dungeonDTO);
-  }
+        assertEquals(initialDungeonDTO.getId(), dungeonDTO.getId());
+        assertEquals(initialDungeonDTO, dungeonDTO);
+    }
 
-  @Test
-  void getDungeonFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
-    mvc
-      .perform(get(fullURL + "/" + Integer.MAX_VALUE).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-      .andExpect(status().isNotFound())
-      .andReturn();
-  }
+    @Test
+    void getDungeonFromWorld_DoesNotExist_ThrowsNotFound() throws Exception {
+        mvc
+            .perform(get(fullURL + "/" + Integer.MAX_VALUE).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andReturn();
+    }
 
-  @Test
-  void updateDungeonFromWorld() throws Exception {
-    final String newTopicName = "Closed Topic";
-    final boolean newActiveStatus = false;
-    final DungeonDTO updateDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
-    updateDungeonDTO.setActive(newActiveStatus);
-    updateDungeonDTO.setTopicName(newTopicName);
-    final String bodyValue = objectMapper.writeValueAsString(updateDungeonDTO);
+    @Test
+    void updateDungeonFromWorld() throws Exception {
+        final String newTopicName = "Closed Topic";
+        final boolean newActiveStatus = false;
+        final DungeonDTO updateDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
+        updateDungeonDTO.setActive(newActiveStatus);
+        updateDungeonDTO.setTopicName(newTopicName);
+        final String bodyValue = objectMapper.writeValueAsString(updateDungeonDTO);
 
-    final MvcResult result = mvc
-      .perform(
-        put(fullURL + "/" + initialDungeon.getIndex())
-          .cookie(cookie)
-          .content(bodyValue)
-          .contentType(MediaType.APPLICATION_JSON)
-      )
-      .andExpect(status().isOk())
-      .andReturn();
+        final MvcResult result = mvc
+            .perform(
+                put(fullURL + "/" + initialDungeon.getIndex())
+                    .cookie(cookie)
+                    .content(bodyValue)
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final DungeonDTO updatedDungeonDTOResult = objectMapper.readValue(
-      result.getResponse().getContentAsString(),
-      DungeonDTO.class
-    );
+        final DungeonDTO updatedDungeonDTOResult = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            DungeonDTO.class
+        );
 
-    assertEquals(initialDungeonDTO.getId(), updatedDungeonDTOResult.getId());
-    assertEquals(initialDungeonDTO.getIndex(), updatedDungeonDTOResult.getIndex());
-    assertEquals(newTopicName, updatedDungeonDTOResult.getTopicName());
-    assertEquals(newActiveStatus, updatedDungeonDTOResult.isActive());
-    assertEquals(initialDungeonDTO.getStaticName(), updatedDungeonDTOResult.getStaticName());
-    assertEquals(initialDungeonDTO.getNpcs(), updatedDungeonDTOResult.getNpcs());
-    assertEquals(initialDungeonDTO.getMinigameTasks(), updatedDungeonDTOResult.getMinigameTasks());
-    assertEquals(initialDungeonDTO, updatedDungeonDTOResult);
-  }
+        assertEquals(initialDungeonDTO.getId(), updatedDungeonDTOResult.getId());
+        assertEquals(initialDungeonDTO.getIndex(), updatedDungeonDTOResult.getIndex());
+        assertEquals(newTopicName, updatedDungeonDTOResult.getTopicName());
+        assertEquals(newActiveStatus, updatedDungeonDTOResult.isActive());
+        assertEquals(initialDungeonDTO.getStaticName(), updatedDungeonDTOResult.getStaticName());
+        assertEquals(initialDungeonDTO.getNpcs(), updatedDungeonDTOResult.getNpcs());
+        assertEquals(initialDungeonDTO.getMinigameTasks(), updatedDungeonDTOResult.getMinigameTasks());
+        assertEquals(initialDungeonDTO, updatedDungeonDTOResult);
+    }
 
-  @Test
-  void updateDungeonFromWorld_DoNotUpdatedStaticName() throws Exception {
-    final String newTopicName = "Closed Topic";
-    final String newStaticName = "PSE World Override Static Name";
-    final boolean newActiveStatus = false;
-    final DungeonDTO updatedDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
-    updatedDungeonDTO.setActive(newActiveStatus);
-    updatedDungeonDTO.setTopicName(newTopicName);
-    updatedDungeonDTO.setStaticName(newStaticName);
-    final String bodyValue = objectMapper.writeValueAsString(updatedDungeonDTO);
+    @Test
+    void updateDungeonFromWorld_DoNotUpdatedStaticName() throws Exception {
+        final String newTopicName = "Closed Topic";
+        final String newStaticName = "PSE World Override Static Name";
+        final boolean newActiveStatus = false;
+        final DungeonDTO updatedDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
+        updatedDungeonDTO.setActive(newActiveStatus);
+        updatedDungeonDTO.setTopicName(newTopicName);
+        updatedDungeonDTO.setStaticName(newStaticName);
+        final String bodyValue = objectMapper.writeValueAsString(updatedDungeonDTO);
 
-    final MvcResult result = mvc
-      .perform(
-        put(fullURL + "/" + initialDungeon.getIndex())
-          .cookie(cookie)
-          .content(bodyValue)
-          .contentType(MediaType.APPLICATION_JSON)
-      )
-      .andExpect(status().isOk())
-      .andReturn();
+        final MvcResult result = mvc
+            .perform(
+                put(fullURL + "/" + initialDungeon.getIndex())
+                    .cookie(cookie)
+                    .content(bodyValue)
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final DungeonDTO updatedDungeonDTOResult = objectMapper.readValue(
-      result.getResponse().getContentAsString(),
-      DungeonDTO.class
-    );
+        final DungeonDTO updatedDungeonDTOResult = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            DungeonDTO.class
+        );
 
-    assertEquals(initialDungeonDTO.getId(), updatedDungeonDTOResult.getId());
-    assertEquals(initialDungeonDTO.getIndex(), updatedDungeonDTOResult.getIndex());
-    assertEquals(newTopicName, updatedDungeonDTOResult.getTopicName());
-    assertEquals(newActiveStatus, updatedDungeonDTOResult.isActive());
-    assertNotEquals(newStaticName, updatedDungeonDTOResult.getStaticName());
-    assertEquals(initialDungeonDTO.getStaticName(), updatedDungeonDTOResult.getStaticName());
-    assertEquals(initialDungeonDTO.getNpcs(), updatedDungeonDTOResult.getNpcs());
-    assertEquals(initialDungeonDTO.getMinigameTasks(), updatedDungeonDTOResult.getMinigameTasks());
-    assertEquals(initialDungeonDTO, updatedDungeonDTOResult);
-  }
+        assertEquals(initialDungeonDTO.getId(), updatedDungeonDTOResult.getId());
+        assertEquals(initialDungeonDTO.getIndex(), updatedDungeonDTOResult.getIndex());
+        assertEquals(newTopicName, updatedDungeonDTOResult.getTopicName());
+        assertEquals(newActiveStatus, updatedDungeonDTOResult.isActive());
+        assertNotEquals(newStaticName, updatedDungeonDTOResult.getStaticName());
+        assertEquals(initialDungeonDTO.getStaticName(), updatedDungeonDTOResult.getStaticName());
+        assertEquals(initialDungeonDTO.getNpcs(), updatedDungeonDTOResult.getNpcs());
+        assertEquals(initialDungeonDTO.getMinigameTasks(), updatedDungeonDTOResult.getMinigameTasks());
+        assertEquals(initialDungeonDTO, updatedDungeonDTOResult);
+    }
 }

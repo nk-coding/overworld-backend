@@ -16,47 +16,47 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/courses/{courseId}/worlds/{worldIndex}")
 public class BookController {
 
-  @Autowired
-  JWTValidatorService jwtValidatorService;
+    @Autowired
+    JWTValidatorService jwtValidatorService;
 
-  @Autowired
-  private BookService bookService;
+    @Autowired
+    private BookService bookService;
 
-  @Operation(summary = "Update a book by its index in a world")
-  @PutMapping("/books/{bookIndex}")
-  public BookDTO updateNPCFromWorld(
-    @PathVariable final int courseId,
-    @PathVariable final int worldIndex,
-    @PathVariable final int bookIndex,
-    @RequestBody final BookDTO bookDTO,
-    @CookieValue("access_token") final String accessToken
-  ) {
-    jwtValidatorService.validateTokenOrThrow(accessToken);
-    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
-    log.debug("update book {} of world {} of course {}", bookIndex, worldIndex, courseId);
-    return bookService.updateBookFromWorld(courseId, worldIndex, bookIndex, bookDTO);
-  }
+    @Operation(summary = "Update a book by its index in a world")
+    @PutMapping("/books/{bookIndex}")
+    public BookDTO updateNPCFromWorld(
+        @PathVariable final int courseId,
+        @PathVariable final int worldIndex,
+        @PathVariable final int bookIndex,
+        @RequestBody final BookDTO bookDTO,
+        @CookieValue("access_token") final String accessToken
+    ) {
+        jwtValidatorService.validateTokenOrThrow(accessToken);
+        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        log.debug("update book {} of world {} of course {}", bookIndex, worldIndex, courseId);
+        return bookService.updateBookFromWorld(courseId, worldIndex, bookIndex, bookDTO);
+    }
 
-  @Operation(summary = "Update a book by its index in a dungeon")
-  @PutMapping("/dungeons/{dungeonIndex}/books/{bookIndex}")
-  public BookDTO updateNPCFromDungeon(
-    @PathVariable final int courseId,
-    @PathVariable final int worldIndex,
-    @PathVariable final int dungeonIndex,
-    @PathVariable final int bookIndex,
-    @RequestBody final BookDTO bookDTO,
-    @CookieValue("access_token") final String accessToken
-  ) {
-    jwtValidatorService.validateTokenOrThrow(accessToken);
-    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
-    log.debug(
-      "update book {} of dungeon {} from world {} of course {} with {}",
-      bookIndex,
-      dungeonIndex,
-      worldIndex,
-      courseId,
-      bookDTO
-    );
-    return bookService.updateBookFromDungeon(courseId, worldIndex, dungeonIndex, bookIndex, bookDTO);
-  }
+    @Operation(summary = "Update a book by its index in a dungeon")
+    @PutMapping("/dungeons/{dungeonIndex}/books/{bookIndex}")
+    public BookDTO updateNPCFromDungeon(
+        @PathVariable final int courseId,
+        @PathVariable final int worldIndex,
+        @PathVariable final int dungeonIndex,
+        @PathVariable final int bookIndex,
+        @RequestBody final BookDTO bookDTO,
+        @CookieValue("access_token") final String accessToken
+    ) {
+        jwtValidatorService.validateTokenOrThrow(accessToken);
+        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        log.debug(
+            "update book {} of dungeon {} from world {} of course {} with {}",
+            bookIndex,
+            dungeonIndex,
+            worldIndex,
+            courseId,
+            bookDTO
+        );
+        return bookService.updateBookFromDungeon(courseId, worldIndex, dungeonIndex, bookIndex, bookDTO);
+    }
 }

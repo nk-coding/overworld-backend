@@ -21,14 +21,14 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerTaskStatisticDTO {
 
-  @Nullable
-  UUID id;
+    @Nullable
+    UUID id;
 
-  @Min(0)
-  @Max(100)
-  long highscore;
+    @Min(0)
+    @Max(100)
+    long highscore;
 
-  boolean completed;
+    boolean completed;
 
-  MinigameTaskDTO minigameTask;
+    MinigameTaskDTO minigameTask;
 }

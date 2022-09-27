@@ -21,20 +21,20 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AreaDTO {
 
-  @Nullable
-  UUID id;
+    @Nullable
+    UUID id;
 
-  int index;
+    int index;
 
-  @NotNull
-  String staticName;
+    @NotNull
+    String staticName;
 
-  String topicName;
+    String topicName;
 
-  boolean active;
-  boolean configured;
+    boolean active;
+    boolean configured;
 
-  Set<MinigameTaskDTO> minigameTasks;
-  Set<NPCDTO> npcs;
-  Set<Book> books;
+    Set<MinigameTaskDTO> minigameTasks;
+    Set<NPCDTO> npcs;
+    Set<Book> books;
 }

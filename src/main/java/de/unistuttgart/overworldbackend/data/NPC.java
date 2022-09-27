@@ -24,34 +24,34 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NPC {
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    UUID id;
 
-  int index;
+    int index;
 
-  @ElementCollection
-  List<String> text;
+    @ElementCollection
+    List<String> text;
 
-  @Nullable
-  String description;
+    @Nullable
+    String description;
 
-  @JsonBackReference(value = "course-npcs")
-  @ManyToOne
-  Course course;
+    @JsonBackReference(value = "course-npcs")
+    @ManyToOne
+    Course course;
 
-  @JsonBackReference(value = "area-npcs")
-  @ManyToOne
-  Area area;
+    @JsonBackReference(value = "area-npcs")
+    @ManyToOne
+    Area area;
 
-  public NPC(final List<String> text, final int index) {
-    this.text = text;
-    this.index = index;
-  }
+    public NPC(final List<String> text, final int index) {
+        this.text = text;
+        this.index = index;
+    }
 
-  public NPC(final List<String> text, @org.jetbrains.annotations.Nullable final String description, final int index) {
-    this.text = text;
-    this.index = index;
-    this.description = description;
-  }
+    public NPC(final List<String> text, @org.jetbrains.annotations.Nullable final String description, final int index) {
+        this.text = text;
+        this.index = index;
+        this.description = description;
+    }
 }

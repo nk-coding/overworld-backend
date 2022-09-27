@@ -23,29 +23,29 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerTaskStatistic {
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    UUID id;
 
-  @ManyToOne
-  PlayerStatistic playerStatistic;
+    @ManyToOne
+    PlayerStatistic playerStatistic;
 
-  @ManyToOne
-  MinigameTask minigameTask;
+    @ManyToOne
+    MinigameTask minigameTask;
 
-  @ManyToOne
-  Course course;
+    @ManyToOne
+    Course course;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  Set<PlayerTaskActionLog> playerTaskActionLogs = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<PlayerTaskActionLog> playerTaskActionLogs = new HashSet<>();
 
-  @Min(0)
-  @Max(100)
-  long highscore = 0;
+    @Min(0)
+    @Max(100)
+    long highscore = 0;
 
-  boolean completed = false;
+    boolean completed = false;
 
-  public void addActionLog(final PlayerTaskActionLog actionLog) {
-    this.playerTaskActionLogs.add(actionLog);
-  }
+    public void addActionLog(final PlayerTaskActionLog actionLog) {
+        this.playerTaskActionLogs.add(actionLog);
+    }
 }

@@ -24,43 +24,43 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MinigameTask {
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    UUID id;
 
-  int index;
+    int index;
 
-  @Enumerated(EnumType.STRING)
-  Minigame game;
+    @Enumerated(EnumType.STRING)
+    Minigame game;
 
-  UUID configurationId;
+    UUID configurationId;
 
-  @Nullable
-  String description;
+    @Nullable
+    String description;
 
-  @JsonBackReference(value = "course-minigames")
-  @ManyToOne
-  Course course;
+    @JsonBackReference(value = "course-minigames")
+    @ManyToOne
+    Course course;
 
-  @JsonBackReference(value = "area-minigames")
-  @ManyToOne
-  Area area;
+    @JsonBackReference(value = "area-minigames")
+    @ManyToOne
+    Area area;
 
-  public MinigameTask(final Minigame game, final UUID configurationId, final int index) {
-    this.game = game;
-    this.configurationId = configurationId;
-    this.index = index;
-  }
+    public MinigameTask(final Minigame game, final UUID configurationId, final int index) {
+        this.game = game;
+        this.configurationId = configurationId;
+        this.index = index;
+    }
 
-  public MinigameTask(
-    final Minigame game,
-    @org.jetbrains.annotations.Nullable final String description,
-    final UUID configurationId,
-    final int index
-  ) {
-    this.game = game;
-    this.configurationId = configurationId;
-    this.index = index;
-    this.description = description;
-  }
+    public MinigameTask(
+        final Minigame game,
+        @org.jetbrains.annotations.Nullable final String description,
+        final UUID configurationId,
+        final int index
+    ) {
+        this.game = game;
+        this.configurationId = configurationId;
+        this.index = index;
+        this.description = description;
+    }
 }

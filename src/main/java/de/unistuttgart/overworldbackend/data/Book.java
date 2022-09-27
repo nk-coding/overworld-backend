@@ -24,33 +24,33 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Book {
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    UUID id;
 
-  int index;
+    int index;
 
-  String text;
+    String text;
 
-  @Nullable
-  String description;
+    @Nullable
+    String description;
 
-  @JsonBackReference(value = "course-books")
-  @ManyToOne
-  Course course;
+    @JsonBackReference(value = "course-books")
+    @ManyToOne
+    Course course;
 
-  @JsonBackReference(value = "area-books")
-  @ManyToOne
-  Area area;
+    @JsonBackReference(value = "area-books")
+    @ManyToOne
+    Area area;
 
-  public Book(final String text, final int index) {
-    this.text = text;
-    this.index = index;
-  }
+    public Book(final String text, final int index) {
+        this.text = text;
+        this.index = index;
+    }
 
-  public Book(final String text, String description, final int index) {
-    this.text = text;
-    this.index = index;
-    this.description = description;
-  }
+    public Book(final String text, String description, final int index) {
+        this.text = text;
+        this.index = index;
+        this.description = description;
+    }
 }

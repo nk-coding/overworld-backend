@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "chickenshockClient", url = "${chickenshock.url}/configurations")
 public interface ChickenshockClient {
-  @GetMapping("/{id}")
-  ChickenshockConfiguration getConfiguration(
-    @CookieValue("access_token") final String accessToken,
-    @PathVariable("id") UUID id
-  );
+    @GetMapping("/{id}")
+    ChickenshockConfiguration getConfiguration(
+        @CookieValue("access_token") final String accessToken,
+        @PathVariable("id") UUID id
+    );
 
-  @PostMapping("/")
-  ChickenshockConfiguration postConfiguration(
-    @CookieValue("access_token") final String accessToken,
-    ChickenshockConfiguration chickenshockConfiguration
-  );
+    @PostMapping("/")
+    ChickenshockConfiguration postConfiguration(
+        @CookieValue("access_token") final String accessToken,
+        ChickenshockConfiguration chickenshockConfiguration
+    );
 }

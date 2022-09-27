@@ -40,223 +40,226 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class PlayerNPCStatisticControllerTest {
 
-  @Container
-  public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-    .withDatabaseName("postgres")
-    .withUsername("postgres")
-    .withPassword("postgres");
+    @Container
+    public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
+        .withDatabaseName("postgres")
+        .withUsername("postgres")
+        .withPassword("postgres");
 
-  @DynamicPropertySource
-  public static void properties(final DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
-    registry.add("spring.datasource.username", postgresDB::getUsername);
-    registry.add("spring.datasource.password", postgresDB::getPassword);
-  }
+    @DynamicPropertySource
+    public static void properties(final DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
+        registry.add("spring.datasource.username", postgresDB::getUsername);
+        registry.add("spring.datasource.password", postgresDB::getPassword);
+    }
 
-  @Autowired
-  private MockMvc mvc;
+    @Autowired
+    private MockMvc mvc;
 
-  @MockBean
-  JWTValidatorService jwtValidatorService;
+    @MockBean
+    JWTValidatorService jwtValidatorService;
 
-  final Cookie cookie = new Cookie("access_token", "testToken");
+    final Cookie cookie = new Cookie("access_token", "testToken");
 
-  @Autowired
-  private CourseRepository courseRepository;
+    @Autowired
+    private CourseRepository courseRepository;
 
-  @Autowired
-  private PlayerStatisticRepository playerstatisticRepository;
+    @Autowired
+    private PlayerStatisticRepository playerstatisticRepository;
 
-  @Autowired
-  private PlayerNPCStatisticService playerNPCStatisticService;
+    @Autowired
+    private PlayerNPCStatisticService playerNPCStatisticService;
 
-  @Autowired
-  private CourseMapper courseMapper;
+    @Autowired
+    private CourseMapper courseMapper;
 
-  @Autowired
-  private PlayerStatisticMapper playerstatisticMapper;
+    @Autowired
+    private PlayerStatisticMapper playerstatisticMapper;
 
-  @Autowired
-  private NPCMapper npcMapper;
+    @Autowired
+    private NPCMapper npcMapper;
 
-  private String fullURL;
-  private String fullURLWithoutPlayerId;
-  private ObjectMapper objectMapper;
+    private String fullURL;
+    private String fullURLWithoutPlayerId;
+    private ObjectMapper objectMapper;
 
-  private Course initialCourse;
-  private CourseDTO initialCourseDTO;
+    private Course initialCourse;
+    private CourseDTO initialCourseDTO;
 
-  private PlayerStatistic initialPlayerStatistic;
-  private PlayerStatisticDTO initialPlayerStatisticDTO;
+    private PlayerStatistic initialPlayerStatistic;
+    private PlayerStatisticDTO initialPlayerStatisticDTO;
 
-  private NPC initialNPC;
+    private NPC initialNPC;
 
-  private NPCDTO initialNpcDTO;
+    private NPCDTO initialNpcDTO;
 
-  @BeforeEach
-  public void createBasicData() {
-    courseRepository.deleteAll();
+    @BeforeEach
+    public void createBasicData() {
+        courseRepository.deleteAll();
 
-    final Dungeon dungeon = new Dungeon();
-    dungeon.setStaticName("Dark Dungeon");
-    dungeon.setTopicName("Dark UML");
-    dungeon.setActive(true);
-    dungeon.setMinigameTasks(Set.of());
-    dungeon.setNpcs(Set.of());
-    dungeon.setBooks(Set.of());
-    final List<Dungeon> dungeons = new ArrayList<>();
+        final Dungeon dungeon = new Dungeon();
+        dungeon.setStaticName("Dark Dungeon");
+        dungeon.setTopicName("Dark UML");
+        dungeon.setActive(true);
+        dungeon.setMinigameTasks(Set.of());
+        dungeon.setNpcs(Set.of());
+        dungeon.setBooks(Set.of());
+        final List<Dungeon> dungeons = new ArrayList<>();
 
-    final List<String> npcText = new ArrayList<>();
-    npcText.add("NPCText");
+        final List<String> npcText = new ArrayList<>();
+        npcText.add("NPCText");
 
-    final NPC npc = new NPC();
-    npc.setText(npcText);
-    npc.setIndex(1);
+        final NPC npc = new NPC();
+        npc.setText(npcText);
+        npc.setIndex(1);
 
-    final Set<NPC> npcs = new HashSet<>();
-    npcs.add(npc);
+        final Set<NPC> npcs = new HashSet<>();
+        npcs.add(npc);
 
-    final World world = new World();
-    world.setStaticName("Winter Wonderland");
-    world.setTopicName("UML Winter");
-    world.setActive(true);
-    world.setMinigameTasks(Set.of());
-    world.setNpcs(npcs);
-    world.setDungeons(dungeons);
-    world.setBooks(Set.of());
-    final List<World> worlds = new ArrayList<>();
-    worlds.add(world);
+        final World world = new World();
+        world.setStaticName("Winter Wonderland");
+        world.setTopicName("UML Winter");
+        world.setActive(true);
+        world.setMinigameTasks(Set.of());
+        world.setNpcs(npcs);
+        world.setDungeons(dungeons);
+        world.setBooks(Set.of());
+        final List<World> worlds = new ArrayList<>();
+        worlds.add(world);
 
-    final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
+        final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
 
-    final PlayerStatistic playerstatistic = new PlayerStatistic();
-    playerstatistic.setUserId("45h23o2j432");
-    playerstatistic.setUsername("testUser");
-    playerstatistic.setCourse(course);
-    playerstatistic.setCurrentArea(world);
-    playerstatistic.setKnowledge(new Random(10).nextLong());
-    playerstatistic.setUnlockedAreas(new ArrayList<>());
-    playerstatistic.setCompletedDungeons(new ArrayList<>());
-    course.addPlayerStatistic(playerstatistic);
+        final PlayerStatistic playerstatistic = new PlayerStatistic();
+        playerstatistic.setUserId("45h23o2j432");
+        playerstatistic.setUsername("testUser");
+        playerstatistic.setCourse(course);
+        playerstatistic.setCurrentArea(world);
+        playerstatistic.setKnowledge(new Random(10).nextLong());
+        playerstatistic.setUnlockedAreas(new ArrayList<>());
+        playerstatistic.setCompletedDungeons(new ArrayList<>());
+        course.addPlayerStatistic(playerstatistic);
 
-    initialCourse = courseRepository.save(course);
-    initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
+        initialCourse = courseRepository.save(course);
+        initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
-    initialPlayerStatistic = course.getPlayerStatistics().stream().findAny().get();
-    initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
+        initialPlayerStatistic = course.getPlayerStatistics().stream().findAny().get();
+        initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
-    initialNPC = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
-    initialNpcDTO = npcMapper.npcToNPCDTO(initialNPC);
+        initialNPC = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
+        initialNpcDTO = npcMapper.npcToNPCDTO(initialNPC);
 
-    assertNotNull(initialCourse.getCourseName());
+        assertNotNull(initialCourse.getCourseName());
 
-    assertEquals(initialCourse.getId(), initialNPC.getCourse().getId());
-    assertEquals(initialCourse.getId(), initialPlayerStatistic.getCourse().getId());
+        assertEquals(initialCourse.getId(), initialNPC.getCourse().getId());
+        assertEquals(initialCourse.getId(), initialPlayerStatistic.getCourse().getId());
 
-    assertEquals(initialCourse, initialNPC.getCourse());
-    assertEquals(initialCourse.getWorlds().stream().findFirst().get(), initialNPC.getArea());
+        assertEquals(initialCourse, initialNPC.getCourse());
+        assertEquals(initialCourse.getWorlds().stream().findFirst().get(), initialNPC.getArea());
 
-    fullURL =
-      String.format(
-        "/courses/%d/playerstatistics/%s/player-npc-statistics",
-        initialCourse.getId(),
-        initialPlayerStatistic.getUserId()
-      );
-    fullURLWithoutPlayerId = String.format("/courses/%d/playerstatistics/player-npc-statistics", initialCourse.getId());
+        fullURL =
+            String.format(
+                "/courses/%d/playerstatistics/%s/player-npc-statistics",
+                initialCourse.getId(),
+                initialPlayerStatistic.getUserId()
+            );
+        fullURLWithoutPlayerId =
+            String.format("/courses/%d/playerstatistics/player-npc-statistics", initialCourse.getId());
 
-    objectMapper = new ObjectMapper();
+        objectMapper = new ObjectMapper();
 
-    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
-    when(jwtValidatorService.extractUserId("testToken")).thenReturn(initialPlayerStatistic.getUserId());
-  }
+        doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+        when(jwtValidatorService.extractUserId("testToken")).thenReturn(initialPlayerStatistic.getUserId());
+    }
 
-  @Test
-  void getNPCStatistics() throws Exception {
-    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
-    );
+    @Test
+    void getNPCStatistics() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+        );
 
-    final MvcResult result = mvc
-      .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-      .andExpect(status().isOk())
-      .andReturn();
+        final MvcResult result = mvc
+            .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
-      objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
-    );
-    assertEquals(statistic, playerNPCStatisticDTOs.get(0));
-  }
+        final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
+            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
+        );
+        assertEquals(statistic, playerNPCStatisticDTOs.get(0));
+    }
 
-  @Test
-  void getOwnNPCStatistics() throws Exception {
-    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
-    );
+    @Test
+    void getOwnNPCStatistics() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+        );
 
-    final MvcResult result = mvc
-      .perform(get(fullURLWithoutPlayerId).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-      .andExpect(status().isOk())
-      .andReturn();
+        final MvcResult result = mvc
+            .perform(get(fullURLWithoutPlayerId).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
-      objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
-    );
-    assertEquals(statistic, playerNPCStatisticDTOs.get(0));
-  }
+        final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
+            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
+        );
+        assertEquals(statistic, playerNPCStatisticDTOs.get(0));
+    }
 
-  @Test
-  void getNPCStatistic() throws Exception {
-    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
-    );
+    @Test
+    void getNPCStatistic() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+        );
 
-    final MvcResult result = mvc
-      .perform(get(fullURL + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-      .andExpect(status().isOk())
-      .andReturn();
+        final MvcResult result = mvc
+            .perform(get(fullURL + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
-      result.getResponse().getContentAsString(),
-      PlayerNPCStatisticDTO.class
-    );
-    assertEquals(statistic, playerNPCStatisticDTO);
-    assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
-    assertNotNull(playerNPCStatisticDTO.getNpc().getArea());
-    assertEquals(initialNpcDTO.getArea(), playerNPCStatisticDTO.getNpc().getArea());
-  }
+        final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerNPCStatisticDTO.class
+        );
+        assertEquals(statistic, playerNPCStatisticDTO);
+        assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
+        assertNotNull(playerNPCStatisticDTO.getNpc().getArea());
+        assertEquals(initialNpcDTO.getArea(), playerNPCStatisticDTO.getNpc().getArea());
+    }
 
-  @Test
-  void getOwnNPCStatistic() throws Exception {
-    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
-    );
+    @Test
+    void getOwnNPCStatistic() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+        );
 
-    final MvcResult result = mvc
-      .perform(
-        get(fullURLWithoutPlayerId + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON)
-      )
-      .andExpect(status().isOk())
-      .andReturn();
+        final MvcResult result = mvc
+            .perform(
+                get(fullURLWithoutPlayerId + "/" + statistic.getId())
+                    .cookie(cookie)
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
-      result.getResponse().getContentAsString(),
-      PlayerNPCStatisticDTO.class
-    );
-    assertEquals(statistic, playerNPCStatisticDTO);
-    assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
-    assertNotNull(playerNPCStatisticDTO.getNpc().getArea());
-    assertEquals(initialNpcDTO.getArea(), playerNPCStatisticDTO.getNpc().getArea());
-  }
+        final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerNPCStatisticDTO.class
+        );
+        assertEquals(statistic, playerNPCStatisticDTO);
+        assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
+        assertNotNull(playerNPCStatisticDTO.getNpc().getArea());
+        assertEquals(initialNpcDTO.getArea(), playerNPCStatisticDTO.getNpc().getArea());
+    }
 
-  @Test
-  void getNPCStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
-    final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
-    );
+    @Test
+    void getNPCStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+        );
 
-    final MvcResult result = mvc
-      .perform(get(fullURL + "/" + UUID.randomUUID()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-      .andExpect(status().isNotFound())
-      .andReturn();
-  }
+        final MvcResult result = mvc
+            .perform(get(fullURL + "/" + UUID.randomUUID()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andReturn();
+    }
 }

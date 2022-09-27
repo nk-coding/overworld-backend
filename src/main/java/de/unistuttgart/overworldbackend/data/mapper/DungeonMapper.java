@@ -7,9 +7,9 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface DungeonMapper {
-  DungeonDTO dungeonToDungeonDTO(final Dungeon dungeon);
+    DungeonDTO dungeonToDungeonDTO(final Dungeon dungeon);
 
-  Dungeon dungeonDTOToDungeon(final DungeonDTO dungeonDTO);
+    Dungeon dungeonDTOToDungeon(final DungeonDTO dungeonDTO);
 
-  Set<DungeonDTO> dungeonsToDungeonDTOs(final Set<Dungeon> dungeons);
+    Set<DungeonDTO> dungeonsToDungeonDTOs(final Set<Dungeon> dungeons);
 }

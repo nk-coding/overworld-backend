@@ -20,14 +20,14 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MinigameTaskDTO {
 
-  @Nullable
-  UUID id;
+    @Nullable
+    UUID id;
 
-  AreaLocationDTO area;
-  int index;
-  Minigame game;
-  UUID configurationId;
+    AreaLocationDTO area;
+    int index;
+    Minigame game;
+    UUID configurationId;
 
-  @Nullable
-  String description;
+    @Nullable
+    String description;
 }

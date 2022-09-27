@@ -20,16 +20,16 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerTaskStatisticData {
 
-  @NotNull
-  Minigame game;
+    @NotNull
+    Minigame game;
 
-  @NotNull
-  UUID configurationId;
+    @NotNull
+    UUID configurationId;
 
-  @Min(0)
-  @Max(100)
-  long score;
+    @Min(0)
+    @Max(100)
+    long score;
 
-  @NotNull
-  String userId;
+    @NotNull
+    String userId;
 }

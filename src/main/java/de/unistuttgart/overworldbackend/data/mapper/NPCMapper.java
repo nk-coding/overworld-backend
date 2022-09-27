@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface NPCMapper {
-  NPCDTO npcToNPCDTO(final NPC npc);
+    NPCDTO npcToNPCDTO(final NPC npc);
 
-  NPC npcDTOToNPC(final NPCDTO npcDTO);
+    NPC npcDTOToNPC(final NPCDTO npcDTO);
 }

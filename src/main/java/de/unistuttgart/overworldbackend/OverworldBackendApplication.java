@@ -12,18 +12,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableFeignClients
 public class OverworldBackendApplication {
 
-  public static void main(final String[] args) {
-    SpringApplication.run(OverworldBackendApplication.class, args);
-  }
+    public static void main(final String[] args) {
+        SpringApplication.run(OverworldBackendApplication.class, args);
+    }
 
-  @Bean
-  public WebMvcConfigurer corsConfigurer() {
-    return new WebMvcConfigurer() {
-      @Override
-      public void addCorsMappings(@NotNull final CorsRegistry registry) {
-        // allow CORS requests for all resources and HTTP methods from the frontend origin
-        registry.addMapping("/**").allowedMethods("OPTIONS", "HEAD", "GET", "PUT", "POST", "DELETE");
-      }
-    };
-  }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(@NotNull final CorsRegistry registry) {
+                // allow CORS requests for all resources and HTTP methods from the frontend origin
+                registry.addMapping("/**").allowedMethods("OPTIONS", "HEAD", "GET", "PUT", "POST", "DELETE");
+            }
+        };
+    }
 }

@@ -21,25 +21,25 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerNPCStatistic {
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    UUID id;
 
-  @ManyToOne
-  PlayerStatistic playerStatistic;
+    @ManyToOne
+    PlayerStatistic playerStatistic;
 
-  @ManyToOne
-  NPC npc;
+    @ManyToOne
+    NPC npc;
 
-  @ManyToOne
-  Course course;
+    @ManyToOne
+    Course course;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  Set<PlayerNPCActionLog> playerNPCActionLogs = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<PlayerNPCActionLog> playerNPCActionLogs = new HashSet<>();
 
-  boolean completed;
+    boolean completed;
 
-  public void addActionLog(final PlayerNPCActionLog actionLog) {
-    this.playerNPCActionLogs.add(actionLog);
-  }
+    public void addActionLog(final PlayerNPCActionLog actionLog) {
+        this.playerNPCActionLogs.add(actionLog);
+    }
 }

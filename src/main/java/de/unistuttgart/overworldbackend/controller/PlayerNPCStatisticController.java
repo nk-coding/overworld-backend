@@ -17,59 +17,59 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/courses/{courseId}/playerstatistics")
 public class PlayerNPCStatisticController {
 
-  @Autowired
-  JWTValidatorService jwtValidatorService;
+    @Autowired
+    JWTValidatorService jwtValidatorService;
 
-  @Autowired
-  private PlayerNPCStatisticService playerNPCStatisticService;
+    @Autowired
+    private PlayerNPCStatisticService playerNPCStatisticService;
 
-  @Operation(summary = "Get all NPC statistics of a player")
-  @GetMapping("/{playerId}/player-npc-statistics")
-  public List<PlayerNPCStatisticDTO> getPlayerNPCStatistics(
-    @PathVariable final int courseId,
-    @PathVariable final String playerId,
-    @CookieValue("access_token") final String accessToken
-  ) {
-    jwtValidatorService.validateTokenOrThrow(accessToken);
-    log.debug("get statistics of player {} in the course {}", playerId, courseId);
-    return playerNPCStatisticService.getAllStatisticsOfPlayer(courseId, playerId);
-  }
+    @Operation(summary = "Get all NPC statistics of a player")
+    @GetMapping("/{playerId}/player-npc-statistics")
+    public List<PlayerNPCStatisticDTO> getPlayerNPCStatistics(
+        @PathVariable final int courseId,
+        @PathVariable final String playerId,
+        @CookieValue("access_token") final String accessToken
+    ) {
+        jwtValidatorService.validateTokenOrThrow(accessToken);
+        log.debug("get statistics of player {} in the course {}", playerId, courseId);
+        return playerNPCStatisticService.getAllStatisticsOfPlayer(courseId, playerId);
+    }
 
-  @Operation(summary = "Get specific NPC statistic of a player")
-  @GetMapping("/{playerId}/player-npc-statistics/{statisticId}")
-  public PlayerNPCStatisticDTO getPlayerNPCStatistic(
-    @PathVariable final int courseId,
-    @PathVariable final String playerId,
-    @PathVariable final UUID statisticId,
-    @CookieValue("access_token") final String accessToken
-  ) {
-    jwtValidatorService.validateTokenOrThrow(accessToken);
-    log.debug("get statistic {}", statisticId);
-    return playerNPCStatisticService.getStatisticOfPlayer(courseId, playerId, statisticId);
-  }
+    @Operation(summary = "Get specific NPC statistic of a player")
+    @GetMapping("/{playerId}/player-npc-statistics/{statisticId}")
+    public PlayerNPCStatisticDTO getPlayerNPCStatistic(
+        @PathVariable final int courseId,
+        @PathVariable final String playerId,
+        @PathVariable final UUID statisticId,
+        @CookieValue("access_token") final String accessToken
+    ) {
+        jwtValidatorService.validateTokenOrThrow(accessToken);
+        log.debug("get statistic {}", statisticId);
+        return playerNPCStatisticService.getStatisticOfPlayer(courseId, playerId, statisticId);
+    }
 
-  @Operation(summary = "Get all NPC statistics of own player, player id is read from cookie")
-  @GetMapping("/player-npc-statistics")
-  public List<PlayerNPCStatisticDTO> getOwnPlayerNPCStatistics(
-    @PathVariable final int courseId,
-    @CookieValue("access_token") final String accessToken
-  ) {
-    jwtValidatorService.validateTokenOrThrow(accessToken);
-    final String playerId = jwtValidatorService.extractUserId(accessToken);
-    log.debug("get statistics of player by cookie {} in the course {}", playerId, courseId);
-    return playerNPCStatisticService.getAllStatisticsOfPlayer(courseId, playerId);
-  }
+    @Operation(summary = "Get all NPC statistics of own player, player id is read from cookie")
+    @GetMapping("/player-npc-statistics")
+    public List<PlayerNPCStatisticDTO> getOwnPlayerNPCStatistics(
+        @PathVariable final int courseId,
+        @CookieValue("access_token") final String accessToken
+    ) {
+        jwtValidatorService.validateTokenOrThrow(accessToken);
+        final String playerId = jwtValidatorService.extractUserId(accessToken);
+        log.debug("get statistics of player by cookie {} in the course {}", playerId, courseId);
+        return playerNPCStatisticService.getAllStatisticsOfPlayer(courseId, playerId);
+    }
 
-  @Operation(summary = "Get own NPC statistic, player id is read from cookie")
-  @GetMapping("/player-npc-statistics/{statisticId}")
-  public PlayerNPCStatisticDTO getOwnPlayerNPCStatistic(
-    @PathVariable final int courseId,
-    @PathVariable final UUID statisticId,
-    @CookieValue("access_token") final String accessToken
-  ) {
-    jwtValidatorService.validateTokenOrThrow(accessToken);
-    final String playerId = jwtValidatorService.extractUserId(accessToken);
-    log.debug("get statistic by cookie {}", statisticId);
-    return playerNPCStatisticService.getStatisticOfPlayer(courseId, playerId, statisticId);
-  }
+    @Operation(summary = "Get own NPC statistic, player id is read from cookie")
+    @GetMapping("/player-npc-statistics/{statisticId}")
+    public PlayerNPCStatisticDTO getOwnPlayerNPCStatistic(
+        @PathVariable final int courseId,
+        @PathVariable final UUID statisticId,
+        @CookieValue("access_token") final String accessToken
+    ) {
+        jwtValidatorService.validateTokenOrThrow(accessToken);
+        final String playerId = jwtValidatorService.extractUserId(accessToken);
+        log.debug("get statistic by cookie {}", statisticId);
+        return playerNPCStatisticService.getStatisticOfPlayer(courseId, playerId, statisticId);
+    }
 }

@@ -21,30 +21,30 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseDTO {
 
-  @Nullable
-  int id;
+    @Nullable
+    int id;
 
-  @NotNull
-  String courseName;
+    @NotNull
+    String courseName;
 
-  @Pattern(regexp = Course.SEMESTER_PATTERN)
-  String semester;
+    @Pattern(regexp = Course.SEMESTER_PATTERN)
+    String semester;
 
-  String description;
-  boolean active;
-  List<WorldDTO> worlds;
+    String description;
+    boolean active;
+    List<WorldDTO> worlds;
 
-  public CourseDTO(
-    final String courseName,
-    final String semester,
-    final String description,
-    final boolean active,
-    final List<WorldDTO> worlds
-  ) {
-    this.courseName = courseName;
-    this.semester = semester;
-    this.description = description;
-    this.active = active;
-    this.worlds = worlds;
-  }
+    public CourseDTO(
+        final String courseName,
+        final String semester,
+        final String description,
+        final boolean active,
+        final List<WorldDTO> worlds
+    ) {
+        this.courseName = courseName;
+        this.semester = semester;
+        this.description = description;
+        this.active = active;
+        this.worlds = worlds;
+    }
 }

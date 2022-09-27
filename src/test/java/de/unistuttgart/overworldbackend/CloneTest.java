@@ -57,308 +57,315 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CloneTest {
 
-  @Container
-  public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-    .withDatabaseName("postgres")
-    .withUsername("postgres")
-    .withPassword("postgres");
+    @Container
+    public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
+        .withDatabaseName("postgres")
+        .withUsername("postgres")
+        .withPassword("postgres");
 
-  @Container
-  public static DockerComposeContainer compose = new DockerComposeContainer(
-    new File("src/test/resources/docker-compose-test.yaml")
-  )
-    .withPull(true)
-    .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
-    .withEnv("LOCAL_URL", postgresDB.getHost())
-    .withExposedService("overworld-db", 5432, Wait.forListeningPort())
-    .withExposedService("reverse-proxy", 80)
-    .waitingFor(
-      "reverse-proxy",
-      Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80).forStatusCode(400)
+    @Container
+    public static DockerComposeContainer compose = new DockerComposeContainer(
+        new File("src/test/resources/docker-compose-test.yaml")
     )
-    .waitingFor(
-      "reverse-proxy",
-      Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(200)
-    )
-    .waitingFor(
-      "reverse-proxy",
-      Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80).forStatusCode(400)
-    )
-    .waitingFor(
-      "reverse-proxy",
-      Wait.forHttp("/minigames/bugfinder/api/v1/configurations").forPort(80).forStatusCode(200)
-    )
-    .waitingFor(
-      "reverse-proxy",
-      Wait
-        .forHttp("/keycloak/realms/Gamify-IT/.well-known/openid-configuration")
-        .forPort(80)
-        .forStatusCode(200)
-        .withStartupTimeout(Duration.ofSeconds(120))
-    );
-
-  @DynamicPropertySource
-  public static void properties(final DynamicPropertyRegistry registry) {
-    //wait till setup has finished
-    final ContainerState state = (ContainerState) compose.getContainerByServiceName("setup_1").get();
-    while (state.isRunning()) {}
-    registry.add(
-      "spring.datasource.url",
-      () ->
-        String.format(
-          "jdbc:postgresql://%s:%d/postgres",
-          compose.getServiceHost("overworld-db", 5432),
-          compose.getServicePort("overworld-db", 5432)
+        .withPull(true)
+        .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
+        .withEnv("LOCAL_URL", postgresDB.getHost())
+        .withExposedService("overworld-db", 5432, Wait.forListeningPort())
+        .withExposedService("reverse-proxy", 80)
+        .waitingFor(
+            "reverse-proxy",
+            Wait.forHttp("/minigames/chickenshock/api/v1/configurations").forPort(80).forStatusCode(400)
         )
-    );
-    registry.add(
-      "chickenshock.url",
-      () -> String.format("http://%s/minigames/chickenshock/api/v1", compose.getServiceHost("reverse-proxy", 80))
-    );
-    registry.add(
-      "finitequiz.url",
-      () -> String.format("http://%s/minigames/finitequiz/api/v1", compose.getServiceHost("reverse-proxy", 80))
-    );
-    registry.add(
-      "crosswordpuzzle.url",
-      () -> String.format("http://%s/minigames/crosswordpuzzle/api/v1", compose.getServiceHost("reverse-proxy", 80))
-    );
-    registry.add(
-      "bugfinder.url",
-      () -> String.format("http://%s/minigames/bugfinder/api/v1", compose.getServiceHost("reverse-proxy", 80))
-    );
-  }
+        .waitingFor(
+            "reverse-proxy",
+            Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(200)
+        )
+        .waitingFor(
+            "reverse-proxy",
+            Wait.forHttp("/minigames/finitequiz/api/v1/configurations").forPort(80).forStatusCode(400)
+        )
+        .waitingFor(
+            "reverse-proxy",
+            Wait.forHttp("/minigames/bugfinder/api/v1/configurations").forPort(80).forStatusCode(200)
+        )
+        .waitingFor(
+            "reverse-proxy",
+            Wait
+                .forHttp("/keycloak/realms/Gamify-IT/.well-known/openid-configuration")
+                .forPort(80)
+                .forStatusCode(200)
+                .withStartupTimeout(Duration.ofSeconds(120))
+        );
 
-  @Autowired
-  MockMvc mvc;
+    @DynamicPropertySource
+    public static void properties(final DynamicPropertyRegistry registry) {
+        //wait till setup has finished
+        final ContainerState state = (ContainerState) compose.getContainerByServiceName("setup_1").get();
+        while (state.isRunning()) {}
+        registry.add(
+            "spring.datasource.url",
+            () ->
+                String.format(
+                    "jdbc:postgresql://%s:%d/postgres",
+                    compose.getServiceHost("overworld-db", 5432),
+                    compose.getServicePort("overworld-db", 5432)
+                )
+        );
+        registry.add(
+            "chickenshock.url",
+            () -> String.format("http://%s/minigames/chickenshock/api/v1", compose.getServiceHost("reverse-proxy", 80))
+        );
+        registry.add(
+            "finitequiz.url",
+            () -> String.format("http://%s/minigames/finitequiz/api/v1", compose.getServiceHost("reverse-proxy", 80))
+        );
+        registry.add(
+            "crosswordpuzzle.url",
+            () ->
+                String.format("http://%s/minigames/crosswordpuzzle/api/v1", compose.getServiceHost("reverse-proxy", 80))
+        );
+        registry.add(
+            "bugfinder.url",
+            () -> String.format("http://%s/minigames/bugfinder/api/v1", compose.getServiceHost("reverse-proxy", 80))
+        );
+    }
 
-  @MockBean
-  JWTValidatorService jwtValidatorService;
+    @Autowired
+    MockMvc mvc;
 
-  final Cookie cookie = new Cookie("access_token", "testToken");
+    @MockBean
+    JWTValidatorService jwtValidatorService;
 
-  @Autowired
-  ChickenshockClient chickenshockClient;
+    final Cookie cookie = new Cookie("access_token", "testToken");
 
-  @Autowired
-  CrosswordpuzzleClient crosswordpuzzleClient;
+    @Autowired
+    ChickenshockClient chickenshockClient;
 
-  @Autowired
-  FinitequizClient finitequizClient;
+    @Autowired
+    CrosswordpuzzleClient crosswordpuzzleClient;
 
-  @Autowired
-  private CourseMapper courseMapper;
+    @Autowired
+    FinitequizClient finitequizClient;
 
-  private String fullURL;
-  private ObjectMapper objectMapper;
+    @Autowired
+    private CourseMapper courseMapper;
 
-  @BeforeEach
-  public void createBasicData() {
-    fullURL = "/courses";
-    objectMapper = new ObjectMapper();
+    private String fullURL;
+    private ObjectMapper objectMapper;
 
-    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
-    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
-  }
+    @BeforeEach
+    public void createBasicData() {
+        fullURL = "/courses";
+        objectMapper = new ObjectMapper();
 
-  @Test
-  void cloneCourseTest() throws Exception {
-    final URI authorizationURI = new URIBuilder(
-      compose.getServiceHost("reverse-proxy", 80) + "/keycloak/realms/Gamify-IT/protocol/openid-connect/token"
-    )
-      .build();
-    final WebClient webclient = WebClient.builder().build();
-    final MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-    formData.put("grant_type", Collections.singletonList("password"));
-    formData.put("client_id", Collections.singletonList("game"));
-    formData.put("username", Collections.singletonList("lecturer"));
-    formData.put("password", Collections.singletonList("lecturer"));
+        doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+        when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
+    }
 
-    final String result = webclient
-      .post()
-      .uri(authorizationURI)
-      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-      .body(BodyInserters.fromFormData(formData))
-      .retrieve()
-      .bodyToMono(String.class)
-      .block();
+    @Test
+    void cloneCourseTest() throws Exception {
+        final URI authorizationURI = new URIBuilder(
+            compose.getServiceHost("reverse-proxy", 80) + "/keycloak/realms/Gamify-IT/protocol/openid-connect/token"
+        )
+            .build();
+        final WebClient webclient = WebClient.builder().build();
+        final MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.put("grant_type", Collections.singletonList("password"));
+        formData.put("client_id", Collections.singletonList("game"));
+        formData.put("username", Collections.singletonList("lecturer"));
+        formData.put("password", Collections.singletonList("lecturer"));
 
-    final JacksonJsonParser jsonParser = new JacksonJsonParser();
+        final String result = webclient
+            .post()
+            .uri(authorizationURI)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .body(BodyInserters.fromFormData(formData))
+            .retrieve()
+            .bodyToMono(String.class)
+            .block();
 
-    final String access_token = jsonParser.parseMap(result).get("access_token").toString();
+        final JacksonJsonParser jsonParser = new JacksonJsonParser();
 
-    final MvcResult resultGet = mvc
-      .perform(get(fullURL + "/1").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-      .andExpect(status().isOk())
-      .andReturn();
+        final String access_token = jsonParser.parseMap(result).get("access_token").toString();
 
-    final Course course = courseMapper.courseDTOToCourse(
-      objectMapper.readValue(resultGet.getResponse().getContentAsString(), CourseDTO.class)
-    );
+        final MvcResult resultGet = mvc
+            .perform(get(fullURL + "/1").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
 
-    final Cookie cookie = new Cookie("access_token", access_token);
+        final Course course = courseMapper.courseDTOToCourse(
+            objectMapper.readValue(resultGet.getResponse().getContentAsString(), CourseDTO.class)
+        );
 
-    final CourseInitialData initialData = new CourseInitialData();
-    initialData.setCourseName("CloneCourse");
-    initialData.setDescription("CloneDescription");
-    initialData.setSemester("WS-23");
+        final Cookie cookie = new Cookie("access_token", access_token);
 
-    final String bodyValue = objectMapper.writeValueAsString(initialData);
+        final CourseInitialData initialData = new CourseInitialData();
+        initialData.setCourseName("CloneCourse");
+        initialData.setDescription("CloneDescription");
+        initialData.setSemester("WS-23");
 
-    final MvcResult resultClone = mvc
-      .perform(
-        post(fullURL + "/1/clone")
-          .cookie(cookie)
-          .content(bodyValue)
-          .cookie(cookie)
-          .contentType(MediaType.APPLICATION_JSON)
-      )
-      .andExpect(status().isCreated())
-      .andReturn();
-    final Course cloneCourse = courseMapper.courseDTOToCourse(
-      objectMapper.readValue(resultClone.getResponse().getContentAsString(), CourseDTO.class)
-    );
+        final String bodyValue = objectMapper.writeValueAsString(initialData);
 
-    for (int i = 0; i < course.getWorlds().size(); i++) {
-      final World world = course.getWorlds().get(i);
-      final World cloneWorld = cloneCourse.getWorlds().get(i);
-      world
-        .getMinigameTasks()
-        .forEach(minigameTask -> {
-          final MinigameTask cloneMinigameTask = cloneWorld
-            .getMinigameTasks()
-            .stream()
-            .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
-            .findAny()
-            .get();
-          assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
-          assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
-          compareMinigame(minigameTask, cloneMinigameTask, access_token);
-        });
-      world
-        .getNpcs()
-        .forEach(npc -> {
-          final NPC cloneNpc = cloneWorld
-            .getNpcs()
-            .stream()
-            .filter(npc1 -> npc1.getIndex() == npc.getIndex())
-            .findAny()
-            .get();
-          final AtomicInteger k = new AtomicInteger(0);
-          for (final String text : npc.getText()) {
-            cloneNpc.getText().get(k.getAndIncrement());
-          }
-          assertEquals(npc.getDescription(), cloneNpc.getDescription());
-        });
-      for (int j = 0; j < world.getDungeons().size(); j++) {
-        final Dungeon dungeon = world.getDungeons().get(i);
-        final Dungeon cloneDungeon = cloneWorld.getDungeons().get(i);
-        dungeon
-          .getMinigameTasks()
-          .forEach(minigameTask -> {
-            final MinigameTask cloneMinigameTask = cloneDungeon
-              .getMinigameTasks()
-              .stream()
-              .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
-              .findAny()
-              .get();
-            assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
-            assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
-            compareMinigame(minigameTask, cloneMinigameTask, access_token);
-          });
-        dungeon
-          .getNpcs()
-          .forEach(npc -> {
-            final NPC cloneNpc = cloneDungeon
-              .getNpcs()
-              .stream()
-              .filter(npc1 -> npc1.getIndex() == npc.getIndex())
-              .findAny()
-              .get();
-            final AtomicInteger k = new AtomicInteger(0);
-            for (final String text : npc.getText()) {
-              cloneNpc.getText().get(k.getAndIncrement());
+        final MvcResult resultClone = mvc
+            .perform(
+                post(fullURL + "/1/clone")
+                    .cookie(cookie)
+                    .content(bodyValue)
+                    .cookie(cookie)
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isCreated())
+            .andReturn();
+        final Course cloneCourse = courseMapper.courseDTOToCourse(
+            objectMapper.readValue(resultClone.getResponse().getContentAsString(), CourseDTO.class)
+        );
+
+        for (int i = 0; i < course.getWorlds().size(); i++) {
+            final World world = course.getWorlds().get(i);
+            final World cloneWorld = cloneCourse.getWorlds().get(i);
+            world
+                .getMinigameTasks()
+                .forEach(minigameTask -> {
+                    final MinigameTask cloneMinigameTask = cloneWorld
+                        .getMinigameTasks()
+                        .stream()
+                        .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
+                        .findAny()
+                        .get();
+                    assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
+                    assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
+                    compareMinigame(minigameTask, cloneMinigameTask, access_token);
+                });
+            world
+                .getNpcs()
+                .forEach(npc -> {
+                    final NPC cloneNpc = cloneWorld
+                        .getNpcs()
+                        .stream()
+                        .filter(npc1 -> npc1.getIndex() == npc.getIndex())
+                        .findAny()
+                        .get();
+                    final AtomicInteger k = new AtomicInteger(0);
+                    for (final String text : npc.getText()) {
+                        cloneNpc.getText().get(k.getAndIncrement());
+                    }
+                    assertEquals(npc.getDescription(), cloneNpc.getDescription());
+                });
+            for (int j = 0; j < world.getDungeons().size(); j++) {
+                final Dungeon dungeon = world.getDungeons().get(i);
+                final Dungeon cloneDungeon = cloneWorld.getDungeons().get(i);
+                dungeon
+                    .getMinigameTasks()
+                    .forEach(minigameTask -> {
+                        final MinigameTask cloneMinigameTask = cloneDungeon
+                            .getMinigameTasks()
+                            .stream()
+                            .filter(minigameTask1 -> minigameTask1.getIndex() == minigameTask.getIndex())
+                            .findAny()
+                            .get();
+                        assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
+                        assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
+                        compareMinigame(minigameTask, cloneMinigameTask, access_token);
+                    });
+                dungeon
+                    .getNpcs()
+                    .forEach(npc -> {
+                        final NPC cloneNpc = cloneDungeon
+                            .getNpcs()
+                            .stream()
+                            .filter(npc1 -> npc1.getIndex() == npc.getIndex())
+                            .findAny()
+                            .get();
+                        final AtomicInteger k = new AtomicInteger(0);
+                        for (final String text : npc.getText()) {
+                            cloneNpc.getText().get(k.getAndIncrement());
+                        }
+                        assertEquals(npc.getDescription(), cloneNpc.getDescription());
+                    });
             }
-            assertEquals(npc.getDescription(), cloneNpc.getDescription());
-          });
-      }
+        }
     }
-  }
 
-  private void compareMinigame(
-    final MinigameTask minigameTask1,
-    final MinigameTask minigameTask2,
-    final String access_token
-  ) {
-    if (minigameTask1 == null) {
-      return;
+    private void compareMinigame(
+        final MinigameTask minigameTask1,
+        final MinigameTask minigameTask2,
+        final String access_token
+    ) {
+        if (minigameTask1 == null) {
+            return;
+        }
+        if (minigameTask1.getGame() == null) {
+            return;
+        }
+        switch (minigameTask1.getGame()) {
+            case CHICKENSHOCK -> {
+                final ChickenshockConfiguration config1 = chickenshockClient.getConfiguration(
+                    access_token,
+                    minigameTask1.getConfigurationId()
+                );
+                final ChickenshockConfiguration config2 = chickenshockClient.getConfiguration(
+                    access_token,
+                    minigameTask2.getConfigurationId()
+                );
+                config1
+                    .getQuestions()
+                    .forEach(chickenshockQuestion -> {
+                        final Optional<ChickenshockQuestion> question = config2
+                            .getQuestions()
+                            .stream()
+                            .filter(chickenshockQuestion1 ->
+                                chickenshockQuestion1.getText().equals(chickenshockQuestion.getText())
+                            )
+                            .findAny();
+                        assertFalse(question.isEmpty());
+                    });
+            }
+            case CROSSWORDPUZZLE -> {
+                final CrosswordpuzzleConfiguration config1 = crosswordpuzzleClient.getConfiguration(
+                    access_token,
+                    minigameTask1.getConfigurationId()
+                );
+                final CrosswordpuzzleConfiguration config2 = crosswordpuzzleClient.getConfiguration(
+                    access_token,
+                    minigameTask2.getConfigurationId()
+                );
+                config1
+                    .getQuestions()
+                    .forEach(crosswordpuzzleQuestion -> {
+                        final Optional<CrosswordpuzzleQuestion> question = config2
+                            .getQuestions()
+                            .stream()
+                            .filter(crosswordpuzzleQuestion1 ->
+                                crosswordpuzzleQuestion1
+                                    .getQuestionText()
+                                    .equals(crosswordpuzzleQuestion.getQuestionText())
+                            )
+                            .findAny();
+                        assertFalse(question.isEmpty());
+                    });
+            }
+            case FINITEQUIZ -> {
+                final FinitequizConfiguration config1 = finitequizClient.getConfiguration(
+                    access_token,
+                    minigameTask1.getConfigurationId()
+                );
+                final FinitequizConfiguration config2 = finitequizClient.getConfiguration(
+                    access_token,
+                    minigameTask2.getConfigurationId()
+                );
+                config1
+                    .getQuestions()
+                    .forEach(finitequizQuestion -> {
+                        final Optional<FinitequizQuestion> question = config2
+                            .getQuestions()
+                            .stream()
+                            .filter(finitequizQuestion1 ->
+                                finitequizQuestion1.getText().equals(finitequizQuestion.getText())
+                            )
+                            .findAny();
+                        assertFalse(question.isEmpty());
+                    });
+            }
+        }
     }
-    if (minigameTask1.getGame() == null) {
-      return;
-    }
-    switch (minigameTask1.getGame()) {
-      case CHICKENSHOCK -> {
-        final ChickenshockConfiguration config1 = chickenshockClient.getConfiguration(
-          access_token,
-          minigameTask1.getConfigurationId()
-        );
-        final ChickenshockConfiguration config2 = chickenshockClient.getConfiguration(
-          access_token,
-          minigameTask2.getConfigurationId()
-        );
-        config1
-          .getQuestions()
-          .forEach(chickenshockQuestion -> {
-            final Optional<ChickenshockQuestion> question = config2
-              .getQuestions()
-              .stream()
-              .filter(chickenshockQuestion1 -> chickenshockQuestion1.getText().equals(chickenshockQuestion.getText()))
-              .findAny();
-            assertFalse(question.isEmpty());
-          });
-      }
-      case CROSSWORDPUZZLE -> {
-        final CrosswordpuzzleConfiguration config1 = crosswordpuzzleClient.getConfiguration(
-          access_token,
-          minigameTask1.getConfigurationId()
-        );
-        final CrosswordpuzzleConfiguration config2 = crosswordpuzzleClient.getConfiguration(
-          access_token,
-          minigameTask2.getConfigurationId()
-        );
-        config1
-          .getQuestions()
-          .forEach(crosswordpuzzleQuestion -> {
-            final Optional<CrosswordpuzzleQuestion> question = config2
-              .getQuestions()
-              .stream()
-              .filter(crosswordpuzzleQuestion1 ->
-                crosswordpuzzleQuestion1.getQuestionText().equals(crosswordpuzzleQuestion.getQuestionText())
-              )
-              .findAny();
-            assertFalse(question.isEmpty());
-          });
-      }
-      case FINITEQUIZ -> {
-        final FinitequizConfiguration config1 = finitequizClient.getConfiguration(
-          access_token,
-          minigameTask1.getConfigurationId()
-        );
-        final FinitequizConfiguration config2 = finitequizClient.getConfiguration(
-          access_token,
-          minigameTask2.getConfigurationId()
-        );
-        config1
-          .getQuestions()
-          .forEach(finitequizQuestion -> {
-            final Optional<FinitequizQuestion> question = config2
-              .getQuestions()
-              .stream()
-              .filter(finitequizQuestion1 -> finitequizQuestion1.getText().equals(finitequizQuestion.getText()))
-              .findAny();
-            assertFalse(question.isEmpty());
-          });
-      }
-    }
-  }
 }

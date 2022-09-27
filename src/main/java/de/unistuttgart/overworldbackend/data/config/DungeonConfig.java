@@ -8,8 +8,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DungeonConfig {
 
-  String staticName;
-  int numberOfMinigames;
-  int numberOfNPCs;
-  int numberOfBooks;
+    String staticName;
+    int numberOfMinigames;
+    int numberOfNPCs;
+    int numberOfBooks;
 }

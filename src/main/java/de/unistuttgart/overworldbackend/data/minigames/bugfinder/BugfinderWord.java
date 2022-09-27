@@ -13,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BugfinderWord {
 
-  UUID id;
-  String word;
+    UUID id;
+    String word;
 }
