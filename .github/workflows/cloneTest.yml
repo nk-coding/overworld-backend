@@ -1,11 +1,11 @@
-name: Test
+name: CloneTest
 on:
   push:
     branches:
       - "**"
 jobs:
   build:
-    name: Test
+    name: CloneTest
     runs-on: self-hosted
 
     steps:
@@ -19,4 +19,3 @@ jobs:
       - name: Run tests
         run: mvn clean test -Dtest=CloneTest
         shell: bash
-
