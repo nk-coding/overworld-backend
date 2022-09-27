@@ -31,8 +31,8 @@ public class PlayerStatisticController {
   @Operation(summary = "Get a playerStatistic from a player in a course by playerId and courseId")
   @GetMapping("/{playerId}")
   public PlayerStatisticDTO getPlayerstatistic(
-    @PathVariable int courseId,
-    @PathVariable String playerId,
+    @PathVariable final int courseId,
+    @PathVariable final String playerId,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -45,11 +45,11 @@ public class PlayerStatisticController {
   @Operation(summary = "Get own playerStatistic in a course of a player and courseId, player id is read from cookie")
   @GetMapping("")
   public PlayerStatisticDTO getOwnPlayerstatistic(
-    @PathVariable int courseId,
+    @PathVariable final int courseId,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
-    String playerId = jwtValidatorService.extractUserId(accessToken);
+    final String playerId = jwtValidatorService.extractUserId(accessToken);
     log.debug("get statistics from player by cookie {} in course {}", playerId, courseId);
     return playerStatisticMapper.playerStatisticToPlayerstatisticDTO(
       playerStatisticService.getPlayerStatisticFromCourse(courseId, playerId)
@@ -60,8 +60,8 @@ public class PlayerStatisticController {
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
   public PlayerStatisticDTO createPlayerstatistic(
-    @PathVariable int courseId,
-    @Valid @RequestBody Player player,
+    @PathVariable final int courseId,
+    @Valid @RequestBody final Player player,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -72,9 +72,9 @@ public class PlayerStatisticController {
   @Operation(summary = "Update a playerStatistic in a course by playerId")
   @PutMapping("/{playerId}")
   public PlayerStatisticDTO updatePlayerStatistic(
-    @PathVariable int courseId,
-    @PathVariable String playerId,
-    @RequestBody PlayerStatisticDTO playerstatisticDTO,
+    @PathVariable final int courseId,
+    @PathVariable final String playerId,
+    @RequestBody final PlayerStatisticDTO playerstatisticDTO,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);

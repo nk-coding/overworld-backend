@@ -16,7 +16,6 @@ import de.unistuttgart.overworldbackend.data.minigames.bugfinder.BugfinderConfig
 import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
-import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizQuestion;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,12 +58,12 @@ public class CourseService {
 
   public CourseService() {
     configCourse = new CourseConfig();
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
 
-    InputStream inputStream = TypeReference.class.getResourceAsStream("/config.json");
+    final InputStream inputStream = TypeReference.class.getResourceAsStream("/config.json");
     try {
       configCourse = mapper.readValue(inputStream, CourseConfig.class);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
     }
   }
@@ -93,12 +92,12 @@ public class CourseService {
    * @return the updated course as DTO
    */
   public CourseDTO updateCourse(final int courseId, final CourseDTO courseDTO) {
-    Course course = getCourse(courseId);
+    final Course course = getCourse(courseId);
     course.setCourseName(courseDTO.getCourseName());
     course.setDescription(courseDTO.getDescription());
     course.setActive(courseDTO.isActive());
     course.setSemester(courseDTO.getSemester());
-    Course updatedCourse = courseRepository.save(course);
+    final Course updatedCourse = courseRepository.save(course);
     return courseMapper.courseToCourseDTO(updatedCourse);
   }
 
@@ -111,11 +110,11 @@ public class CourseService {
    * @return the created course as DTO with all its generated worlds, dungeons, minigame tasks and npcs
    */
   public CourseDTO createCourse(final CourseInitialData courseInit) {
-    List<World> worlds = new ArrayList<>();
-    AtomicInteger worldId = new AtomicInteger(1);
+    final List<World> worlds = new ArrayList<>();
+    final AtomicInteger worldId = new AtomicInteger(1);
     configCourse.getWorlds().forEach(worldConfig -> configureWorld(worlds, worldId.getAndIncrement(), worldConfig));
 
-    Course course = new Course(
+    final Course course = new Course(
       courseInit.getCourseName(),
       courseInit.getSemester(),
       courseInit.getDescription(),
@@ -134,59 +133,59 @@ public class CourseService {
    * @return the deleted course as DTO
    */
   public CourseDTO deleteCourse(final int id) {
-    Course course = getCourse(id);
+    final Course course = getCourse(id);
     courseRepository.delete(course);
     return courseMapper.courseToCourseDTO(course);
   }
 
-  private void configureWorld(List<World> worlds, int worldId, WorldConfig worldConfig) {
-    Set<MinigameTask> minigames = new HashSet<>();
-    Set<NPC> npcs = new HashSet<>();
-    Set<Book> books = new HashSet<>();
-    List<Dungeon> dungeons = new ArrayList<>();
-    AtomicInteger dungeonId = new AtomicInteger(1);
+  private void configureWorld(final List<World> worlds, final int worldId, final WorldConfig worldConfig) {
+    final Set<MinigameTask> minigames = new HashSet<>();
+    final Set<NPC> npcs = new HashSet<>();
+    final Set<Book> books = new HashSet<>();
+    final List<Dungeon> dungeons = new ArrayList<>();
+    final AtomicInteger dungeonId = new AtomicInteger(1);
     worldConfig
       .getDungeons()
       .forEach(dungeonConfig -> dungeons.add(configureDungeon(dungeonId.getAndIncrement(), dungeonConfig)));
     for (int minigameIndex = 1; minigameIndex <= worldConfig.getNumberOfMinigames(); minigameIndex++) {
-      MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
+      final MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);
     }
     for (int npcIndex = 1; npcIndex <= worldConfig.getNumberOfNPCs(); npcIndex++) {
-      NPC npc = new NPC(new ArrayList<>(), npcIndex);
+      final NPC npc = new NPC(new ArrayList<>(), npcIndex);
       npcs.add(npc);
     }
     for (int bookIndex = 1; bookIndex <= worldConfig.getNumberOfBooks(); bookIndex++) {
-      Book book = new Book("", bookIndex);
+      final Book book = new Book("", bookIndex);
       books.add(book);
     }
-    World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, books, dungeons, worldId);
+    final World world = new World(worldConfig.getStaticName(), "", false, minigames, npcs, books, dungeons, worldId);
     worlds.add(world);
   }
 
-  private Dungeon configureDungeon(int dungeonId, DungeonConfig dungeonConfig) {
-    Set<MinigameTask> minigames = new HashSet<>();
-    Set<NPC> npcs = new HashSet<>();
-    Set<Book> books = new HashSet<>();
+  private Dungeon configureDungeon(final int dungeonId, final DungeonConfig dungeonConfig) {
+    final Set<MinigameTask> minigames = new HashSet<>();
+    final Set<NPC> npcs = new HashSet<>();
+    final Set<Book> books = new HashSet<>();
     for (int minigameIndex = 1; minigameIndex <= dungeonConfig.getNumberOfMinigames(); minigameIndex++) {
-      MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
+      final MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
       minigames.add(minigame);
     }
     for (int npcIndex = 1; npcIndex <= dungeonConfig.getNumberOfNPCs(); npcIndex++) {
-      NPC npc = new NPC(new ArrayList<>(), npcIndex);
+      final NPC npc = new NPC(new ArrayList<>(), npcIndex);
       npcs.add(npc);
     }
     for (int bookIndex = 1; bookIndex <= dungeonConfig.getNumberOfBooks(); bookIndex++) {
-      Book book = new Book("", bookIndex);
+      final Book book = new Book("", bookIndex);
       books.add(book);
     }
     return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, books, dungeonId);
   }
 
-  public CourseDTO cloneCourse(int id, CourseInitialData courseInitialData, final String accessToken) {
+  public CourseDTO cloneCourse(final int id, final CourseInitialData courseInitialData, final String accessToken) {
     currentAccessToken = accessToken;
-    Course course = getCourse(id);
-    Course cloneCourse = new Course(
+    final Course course = getCourse(id);
+    final Course cloneCourse = new Course(
       courseInitialData.getCourseName(),
       courseInitialData.getSemester(),
       courseInitialData.getDescription(),
@@ -198,7 +197,7 @@ public class CourseService {
     return courseMapper.courseToCourseDTO(cloneCourse);
   }
 
-  private World cloneWorld(World oldWorld) {
+  private World cloneWorld(final World oldWorld) {
     return new World(
       oldWorld.getStaticName(),
       oldWorld.getTopicName(),
@@ -220,7 +219,7 @@ public class CourseService {
     );
   }
 
-  private Dungeon cloneDungeon(Dungeon oldDungeon) {
+  private Dungeon cloneDungeon(final Dungeon oldDungeon) {
     return new Dungeon(
       oldDungeon.getStaticName(),
       oldDungeon.getTopicName(),
@@ -236,15 +235,15 @@ public class CourseService {
     );
   }
 
-  private NPC cloneNPC(NPC npc) {
+  private NPC cloneNPC(final NPC npc) {
     return new NPC(new ArrayList<>(npc.getText()), npc.getDescription(), npc.getIndex());
   }
 
-  private Book cloneBook(Book book) {
+  private Book cloneBook(final Book book) {
     return new Book(book.getText(), book.getDescription(), book.getIndex());
   }
 
-  private MinigameTask cloneMinigameTask(MinigameTask minigameTask) {
+  private MinigameTask cloneMinigameTask(final MinigameTask minigameTask) {
     if (minigameTask.getGame() == null) {
       return new MinigameTask(null, minigameTask.getDescription(), null, minigameTask.getIndex());
     }

@@ -171,13 +171,11 @@ class PlayerTaskStatisticControllerTest {
     fullURL =
       String.format(
         "/courses/%d/playerstatistics/%s/player-task-statistics",
-        initialCourse.getId(), initialPlayerStatistic.getUserId()
+        initialCourse.getId(),
+        initialPlayerStatistic.getUserId()
       );
     fullURLWithoutPlayerId =
-            String.format(
-                    "/courses/%d/playerstatistics/player-task-statistics",
-                    initialCourse.getId()
-            );
+      String.format("/courses/%d/playerstatistics/player-task-statistics", initialCourse.getId());
 
     objectMapper = new ObjectMapper();
 
@@ -210,21 +208,21 @@ class PlayerTaskStatisticControllerTest {
   @Test
   void getOwnTaskStatistics() throws Exception {
     PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
-            new PlayerTaskStatisticData(
-                    initialMinigameTask.getGame(),
-                    initialMinigameTask.getConfigurationId(),
-                    80,
-                    initialPlayerStatisticDTO.getUserId()
-            )
+      new PlayerTaskStatisticData(
+        initialMinigameTask.getGame(),
+        initialMinigameTask.getConfigurationId(),
+        80,
+        initialPlayerStatisticDTO.getUserId()
+      )
     );
 
     final MvcResult result = mvc
-            .perform(get(fullURLWithoutPlayerId).contentType(MediaType.APPLICATION_JSON).cookie(cookie))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(get(fullURLWithoutPlayerId).contentType(MediaType.APPLICATION_JSON).cookie(cookie))
+      .andExpect(status().isOk())
+      .andReturn();
 
     final List<PlayerTaskStatisticDTO> playerTaskStatisticDTOs = Arrays.asList(
-            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerTaskStatisticDTO[].class)
+      objectMapper.readValue(result.getResponse().getContentAsString(), PlayerTaskStatisticDTO[].class)
     );
     assertEquals(playerTaskStatisticDTOs.get(0), statistic);
   }
@@ -258,22 +256,24 @@ class PlayerTaskStatisticControllerTest {
   @Test
   void getOwnTaskStatistic() throws Exception {
     PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
-            new PlayerTaskStatisticData(
-                    initialMinigameTask.getGame(),
-                    initialMinigameTask.getConfigurationId(),
-                    80,
-                    initialPlayerStatisticDTO.getUserId()
-            )
+      new PlayerTaskStatisticData(
+        initialMinigameTask.getGame(),
+        initialMinigameTask.getConfigurationId(),
+        80,
+        initialPlayerStatisticDTO.getUserId()
+      )
     );
 
     final MvcResult result = mvc
-            .perform(get(fullURLWithoutPlayerId + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(
+        get(fullURLWithoutPlayerId + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
 
     final PlayerTaskStatisticDTO playerTaskStatisticDTO = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            PlayerTaskStatisticDTO.class
+      result.getResponse().getContentAsString(),
+      PlayerTaskStatisticDTO.class
     );
     assertEquals(statistic, playerTaskStatisticDTO);
     assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());

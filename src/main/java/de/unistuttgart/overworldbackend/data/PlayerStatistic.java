@@ -53,7 +53,7 @@ public class PlayerStatistic {
 
   long knowledge = 0;
 
-  public void addKnowledge(long gainedKnowledge) {
+  public void addKnowledge(final long gainedKnowledge) {
     knowledge += gainedKnowledge;
   }
 

@@ -46,7 +46,7 @@ public class PlayerNPCStatisticService {
    * @return List of playerNPCStatistics of the player of the course
    */
   public List<PlayerNPCStatisticDTO> getAllStatisticsOfPlayer(final int courseId, final String playerId) {
-    List<PlayerNPCStatistic> statisticList = playerNPCStatisticRepository
+    final List<PlayerNPCStatistic> statisticList = playerNPCStatisticRepository
       .findByCourseId(courseId)
       .stream()
       .filter(playerNPCStatistic -> playerNPCStatistic.getPlayerStatistic().getUserId().equals(playerId))
@@ -117,7 +117,12 @@ public class PlayerNPCStatisticService {
       currentPlayerNPCStatistic =
         playerNPCStatisticRepository
           .findByNpcIdAndCourseIdAndPlayerStatisticId(npc.getId(), course.getId(), playerStatistic.getId())
-          .get();
+          .orElseThrow(() ->
+            new ResponseStatusException(
+              HttpStatus.NOT_FOUND,
+              String.format("PlayerNpcStatistic for Player %s not found", playerStatistic.getId())
+            )
+          );
     } else {
       currentPlayerNPCStatistic = playerNPCStatistic.get();
       if (!playerNPCStatistic.get().isCompleted() && data.isCompleted()) {

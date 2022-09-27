@@ -181,17 +181,13 @@ class PlayerStatisticControllerTest {
   @Test
   void getOwnPlayerStatistic() throws Exception {
     final MvcResult result = mvc
-            .perform(
-                    get(fullURL)
-                            .cookie(cookie)
-                            .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
 
     final PlayerStatisticDTO playerStatisticDTOResult = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            PlayerStatisticDTO.class
+      result.getResponse().getContentAsString(),
+      PlayerStatisticDTO.class
     );
 
     assertEquals(initialPlayerStatisticDTO, playerStatisticDTOResult);

@@ -1,11 +1,6 @@
 package de.unistuttgart.overworldbackend.service;
 
-import de.unistuttgart.overworldbackend.data.Dungeon;
-import de.unistuttgart.overworldbackend.data.DungeonDTO;
-import de.unistuttgart.overworldbackend.data.MinigameTask;
-import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
-import de.unistuttgart.overworldbackend.data.World;
-import de.unistuttgart.overworldbackend.data.WorldDTO;
+import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
@@ -220,7 +215,7 @@ public class MinigameTaskService {
    * @param dungeonIndex the index of the dungeon the minigame is in
    */
   private void minigameRemoved(final int courseId, final int worldIndex, final Optional<Integer> dungeonIndex) {
-    Set<MinigameTask> minigames;
+    final Set<MinigameTask> minigames;
     if (dungeonIndex.isEmpty()) {
       final World world = worldService.getWorldByIndexFromCourse(courseId, worldIndex);
       minigames = world.getMinigameTasks();

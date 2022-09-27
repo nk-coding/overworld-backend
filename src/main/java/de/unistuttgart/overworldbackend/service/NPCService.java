@@ -41,7 +41,7 @@ public class NPCService {
    * @param npcIndex the index of the npc
    * @return the found npc
    */
-  public NPC getNPCFromWorld(final int courseId, final int worldIndex, int npcIndex) {
+  public NPC getNPCFromWorld(final int courseId, final int worldIndex, final int npcIndex) {
     return worldService
       .getWorldByIndexFromCourse(courseId, worldIndex)
       .getNpcs()
@@ -66,7 +66,7 @@ public class NPCService {
    * @param npcIndex the index of the npc
    * @return the found npc
    */
-  public NPC getNPCFromDungeon(final int courseId, final int worldIndex, final int dungeonIndex, int npcIndex) {
+  public NPC getNPCFromDungeon(final int courseId, final int worldIndex, final int dungeonIndex, final int npcIndex) {
     return dungeonService
       .getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex)
       .getNpcs()
@@ -136,8 +136,8 @@ public class NPCService {
     return npcMapper.npcToNPCDTO(updatedNPC);
   }
 
-  private void resetNPC(NPC npc) {
-    List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npc.getId());
+  private void resetNPC(final NPC npc) {
+    final List<PlayerNPCStatistic> statistics = playerNPCStatisticRepository.findByNpcId(npc.getId());
     statistics.forEach(statistic -> statistic.setCompleted(false));
     playerNPCStatisticRepository.saveAll(statistics);
   }

@@ -6,13 +6,14 @@ import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -127,17 +128,27 @@ public class PlayerTaskStatisticService {
             course.getId(),
             playerStatistic.getId()
           )
-          .get();
+          .orElseThrow(() ->
+            new ResponseStatusException(
+              HttpStatus.NOT_FOUND,
+              String.format(
+                "Statistic for the minigame with the id %s of the player %s in the course %s not found.",
+                minigameTask.getId(),
+                playerStatistic.getId(),
+                course.getId()
+              )
+            )
+          );
       });
 
-    long gainedKnowledge = calculateKnowledge(data.getScore(), playerTaskStatistic.getHighscore());
+    final long gainedKnowledge = calculateKnowledge(data.getScore(), playerTaskStatistic.getHighscore());
 
     playerTaskStatistic.setHighscore(Math.max(playerTaskStatistic.getHighscore(), data.getScore()));
     playerTaskStatistic.setCompleted(playerTaskStatistic.isCompleted() || checkCompleted(data.getScore()));
 
     logData(data, course, playerTaskStatistic, gainedKnowledge);
 
-    Area area = minigameTask.getArea();
+    final Area area = minigameTask.getArea();
     if (area instanceof Dungeon dungeon) {
       calculateCompletedDungeon(dungeon, playerStatistic);
     }
@@ -156,7 +167,7 @@ public class PlayerTaskStatisticService {
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
       playerStatistic.getId()
     );
-    boolean dungeonCompleted = dungeon
+    final boolean dungeonCompleted = dungeon
       .getMinigameTasks()
       .parallelStream()
       .allMatch(minigameTask ->
@@ -166,7 +177,7 @@ public class PlayerTaskStatisticService {
           .anyMatch(PlayerTaskStatistic::isCompleted)
       );
     if (dungeonCompleted) {
-      List<Area> completedDungeons = playerStatistic.getCompletedDungeons();
+      final List<Area> completedDungeons = playerStatistic.getCompletedDungeons();
       completedDungeons.add(dungeon);
     }
   }

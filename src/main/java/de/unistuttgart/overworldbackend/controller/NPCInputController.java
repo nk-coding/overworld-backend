@@ -27,7 +27,7 @@ public class NPCInputController {
   @Operation(summary = "Submit statistics for a NPC for a player")
   @PostMapping("/submit-npc-pass")
   public PlayerNPCStatisticDTO inputData(
-    @RequestBody PlayerNPCStatisticData data,
+    @RequestBody final PlayerNPCStatisticData data,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);

@@ -27,8 +27,8 @@ public class MinigameTaskController {
   @Operation(summary = "Get all task from a world")
   @GetMapping("/minigame-tasks")
   public Set<MinigameTaskDTO> getMinigameTasksFromWorld(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -39,9 +39,9 @@ public class MinigameTaskController {
   @Operation(summary = "Get all tasks from a dungeon")
   @GetMapping("/dungeons/{dungeonIndex}/minigame-tasks")
   public Set<MinigameTaskDTO> getMinigameTasksFromDungeon(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
-    @PathVariable int dungeonIndex,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
+    @PathVariable final int dungeonIndex,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -52,9 +52,9 @@ public class MinigameTaskController {
   @Operation(summary = "Get a task by its index from a world")
   @GetMapping("/minigame-tasks/{taskIndex}")
   public MinigameTaskDTO getMinigameTaskFromWorld(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
-    @PathVariable int taskIndex,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
+    @PathVariable final int taskIndex,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -65,10 +65,10 @@ public class MinigameTaskController {
   @Operation(summary = "Get a task by its index from a dungeon")
   @GetMapping("/dungeons/{dungoenIndex}/minigame-tasks/{taskIndex}")
   public MinigameTaskDTO getMinigameTaskFromDungeon(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
-    @PathVariable int dungoenIndex,
-    @PathVariable int taskIndex,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
+    @PathVariable final int dungoenIndex,
+    @PathVariable final int taskIndex,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -79,10 +79,10 @@ public class MinigameTaskController {
   @Operation(summary = "Update a task by its index from a world")
   @PutMapping("/minigame-tasks/{taskIndex}")
   public MinigameTaskDTO updateMinigameTasksFromWorld(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
-    @PathVariable int taskIndex,
-    @RequestBody MinigameTaskDTO minigameTaskDTO,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
+    @PathVariable final int taskIndex,
+    @RequestBody final MinigameTaskDTO minigameTaskDTO,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -100,11 +100,11 @@ public class MinigameTaskController {
   @Operation(summary = "Update a task by index id from a dungeon")
   @PutMapping("/dungeons/{dungeonIndex}/minigame-tasks/{taskIndex}")
   public MinigameTaskDTO updateMinigameTasksFromDungeon(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
-    @PathVariable int dungeonIndex,
-    @PathVariable int taskIndex,
-    @RequestBody MinigameTaskDTO minigameTaskDTO,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
+    @PathVariable final int dungeonIndex,
+    @PathVariable final int taskIndex,
+    @RequestBody final MinigameTaskDTO minigameTaskDTO,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);

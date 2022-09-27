@@ -16,7 +16,7 @@ public class AreaService {
   @Autowired
   private WorldService worldService;
 
-  public Area getAreaFromAreaLocationDTO(int courseId, AreaLocationDTO areaLocationDTO) {
+  public Area getAreaFromAreaLocationDTO(final int courseId, final AreaLocationDTO areaLocationDTO) {
     return areaLocationDTO.getDungeonIndex() != null
       ? dungeonService.getDungeonByIndexFromCourse(
         courseId,

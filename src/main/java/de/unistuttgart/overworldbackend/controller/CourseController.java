@@ -43,7 +43,7 @@ public class CourseController {
 
   @Operation(summary = "Get a course by its id")
   @GetMapping("/{id}")
-  public CourseDTO getCourse(@PathVariable int id, @CookieValue("access_token") final String accessToken) {
+  public CourseDTO getCourse(@PathVariable final int id, @CookieValue("access_token") final String accessToken) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get course {}", id);
     return courseMapper.courseToCourseDTO(courseService.getCourse(id));
@@ -53,20 +53,20 @@ public class CourseController {
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
   public CourseDTO createCourse(
-    @Valid @RequestBody CourseInitialData course,
+    @Valid @RequestBody final CourseInitialData course,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
     jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
-    log.debug("create course {}");
+    log.debug("create course");
     return courseService.createCourse(course);
   }
 
   @Operation(summary = "Update a course by its id")
   @PutMapping("/{id}")
   public CourseDTO updateCourse(
-    @PathVariable int id,
-    @Valid @RequestBody CourseDTO courseDTO,
+    @PathVariable final int id,
+    @Valid @RequestBody final CourseDTO courseDTO,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -77,7 +77,7 @@ public class CourseController {
 
   @Operation(summary = "Delete a course by its id")
   @DeleteMapping("/{id}")
-  public CourseDTO deleteCourse(@PathVariable int id, @CookieValue("access_token") final String accessToken) {
+  public CourseDTO deleteCourse(@PathVariable final int id, @CookieValue("access_token") final String accessToken) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
     jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
     log.debug("delete course {}", id);
@@ -91,8 +91,8 @@ public class CourseController {
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("/{id}/clone")
   public CourseDTO cloneCourse(
-    @PathVariable int id,
-    @Valid @RequestBody CourseInitialData course,
+    @PathVariable final int id,
+    @Valid @RequestBody final CourseInitialData course,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);

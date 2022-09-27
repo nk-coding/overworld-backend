@@ -63,46 +63,10 @@ public class Course {
   @PrePersist
   private void updateCourseIds() {
     worlds.forEach(world -> {
-      world.setCourse(this);
-      world
-        .getMinigameTasks()
-        .forEach(minigameTask -> {
-          minigameTask.setCourse(this);
-          minigameTask.setArea(world);
-        });
-      world
-        .getNpcs()
-        .forEach(npc -> {
-          npc.setCourse(this);
-          npc.setArea(world);
-        });
-      world
-        .getBooks()
-        .forEach(book -> {
-          book.setCourse(this);
-          book.setArea(world);
-        });
+      setAreaCourseId(world);
       for (final Dungeon dungeon : world.getDungeons()) {
         dungeon.setWorld(world);
-        dungeon.setCourse(this);
-        dungeon
-          .getMinigameTasks()
-          .forEach(minigameTask -> {
-            minigameTask.setCourse(this);
-            minigameTask.setArea(dungeon);
-          });
-        dungeon
-          .getNpcs()
-          .forEach(npc -> {
-            npc.setCourse(this);
-            npc.setArea(dungeon);
-          });
-        dungeon
-          .getBooks()
-          .forEach(book -> {
-            book.setCourse(this);
-            book.setArea(dungeon);
-          });
+        setAreaCourseId(dungeon);
       }
     });
   }
@@ -117,5 +81,27 @@ public class Course {
 
   public void clearPlayerStatistics() {
     this.playerStatistics.clear();
+  }
+
+  private void setAreaCourseId(final Area area) {
+    area.setCourse(this);
+    area
+      .getMinigameTasks()
+      .forEach(minigameTask -> {
+        minigameTask.setCourse(this);
+        minigameTask.setArea(area);
+      });
+    area
+      .getNpcs()
+      .forEach(npc -> {
+        npc.setCourse(this);
+        npc.setArea(area);
+      });
+    area
+      .getBooks()
+      .forEach(book -> {
+        book.setCourse(this);
+        book.setArea(area);
+      });
   }
 }

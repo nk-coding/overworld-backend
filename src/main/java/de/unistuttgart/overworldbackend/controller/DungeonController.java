@@ -30,8 +30,8 @@ public class DungeonController {
   @Operation(summary = "Get all dungeons of a world")
   @GetMapping("")
   public Set<DungeonDTO> getDungeons(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -42,9 +42,9 @@ public class DungeonController {
   @Operation(summary = "Get a dungeon by its index in a world")
   @GetMapping("/{dungeonIndex}")
   public DungeonDTO getDungeon(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
-    @PathVariable int dungeonIndex,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
+    @PathVariable final int dungeonIndex,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -57,10 +57,10 @@ public class DungeonController {
   @Operation(summary = "Update a dungeon by its index in a world")
   @PutMapping("/{dungeonIndex}")
   public DungeonDTO updateDungeon(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
-    @PathVariable int dungeonIndex,
-    @RequestBody DungeonDTO dungeonDTO,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
+    @PathVariable final int dungeonIndex,
+    @RequestBody final DungeonDTO dungeonDTO,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);

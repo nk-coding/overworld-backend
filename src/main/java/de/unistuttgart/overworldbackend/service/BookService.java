@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.service;
 
-import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.Book;
+import de.unistuttgart.overworldbackend.data.BookDTO;
 import de.unistuttgart.overworldbackend.data.mapper.BookMapper;
 import de.unistuttgart.overworldbackend.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class BookService {
    * @param bookIndex the index of the book
    * @return the found book
    */
-  public Book getBookFromWorld(final int courseId, final int worldIndex, int bookIndex) {
+  public Book getBookFromWorld(final int courseId, final int worldIndex, final int bookIndex) {
     return worldService
       .getWorldByIndexFromCourse(courseId, worldIndex)
       .getBooks()
@@ -59,7 +60,12 @@ public class BookService {
    * @param bookIndex the index of the book
    * @return the found book
    */
-  public Book getBookFromDungeon(final int courseId, final int worldIndex, final int dungeonIndex, int bookIndex) {
+  public Book getBookFromDungeon(
+    final int courseId,
+    final int worldIndex,
+    final int dungeonIndex,
+    final int bookIndex
+  ) {
     return dungeonService
       .getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex)
       .getBooks()

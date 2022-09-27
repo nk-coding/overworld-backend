@@ -52,7 +52,12 @@ public class MinigameTask {
     this.index = index;
   }
 
-  public MinigameTask(final Minigame game, String description, final UUID configurationId, final int index) {
+  public MinigameTask(
+    final Minigame game,
+    @org.jetbrains.annotations.Nullable final String description,
+    final UUID configurationId,
+    final int index
+  ) {
     this.game = game;
     this.configurationId = configurationId;
     this.index = index;

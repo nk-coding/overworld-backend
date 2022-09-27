@@ -1,7 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
@@ -50,7 +49,7 @@ public class NPC {
     this.index = index;
   }
 
-  public NPC(final List<String> text, String description, final int index) {
+  public NPC(final List<String> text, @org.jetbrains.annotations.Nullable final String description, final int index) {
     this.text = text;
     this.index = index;
     this.description = description;

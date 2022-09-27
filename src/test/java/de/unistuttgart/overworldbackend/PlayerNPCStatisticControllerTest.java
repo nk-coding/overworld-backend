@@ -159,13 +159,10 @@ class PlayerNPCStatisticControllerTest {
     fullURL =
       String.format(
         "/courses/%d/playerstatistics/%s/player-npc-statistics",
-        initialCourse.getId(), initialPlayerStatistic.getUserId()
+        initialCourse.getId(),
+        initialPlayerStatistic.getUserId()
       );
-    fullURLWithoutPlayerId =
-            String.format(
-                    "/courses/%d/playerstatistics/player-npc-statistics",
-                    initialCourse.getId()
-            );
+    fullURLWithoutPlayerId = String.format("/courses/%d/playerstatistics/player-npc-statistics", initialCourse.getId());
 
     objectMapper = new ObjectMapper();
 
@@ -193,16 +190,16 @@ class PlayerNPCStatisticControllerTest {
   @Test
   void getOwnNPCStatistics() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc
-            .perform(get(fullURLWithoutPlayerId).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(get(fullURLWithoutPlayerId).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
 
     final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
-            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
+      objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
     );
     assertEquals(statistic, playerNPCStatisticDTOs.get(0));
   }
@@ -231,17 +228,19 @@ class PlayerNPCStatisticControllerTest {
   @Test
   void getOwnNPCStatistic() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
-            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+      new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc
-            .perform(get(fullURLWithoutPlayerId + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+      .perform(
+        get(fullURLWithoutPlayerId + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
 
     final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            PlayerNPCStatisticDTO.class
+      result.getResponse().getContentAsString(),
+      PlayerNPCStatisticDTO.class
     );
     assertEquals(statistic, playerNPCStatisticDTO);
     assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());

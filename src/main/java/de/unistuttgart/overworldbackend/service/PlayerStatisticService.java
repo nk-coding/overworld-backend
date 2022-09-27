@@ -41,9 +41,6 @@ public class PlayerStatisticService {
   @Autowired
   private WorldService worldService;
 
-  @Autowired
-  private DungeonService dungeonService;
-
   /**
    * get statistics from a player course
    *
@@ -93,7 +90,7 @@ public class PlayerStatisticService {
     final PlayerStatistic playerstatistic = new PlayerStatistic();
     playerstatistic.setCourse(course);
     playerstatistic.setCompletedDungeons(new ArrayList<>());
-    List<Area> unlockedAreas = new ArrayList<>();
+    final List<Area> unlockedAreas = new ArrayList<>();
     unlockedAreas.add(firstWorld);
 
     playerstatistic.setUnlockedAreas(unlockedAreas);
@@ -102,7 +99,7 @@ public class PlayerStatisticService {
     playerstatistic.setCurrentArea(firstWorld);
     playerstatistic.setKnowledge(0);
     course.addPlayerStatistic(playerstatistic);
-    PlayerStatistic savedPlayerStatistic = getPlayerStatisticFromCourse(courseId, player.getUserId());
+    final PlayerStatistic savedPlayerStatistic = getPlayerStatisticFromCourse(courseId, player.getUserId());
     return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(savedPlayerStatistic);
   }
 
@@ -133,7 +130,7 @@ public class PlayerStatisticService {
       playerstatistic.setCurrentArea(
         areaService.getAreaFromAreaLocationDTO(courseId, playerstatisticDTO.getCurrentArea())
       );
-    } catch (ResponseStatusException exception) {
+    } catch (final ResponseStatusException exception) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Specified area does not exist");
     }
     return playerstatisticMapper.playerStatisticToPlayerstatisticDTO((playerstatisticRepository.save(playerstatistic)));
@@ -146,12 +143,12 @@ public class PlayerStatisticService {
    * @param currentArea     the area to check where the tasks may be finished
    * @param playerStatistic player statistics of the current player
    */
-  public void checkForUnlockedAreas(Area currentArea, PlayerStatistic playerStatistic) {
+  public void checkForUnlockedAreas(final Area currentArea, final PlayerStatistic playerStatistic) {
     final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByPlayerStatisticId(
       playerStatistic.getId()
     );
 
-    int courseId = playerStatistic.getCourse().getId();
+    final int courseId = playerStatistic.getCourse().getId();
 
     if (isAreaCompleted(currentArea, playerTaskStatistics)) {
       if (currentArea instanceof World currentWorld) {

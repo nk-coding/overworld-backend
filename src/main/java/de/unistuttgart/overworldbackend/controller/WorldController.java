@@ -33,7 +33,10 @@ public class WorldController {
 
   @Operation(summary = "Get all worlds from a course by its id")
   @GetMapping("")
-  public Set<WorldDTO> getWorlds(@PathVariable int courseId, @CookieValue("access_token") final String accessToken) {
+  public Set<WorldDTO> getWorlds(
+    @PathVariable final int courseId,
+    @CookieValue("access_token") final String accessToken
+  ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get worlds of course {}", courseId);
     return worldMapper.worldsToWorldDTOs(worldRepository.findAllByCourseId(courseId));
@@ -42,8 +45,8 @@ public class WorldController {
   @Operation(summary = "Get a world by its index from a course")
   @GetMapping("/{worldIndex}")
   public WorldDTO getWorldByStaticName(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -54,9 +57,9 @@ public class WorldController {
   @Operation(summary = "Update a world by its index from a course")
   @PutMapping("/{worldIndex}")
   public WorldDTO updateWorld(
-    @PathVariable int courseId,
-    @PathVariable int worldIndex,
-    @RequestBody WorldDTO worldDTO,
+    @PathVariable final int courseId,
+    @PathVariable final int worldIndex,
+    @RequestBody final WorldDTO worldDTO,
     @CookieValue("access_token") final String accessToken
   ) {
     jwtValidatorService.validateTokenOrThrow(accessToken);
