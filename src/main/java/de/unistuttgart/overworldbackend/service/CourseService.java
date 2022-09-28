@@ -302,15 +302,7 @@ public class CourseService {
                             minigameTask.getIndex()
                         );
                     } catch (final FeignException e) {
-                        if (e.status() == 404) {
-                            errorMessages.add(
-                                String.format(
-                                    "chickenshock configuration %s not found",
-                                    minigameTask.getConfigurationId()
-                                )
-                            );
-                        }
-                        if (e.status() == 400 && !errorMessages.contains("chickenshock-backend not present")) {
+                        if (!errorMessages.contains("chickenshock-backend not present")) {
                             errorMessages.add("chickenshock-backend not present");
                         }
                     }
@@ -339,15 +331,7 @@ public class CourseService {
                             minigameTask.getIndex()
                         );
                     } catch (final FeignException e) {
-                        if (e.status() == 404) {
-                            errorMessages.add(
-                                String.format(
-                                    "finitequiz configuration %s not found",
-                                    minigameTask.getConfigurationId()
-                                )
-                            );
-                        }
-                        if (e.status() == 400 && !errorMessages.contains("finitequiz-backend not present")) {
+                        if (!errorMessages.contains("finitequiz-backend not present")) {
                             errorMessages.add("finitequiz-backend not present");
                         }
                     }
@@ -376,15 +360,7 @@ public class CourseService {
                             minigameTask.getIndex()
                         );
                     } catch (final FeignException e) {
-                        if (e.status() == 404) {
-                            errorMessages.add(
-                                String.format(
-                                    "crosswordpuzzle configuration %s not found",
-                                    minigameTask.getConfigurationId()
-                                )
-                            );
-                        }
-                        if (e.status() == 400 && !errorMessages.contains("finitequiz-backend not present")) {
+                        if (!errorMessages.contains("finitequiz-backend not present")) {
                             errorMessages.add("crosswordpuzzle-backend not present");
                         }
                     }
@@ -418,12 +394,7 @@ public class CourseService {
                             minigameTask.getIndex()
                         );
                     } catch (final FeignException e) {
-                        if (e.status() == 404) {
-                            errorMessages.add(
-                                String.format("bugfinder configuration %s not found", minigameTask.getConfigurationId())
-                            );
-                        }
-                        if (e.status() == 400 && !errorMessages.contains("finitequiz-backend not present")) {
+                        if (!errorMessages.contains("finitequiz-backend not present")) {
                             errorMessages.add("bugfinder-backend not present");
                         }
                     }
