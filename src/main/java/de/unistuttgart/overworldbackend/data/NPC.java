@@ -1,16 +1,15 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.List;
+import java.util.UUID;
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
-
-import javax.persistence.*;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * A NPC has a list of text to talk to a player in an area.

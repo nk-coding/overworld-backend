@@ -216,8 +216,19 @@ public class CloneTest {
             )
             .andExpect(status().isCreated())
             .andReturn();
+        final CourseCloneDTO courseCloneDTO = objectMapper.readValue(
+            resultClone.getResponse().getContentAsString(),
+            CourseCloneDTO.class
+        );
         final Course cloneCourse = courseMapper.courseDTOToCourse(
-            objectMapper.readValue(resultClone.getResponse().getContentAsString(), CourseDTO.class)
+            new CourseDTO(
+                courseCloneDTO.getId(),
+                courseCloneDTO.getCourseName(),
+                courseCloneDTO.getSemester(),
+                courseCloneDTO.getDescription(),
+                courseCloneDTO.isActive(),
+                courseCloneDTO.getWorlds()
+            )
         );
 
         for (int i = 0; i < course.getWorlds().size(); i++) {

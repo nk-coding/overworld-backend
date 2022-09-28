@@ -2,15 +2,14 @@ package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
+import java.util.UUID;
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
-
-import javax.persistence.*;
-import java.util.UUID;
 
 /**
  * A minigame tasks stores the information about a task which game type is played and with which configuration.
