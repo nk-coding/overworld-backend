@@ -364,6 +364,7 @@ class MinigameTaskControllerTest {
     mvc
       .perform(
         put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
+          .cookie(cookie)
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -387,6 +388,7 @@ class MinigameTaskControllerTest {
     mvc
       .perform(
         put(fullURL + "/minigame-tasks/" + initialTask1.getIndex())
+          .cookie(cookie)
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -417,6 +419,7 @@ class MinigameTaskControllerTest {
     mvc
       .perform(
         put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
+          .cookie(cookie)
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )

@@ -295,7 +295,9 @@ class MinigameInputControllerTest {
       final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
 
       mvc
-              .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+              .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+                      .cookie(cookie)
+              )
               .andExpect(status().isOk());
     }
 
@@ -318,7 +320,9 @@ class MinigameInputControllerTest {
       final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
 
       mvc
-              .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+              .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+                      .cookie(cookie)
+              )
               .andExpect(status().isOk());
     }
     final PlayerStatistic playerstatistic = playerstatisticRepository.findById(initialPlayerStatisticDTO.getId()).get();
@@ -342,7 +346,9 @@ class MinigameInputControllerTest {
       final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
 
       mvc
-              .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+              .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+                      .cookie(cookie)
+              )
               .andExpect(status().isOk());
     }
     final PlayerStatistic playerstatistic = playerstatisticRepository.findById(initialPlayerStatisticDTO.getId()).get();
