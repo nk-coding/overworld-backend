@@ -16,9 +16,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Player {
 
-  @NotNull
-  String userId;
+    @NotNull
+    String userId;
 
-  @NotNull
-  String username;
+    @NotNull
+    String username;
 }

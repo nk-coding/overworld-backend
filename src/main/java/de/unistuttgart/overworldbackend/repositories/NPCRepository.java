@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NPCRepository extends JpaRepository<NPC, UUID> {
-  Optional<NPC> findByIndexAndCourseIdAndAreaId(int npcIndex, int courseId, UUID areaId);
+    Optional<NPC> findByIndexAndCourseIdAndAreaId(int npcIndex, int courseId, UUID areaId);
 }

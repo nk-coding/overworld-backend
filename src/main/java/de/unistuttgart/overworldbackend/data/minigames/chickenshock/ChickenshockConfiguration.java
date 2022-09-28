@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 public class ChickenshockConfiguration {
 
-  UUID id;
+    UUID id;
 
-  int time;
+    int time;
 
-  Set<ChickenshockQuestion> questions;
+    Set<ChickenshockQuestion> questions;
 }

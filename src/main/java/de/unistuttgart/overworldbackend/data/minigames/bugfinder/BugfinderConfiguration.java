@@ -14,6 +14,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BugfinderConfiguration {
 
-  UUID id;
-  List<BugfinderCode> codes;
+    UUID id;
+    List<BugfinderCode> codes;
 }

@@ -7,9 +7,9 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface MinigameTaskMapper {
-  MinigameTaskDTO minigameTaskToMinigameTaskDTO(final MinigameTask minigameTask);
+    MinigameTaskDTO minigameTaskToMinigameTaskDTO(final MinigameTask minigameTask);
 
-  MinigameTask minigameTaskDTOToMinigameTask(final MinigameTaskDTO minigameTaskDTO);
+    MinigameTask minigameTaskDTOToMinigameTask(final MinigameTaskDTO minigameTaskDTO);
 
-  Set<MinigameTaskDTO> minigameTasksToMinigameTaskDTOs(final Set<MinigameTask> minigameTasks);
+    Set<MinigameTaskDTO> minigameTasksToMinigameTaskDTOs(final Set<MinigameTask> minigameTasks);
 }

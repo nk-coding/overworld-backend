@@ -7,11 +7,13 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { MinigameTaskMapper.class })
 public interface PlayerTaskStatisticMapper {
-  PlayerTaskStatistic playerTaskStatisticDTOToPlayerTaskStatistic(final PlayerTaskStatisticDTO playerTaskStatisticDTO);
+    PlayerTaskStatistic playerTaskStatisticDTOToPlayerTaskStatistic(
+        final PlayerTaskStatisticDTO playerTaskStatisticDTO
+    );
 
-  PlayerTaskStatisticDTO playerTaskStatisticToPlayerTaskStatisticDTO(final PlayerTaskStatistic playerTaskStatistic);
+    PlayerTaskStatisticDTO playerTaskStatisticToPlayerTaskStatisticDTO(final PlayerTaskStatistic playerTaskStatistic);
 
-  List<PlayerTaskStatisticDTO> playerTaskStatisticsToPlayerTaskStatisticDTO(
-    final List<PlayerTaskStatistic> playerTaskStatistics
-  );
+    List<PlayerTaskStatisticDTO> playerTaskStatisticsToPlayerTaskStatisticDTO(
+        final List<PlayerTaskStatistic> playerTaskStatistics
+    );
 }

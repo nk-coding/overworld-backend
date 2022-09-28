@@ -21,18 +21,18 @@ import org.hibernate.annotations.CreationTimestamp;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerNPCActionLog {
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    UUID id;
 
-  @ManyToOne
-  PlayerNPCStatistic playerNPCStatistic;
+    @ManyToOne
+    PlayerNPCStatistic playerNPCStatistic;
 
-  @ManyToOne
-  Course course;
+    @ManyToOne
+    Course course;
 
-  @CreationTimestamp
-  Date date;
+    @CreationTimestamp
+    Date date;
 
-  long gainedKnowledge;
+    long gainedKnowledge;
 }

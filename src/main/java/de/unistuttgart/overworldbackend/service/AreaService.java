@@ -10,19 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AreaService {
 
-  @Autowired
-  private DungeonService dungeonService;
+    @Autowired
+    private DungeonService dungeonService;
 
-  @Autowired
-  private WorldService worldService;
+    @Autowired
+    private WorldService worldService;
 
-  public Area getAreaFromAreaLocationDTO(int courseId, AreaLocationDTO areaLocationDTO) {
-    return areaLocationDTO.getDungeonIndex() != null
-      ? dungeonService.getDungeonByIndexFromCourse(
-        courseId,
-        areaLocationDTO.getWorldIndex(),
-        areaLocationDTO.getDungeonIndex()
-      )
-      : worldService.getWorldByIndexFromCourse(courseId, areaLocationDTO.getWorldIndex());
-  }
+    public Area getAreaFromAreaLocationDTO(final int courseId, final AreaLocationDTO areaLocationDTO) {
+        return areaLocationDTO.getDungeonIndex() != null
+            ? dungeonService.getDungeonByIndexFromCourse(
+                courseId,
+                areaLocationDTO.getWorldIndex(),
+                areaLocationDTO.getDungeonIndex()
+            )
+            : worldService.getWorldByIndexFromCourse(courseId, areaLocationDTO.getWorldIndex());
+    }
 }

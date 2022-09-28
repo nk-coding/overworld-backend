@@ -7,9 +7,9 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface CourseMapper {
-  CourseDTO courseToCourseDTO(final Course course);
+    CourseDTO courseToCourseDTO(final Course course);
 
-  Course courseDTOToCourse(final CourseDTO courseDTO);
+    Course courseDTOToCourse(final CourseDTO courseDTO);
 
-  List<CourseDTO> coursesToCourseDTOs(final List<Course> courses);
+    List<CourseDTO> coursesToCourseDTOs(final List<Course> courses);
 }

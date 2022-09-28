@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class FinitequizConfiguration {
 
-  UUID id;
+    UUID id;
 
-  Set<FinitequizQuestion> questions;
+    Set<FinitequizQuestion> questions;
 }

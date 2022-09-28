@@ -17,8 +17,8 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class AreaLocationDTO {
 
-  int worldIndex;
+    int worldIndex;
 
-  @Nullable
-  Integer dungeonIndex;
+    @Nullable
+    Integer dungeonIndex;
 }

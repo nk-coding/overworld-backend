@@ -18,5 +18,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WorldDTO extends AreaDTO {
 
-  List<DungeonDTO> dungeons;
+    List<DungeonDTO> dungeons;
 }

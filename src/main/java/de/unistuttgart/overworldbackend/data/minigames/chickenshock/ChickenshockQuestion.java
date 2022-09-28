@@ -12,10 +12,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChickenshockQuestion {
 
-  UUID id;
+    UUID id;
 
-  String text;
-  String rightAnswer;
+    String text;
+    String rightAnswer;
 
-  Set<String> wrongAnswers;
+    Set<String> wrongAnswers;
 }

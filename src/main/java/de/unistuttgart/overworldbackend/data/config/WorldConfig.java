@@ -9,9 +9,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WorldConfig {
 
-  List<DungeonConfig> dungeons;
-  String staticName;
-  int numberOfMinigames;
-  int numberOfNPCs;
-  int numberOfBooks;
+    List<DungeonConfig> dungeons;
+    String staticName;
+    int numberOfMinigames;
+    int numberOfNPCs;
+    int numberOfBooks;
 }

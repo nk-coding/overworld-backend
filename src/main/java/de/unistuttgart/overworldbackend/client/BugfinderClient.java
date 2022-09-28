@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(value = "bugfinderClient", url = "${bugfinder.url}/configurations")
 public interface BugfinderClient {
-  @GetMapping("/{id}")
-  BugfinderConfiguration getConfiguration(
-    @CookieValue("access_token") final String accessToken,
-    @PathVariable("id") UUID id
-  );
+    @GetMapping("/{id}")
+    BugfinderConfiguration getConfiguration(
+        @CookieValue("access_token") final String accessToken,
+        @PathVariable("id") UUID id
+    );
 
-  @PostMapping("/")
-  BugfinderConfiguration postConfiguration(
-    @CookieValue("access_token") final String accessToken,
-    BugfinderConfiguration bugfinderConfiguration
-  );
+    @PostMapping("/")
+    BugfinderConfiguration postConfiguration(
+        @CookieValue("access_token") final String accessToken,
+        BugfinderConfiguration bugfinderConfiguration
+    );
 }

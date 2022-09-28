@@ -19,13 +19,13 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookDTO {
 
-  @Nullable
-  UUID id;
+    @Nullable
+    UUID id;
 
-  AreaLocationDTO area;
-  int index;
-  String text;
+    AreaLocationDTO area;
+    int index;
+    String text;
 
-  @Nullable
-  String description;
+    @Nullable
+    String description;
 }

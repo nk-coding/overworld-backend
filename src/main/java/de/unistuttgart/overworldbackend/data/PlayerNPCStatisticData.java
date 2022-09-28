@@ -17,12 +17,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerNPCStatisticData {
 
-  @NotNull
-  UUID npcId;
+    @NotNull
+    UUID npcId;
 
-  @NotNull
-  boolean completed;
+    @NotNull
+    boolean completed;
 
-  @NotNull
-  String userId;
+    @NotNull
+    String userId;
 }

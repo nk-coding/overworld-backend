@@ -19,9 +19,9 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerNPCStatisticDTO {
 
-  @Nullable
-  UUID id;
+    @Nullable
+    UUID id;
 
-  boolean completed;
-  NPCDTO npc;
+    boolean completed;
+    NPCDTO npc;
 }

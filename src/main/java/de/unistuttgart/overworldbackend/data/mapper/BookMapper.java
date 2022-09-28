@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
 public interface BookMapper {
-  BookDTO bookToBookDTO(final Book book);
+    BookDTO bookToBookDTO(final Book book);
 
-  Book bookDTOToBook(final BookDTO bookDTO);
+    Book bookDTOToBook(final BookDTO bookDTO);
 }

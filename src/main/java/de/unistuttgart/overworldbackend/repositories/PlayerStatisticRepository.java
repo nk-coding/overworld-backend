@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic, UUID> {
-  boolean existsByCourseIdAndUserId(int courseId, String userId);
-  Optional<PlayerStatistic> findByCourseIdAndUserId(int courseId, String userId);
-  Set<PlayerStatistic> deletePlayerStatisticsByCourseId(int courseId);
+    boolean existsByCourseIdAndUserId(int courseId, String userId);
+    Optional<PlayerStatistic> findByCourseIdAndUserId(int courseId, String userId);
+    Set<PlayerStatistic> deletePlayerStatisticsByCourseId(int courseId);
 }

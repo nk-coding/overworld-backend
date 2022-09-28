@@ -23,51 +23,51 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerStatistic {
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    UUID id;
 
-  @ManyToMany(cascade = CascadeType.ALL)
-  List<Area> unlockedAreas;
+    @ManyToMany(cascade = CascadeType.ALL)
+    List<Area> unlockedAreas;
 
-  @ManyToMany(cascade = CascadeType.ALL)
-  List<Area> completedDungeons;
+    @ManyToMany(cascade = CascadeType.ALL)
+    List<Area> completedDungeons;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  Area currentArea;
+    @ManyToOne(cascade = CascadeType.ALL)
+    Area currentArea;
 
-  @ManyToOne
-  Course course;
+    @ManyToOne
+    Course course;
 
-  @NotNull
-  String userId;
+    @NotNull
+    String userId;
 
-  @NotNull
-  String username;
+    @NotNull
+    String username;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  Set<PlayerTaskStatistic> playerTaskStatistics = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<PlayerTaskStatistic> playerTaskStatistics = new HashSet<>();
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  Set<PlayerNPCStatistic> playerNPCStatistics = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<PlayerNPCStatistic> playerNPCStatistics = new HashSet<>();
 
-  long knowledge = 0;
+    long knowledge = 0;
 
-  public void addKnowledge(long gainedKnowledge) {
-    knowledge += gainedKnowledge;
-  }
-
-  public void addPlayerTaskStatistic(final PlayerTaskStatistic playerTaskStatistic) {
-    this.playerTaskStatistics.add(playerTaskStatistic);
-  }
-
-  public void addPlayerNPCStatistic(final PlayerNPCStatistic playerNPCStatistic) {
-    this.playerNPCStatistics.add(playerNPCStatistic);
-  }
-
-  public void addUnlockedArea(final Area area) {
-    if (!this.unlockedAreas.contains(area)) {
-      this.unlockedAreas.add(area);
+    public void addKnowledge(final long gainedKnowledge) {
+        knowledge += gainedKnowledge;
     }
-  }
+
+    public void addPlayerTaskStatistic(final PlayerTaskStatistic playerTaskStatistic) {
+        this.playerTaskStatistics.add(playerTaskStatistic);
+    }
+
+    public void addPlayerNPCStatistic(final PlayerNPCStatistic playerNPCStatistic) {
+        this.playerNPCStatistics.add(playerNPCStatistic);
+    }
+
+    public void addUnlockedArea(final Area area) {
+        if (!this.unlockedAreas.contains(area)) {
+            this.unlockedAreas.add(area);
+        }
+    }
 }

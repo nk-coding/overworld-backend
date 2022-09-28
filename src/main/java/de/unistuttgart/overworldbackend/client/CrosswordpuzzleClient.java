@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(value = "crosswordpuzzleClient", url = "${crosswordpuzzle.url}/configurations")
 public interface CrosswordpuzzleClient {
-  @GetMapping("/{id}")
-  CrosswordpuzzleConfiguration getConfiguration(
-    @CookieValue("access_token") final String accessToken,
-    @PathVariable("id") UUID id
-  );
+    @GetMapping("/{id}")
+    CrosswordpuzzleConfiguration getConfiguration(
+        @CookieValue("access_token") final String accessToken,
+        @PathVariable("id") UUID id
+    );
 
-  @PostMapping("/")
-  CrosswordpuzzleConfiguration postConfiguration(
-    @CookieValue("access_token") final String accessToken,
-    CrosswordpuzzleConfiguration crosswordpuzzleConfiguration
-  );
+    @PostMapping("/")
+    CrosswordpuzzleConfiguration postConfiguration(
+        @CookieValue("access_token") final String accessToken,
+        CrosswordpuzzleConfiguration crosswordpuzzleConfiguration
+    );
 }

@@ -20,17 +20,17 @@ import org.springframework.lang.Nullable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerStatisticDTO {
 
-  @Nullable
-  UUID id;
+    @Nullable
+    UUID id;
 
-  List<AreaLocationDTO> unlockedAreas;
+    List<AreaLocationDTO> unlockedAreas;
 
-  List<AreaLocationDTO> completedDungeons;
+    List<AreaLocationDTO> completedDungeons;
 
-  AreaLocationDTO currentArea;
+    AreaLocationDTO currentArea;
 
-  String userId;
-  String username;
+    String userId;
+    String username;
 
-  long knowledge;
+    long knowledge;
 }

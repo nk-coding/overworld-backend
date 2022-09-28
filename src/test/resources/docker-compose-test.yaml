@@ -145,7 +145,7 @@ services:
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   bugfinder-backend:
-    image: ghcr.io/gamify-it/bugfinder-backend:feature-bugfinder-backend
+    image: ghcr.io/gamify-it/bugfinder-backend:main
     pull_policy: always
     restart: always
     expose:

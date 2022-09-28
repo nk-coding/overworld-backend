@@ -23,34 +23,34 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class World extends Area {
 
-  @OneToMany(cascade = CascadeType.ALL)
-  List<Dungeon> dungeons;
+    @OneToMany(cascade = CascadeType.ALL)
+    List<Dungeon> dungeons;
 
-  public World(
-    final String staticName,
-    final String topicName,
-    final boolean active,
-    final Set<MinigameTask> minigameTasks,
-    final Set<NPC> npcs,
-    final Set<Book> books,
-    final List<Dungeon> dungeons,
-    final int index
-  ) {
-    super(staticName, topicName, active, minigameTasks, npcs, books, index);
-    this.dungeons = dungeons;
-  }
+    public World(
+        final String staticName,
+        final String topicName,
+        final boolean active,
+        final Set<MinigameTask> minigameTasks,
+        final Set<NPC> npcs,
+        final Set<Book> books,
+        final List<Dungeon> dungeons,
+        final int index
+    ) {
+        super(staticName, topicName, active, minigameTasks, npcs, books, index);
+        this.dungeons = dungeons;
+    }
 
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-    World world = (World) o;
-    return Objects.equals(dungeons, world.dungeons);
-  }
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        World world = (World) o;
+        return Objects.equals(dungeons, world.dungeons);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode());
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
+    }
 }

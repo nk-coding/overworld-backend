@@ -19,27 +19,27 @@ import org.hibernate.annotations.CreationTimestamp;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerTaskActionLog {
 
-  @Id
-  @GeneratedValue(generator = "uuid")
-  UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    UUID id;
 
-  @ManyToOne
-  PlayerTaskStatistic playerTaskStatistic;
+    @ManyToOne
+    PlayerTaskStatistic playerTaskStatistic;
 
-  @ManyToOne
-  Course course;
+    @ManyToOne
+    Course course;
 
-  @CreationTimestamp
-  Date date;
+    @CreationTimestamp
+    Date date;
 
-  long score;
+    long score;
 
-  long currentHighscore;
+    long currentHighscore;
 
-  long gainedKnowledge;
+    long gainedKnowledge;
 
-  UUID configurationId;
+    UUID configurationId;
 
-  @Enumerated(EnumType.STRING)
-  Minigame game;
+    @Enumerated(EnumType.STRING)
+    Minigame game;
 }

@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MinigameTaskRepository extends JpaRepository<MinigameTask, UUID> {
-  Optional<MinigameTask> findByGameAndConfigurationId(Minigame game, UUID configurationId);
+    Optional<MinigameTask> findByGameAndConfigurationId(Minigame game, UUID configurationId);
 }
