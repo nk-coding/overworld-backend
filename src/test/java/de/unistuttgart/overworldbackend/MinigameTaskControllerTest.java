@@ -13,10 +13,12 @@ import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
+import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,19 +41,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class MinigameTaskControllerTest {
 
-  @Container
-  public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-    .withDatabaseName("postgres")
-    .withUsername("postgres")
-    .withPassword("postgres");
-
-  @DynamicPropertySource
-  public static void properties(DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
-    registry.add("spring.datasource.username", postgresDB::getUsername);
-    registry.add("spring.datasource.password", postgresDB::getPassword);
-  }
-
   @Autowired
   private MockMvc mvc;
 
@@ -69,6 +58,9 @@ class MinigameTaskControllerTest {
 
   @Autowired
   private MinigameTaskMapper minigameTaskMapper;
+
+  @Autowired
+  private MinigameTaskRepository minigameTaskRepository;
 
   @Autowired
   private DungeonMapper dungeonMapper;
@@ -109,24 +101,33 @@ class MinigameTaskControllerTest {
     minigameTask3.setGame(Minigame.CROSSWORDPUZZLE);
     minigameTask3.setIndex(3);
 
+    Set<MinigameTask> dungeonMinigames = new HashSet<>();
+    dungeonMinigames.add(minigameTask3);
+
     final Dungeon dungeon = new Dungeon();
     dungeon.setIndex(1);
     dungeon.setStaticName("Dungeon 1");
     dungeon.setTopicName("Testtopic");
     dungeon.setActive(true);
-    dungeon.setMinigameTasks(Set.of(minigameTask3));
+    dungeon.setMinigameTasks(dungeonMinigames);
     dungeon.setNpcs(Set.of());
     dungeon.setBooks(Set.of());
+    dungeon.setConfigured(true);
+
+    Set<MinigameTask> worldMinigames = new HashSet<>();
+    worldMinigames.add(minigameTask1);
+    worldMinigames.add(minigameTask2);
 
     final World world = new World();
     world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
-    world.setMinigameTasks(Set.of(minigameTask1, minigameTask2));
+    world.setMinigameTasks(worldMinigames);
     world.setNpcs(Set.of());
     world.setBooks(Set.of());
     world.setDungeons(Arrays.asList(dungeon));
+    world.setConfigured(true);
 
     final Course course = new Course(
       "PSE",
@@ -147,7 +148,7 @@ class MinigameTaskControllerTest {
       initialWorld
         .getMinigameTasks()
         .stream()
-        .filter(task -> task.getId().equals(minigameTask1.getId()))
+        .filter(task -> task.getIndex() == 1)
         .findAny()
         .get();
     initialTaskDTO1 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
@@ -156,7 +157,7 @@ class MinigameTaskControllerTest {
       initialWorld
         .getMinigameTasks()
         .stream()
-        .filter(task -> task.getId().equals(minigameTask2.getId()))
+        .filter(task -> task.getIndex() == 2)
         .findAny()
         .get();
     initialTaskDTO2 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask2);
@@ -165,7 +166,7 @@ class MinigameTaskControllerTest {
       initialDungeon
         .getMinigameTasks()
         .stream()
-        .filter(task -> task.getId().equals(minigameTask3.getId()))
+        .filter(task -> task.getIndex() == 3)
         .findAny()
         .get();
     initialTaskDTO3 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
@@ -270,11 +271,11 @@ class MinigameTaskControllerTest {
 
   @Test
   void updateMinigameTaskFromWorld() throws Exception {
-    final String newGame = "Crosswordpuzzle";
+    final Minigame newGame = Minigame.CROSSWORDPUZZLE;
     final String newDescription = "New Crosswordpuzzle game";
     final UUID newConfigurationId = UUID.randomUUID();
     final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
-    updateMinigameTaskDTO.setGame(Minigame.CROSSWORDPUZZLE);
+    updateMinigameTaskDTO.setGame(newGame);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
     updateMinigameTaskDTO.setDescription(newDescription);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
@@ -351,8 +352,7 @@ class MinigameTaskControllerTest {
       .andExpect(status().isOk());
 
     Dungeon dungeon = dungeonRepository.findById(initialDungeon.getId()).get();
-
-    assertEquals(dungeon.isConfigured(), false);
+    assertEquals(false, dungeon.isConfigured());
   }
 
   @Test
@@ -375,23 +375,29 @@ class MinigameTaskControllerTest {
       .andExpect(status().isOk());
 
     World world = worldRepository.findById(initialWorld.getId()).get();
-
-    assertEquals(world.isConfigured(), true);
+    assertEquals(true, world.isConfigured());
   }
 
   @Test
   void addMinigame_SetConfiguredFlag() throws Exception
   {
-    Minigame newGame = Minigame.NONE;
-    String newDescription = "";
-    UUID newConfigurationId = null;
+    initialDungeon.setConfigured(false);
+    initialDungeon = dungeonRepository.save(initialDungeon);
+
+    initialTask3.setGame(Minigame.NONE);
+    initialTask3.setConfigurationId(null);
+    initialTask3 = minigameTaskRepository.save(initialTask3);
+
+    Minigame newGame = Minigame.CHICKENSHOCK;
+    String newDescription = "New Chickenshock game";
+    UUID newConfigurationId = UUID.randomUUID();
     MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
     updateMinigameTaskDTO.setGame(newGame);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
     updateMinigameTaskDTO.setDescription(newDescription);
     String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
-    MvcResult result = mvc
+     mvc
       .perform(
         put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
           .content(bodyValue)
@@ -400,26 +406,7 @@ class MinigameTaskControllerTest {
       .andExpect(status().isOk())
       .andReturn();
 
-    newGame = Minigame.CHICKENSHOCK;
-    newDescription = "New Chickenshock game";
-    newConfigurationId = UUID.randomUUID();
-    updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
-    updateMinigameTaskDTO.setGame(newGame);
-    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
-    updateMinigameTaskDTO.setDescription(newDescription);
-    bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
-
-    result = mvc
-      .perform(
-        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
-          .content(bodyValue)
-          .contentType(MediaType.APPLICATION_JSON)
-      )
-      .andExpect(status().isOk())
-      .andReturn();
-
-    World world = worldRepository.findById(initialWorld.getId()).get();
-    
-    assertEquals(world.isConfigured(), true);
+    Dungeon dungeon = dungeonRepository.findById(initialDungeon.getId()).get();
+    assertEquals(true, dungeon.isConfigured());
   }
 }

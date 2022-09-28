@@ -10,9 +10,12 @@ import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
+import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import java.util.Optional;
 import java.util.Set;
+
+import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,12 @@ public class MinigameTaskService {
   @Autowired
   private MinigameTaskRepository minigameTaskRepository;
 
+
+  @Autowired
+  private WorldRepository worldRepository;
+
+  @Autowired
+  private DungeonRepository dungeonRepository;
   @Autowired
   private WorldService worldService;
 
@@ -200,15 +209,13 @@ public class MinigameTaskService {
       final World world = worldService.getWorldByIndexFromCourse(courseId, worldIndex);
       if (!world.isConfigured()) {
         world.setConfigured(true);
-        final WorldDTO worldDTO = worldMapper.worldToWorldDTO(world);
-        worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
+        worldRepository.save(world);
       }
     } else {
       final Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex.get());
       if (!dungeon.isConfigured()) {
         dungeon.setConfigured(true);
-        final DungeonDTO dungeonDTO = dungeonMapper.dungeonToDungeonDTO(dungeon);
-        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
+        dungeonRepository.save(dungeon);
       }
     }
   }
@@ -227,8 +234,7 @@ public class MinigameTaskService {
       final int amountOfConfiguredMinigames = getAmountOfConfiguredMinigames(minigames);
       if (amountOfConfiguredMinigames <= 0) {
         world.setConfigured(false);
-        final WorldDTO worldDTO = worldMapper.worldToWorldDTO(world);
-        worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
+        worldRepository.save(world);
       }
     } else {
       final Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex.get());
@@ -236,8 +242,7 @@ public class MinigameTaskService {
       final int amountOfConfiguredMinigames = getAmountOfConfiguredMinigames(minigames);
       if (amountOfConfiguredMinigames <= 0) {
         dungeon.setConfigured(false);
-        final DungeonDTO dungeonDTO = dungeonMapper.dungeonToDungeonDTO(dungeon);
-        dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
+        dungeonRepository.save(dungeon);
       }
     }
   }
