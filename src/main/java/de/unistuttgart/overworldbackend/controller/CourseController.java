@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.controller;
 
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
+import de.unistuttgart.overworldbackend.data.CourseCloneDTO;
 import de.unistuttgart.overworldbackend.data.CourseDTO;
 import de.unistuttgart.overworldbackend.data.CourseInitialData;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
@@ -90,7 +91,7 @@ public class CourseController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{id}/clone")
-    public CourseDTO cloneCourse(
+    public CourseCloneDTO cloneCourse(
         @PathVariable final int id,
         @Valid @RequestBody final CourseInitialData course,
         @CookieValue("access_token") final String accessToken

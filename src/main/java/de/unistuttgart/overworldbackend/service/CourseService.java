@@ -17,16 +17,18 @@ import de.unistuttgart.overworldbackend.data.minigames.chickenshock.Chickenshock
 import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -56,7 +58,10 @@ public class CourseService {
 
     private String currentAccessToken;
 
+    private final List<String> errorMessages;
+
     public CourseService() {
+        errorMessages = new ArrayList<>();
         configCourse = new CourseConfig();
         final ObjectMapper mapper = new ObjectMapper();
 
@@ -191,7 +196,12 @@ public class CourseService {
         return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, books, dungeonId);
     }
 
-    public CourseDTO cloneCourse(final int id, final CourseInitialData courseInitialData, final String accessToken) {
+    public CourseCloneDTO cloneCourse(
+        final int id,
+        final CourseInitialData courseInitialData,
+        final String accessToken
+    ) {
+        errorMessages.clear();
         currentAccessToken = accessToken;
         final Course course = getCourse(id);
         final Course cloneCourse = new Course(
@@ -203,7 +213,16 @@ public class CourseService {
         );
 
         courseRepository.save(cloneCourse);
-        return courseMapper.courseToCourseDTO(cloneCourse);
+        final CourseDTO courseDTO = courseMapper.courseToCourseDTO(cloneCourse);
+        return new CourseCloneDTO(
+            courseDTO.getId(),
+            courseDTO.getCourseName(),
+            courseDTO.getSemester(),
+            courseDTO.getDescription(),
+            courseDTO.isActive(),
+            courseDTO.getWorlds(),
+            errorMessages
+        );
     }
 
     private World cloneWorld(final World oldWorld) {
@@ -268,19 +287,33 @@ public class CourseService {
                         minigameTask.getIndex()
                     );
                 } else {
-                    ChickenshockConfiguration config = chickenshockClient.getConfiguration(
-                        currentAccessToken,
-                        minigameTask.getConfigurationId()
-                    );
-                    config.setId(null);
-                    config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
-                    config = chickenshockClient.postConfiguration(currentAccessToken, config);
-                    return new MinigameTask(
-                        Minigame.CHICKENSHOCK,
-                        minigameTask.getDescription(),
-                        config.getId(),
-                        minigameTask.getIndex()
-                    );
+                    try {
+                        ChickenshockConfiguration config = chickenshockClient.getConfiguration(
+                            currentAccessToken,
+                            minigameTask.getConfigurationId()
+                        );
+                        config.setId(null);
+                        config.getQuestions().forEach(chickenshockQuestion -> chickenshockQuestion.setId(null));
+                        config = chickenshockClient.postConfiguration(currentAccessToken, config);
+                        return new MinigameTask(
+                            Minigame.CHICKENSHOCK,
+                            minigameTask.getDescription(),
+                            config.getId(),
+                            minigameTask.getIndex()
+                        );
+                    } catch (final FeignException e) {
+                        if (e.status() == 404) {
+                            errorMessages.add(
+                                String.format(
+                                    "chickenshock configuration %s not found",
+                                    minigameTask.getConfigurationId()
+                                )
+                            );
+                        }
+                        if (e.status() == 400 && !errorMessages.contains("chickenshock-backend not present")) {
+                            errorMessages.add("chickenshock-backend not present");
+                        }
+                    }
                 }
             case FINITEQUIZ:
                 if (minigameTask.getConfigurationId() == null) {
@@ -291,19 +324,33 @@ public class CourseService {
                         minigameTask.getIndex()
                     );
                 } else {
-                    FinitequizConfiguration config = finitequizClient.getConfiguration(
-                        currentAccessToken,
-                        minigameTask.getConfigurationId()
-                    );
-                    config.setId(null);
-                    config.getQuestions().forEach(finitequizQuestion -> finitequizQuestion.setId(null));
-                    config = finitequizClient.postConfiguration(currentAccessToken, config);
-                    return new MinigameTask(
-                        Minigame.FINITEQUIZ,
-                        minigameTask.getDescription(),
-                        config.getId(),
-                        minigameTask.getIndex()
-                    );
+                    try {
+                        FinitequizConfiguration config = finitequizClient.getConfiguration(
+                            currentAccessToken,
+                            minigameTask.getConfigurationId()
+                        );
+                        config.setId(null);
+                        config.getQuestions().forEach(finitequizQuestion -> finitequizQuestion.setId(null));
+                        config = finitequizClient.postConfiguration(currentAccessToken, config);
+                        return new MinigameTask(
+                            Minigame.FINITEQUIZ,
+                            minigameTask.getDescription(),
+                            config.getId(),
+                            minigameTask.getIndex()
+                        );
+                    } catch (final FeignException e) {
+                        if (e.status() == 404) {
+                            errorMessages.add(
+                                String.format(
+                                    "finitequiz configuration %s not found",
+                                    minigameTask.getConfigurationId()
+                                )
+                            );
+                        }
+                        if (e.status() == 400 && !errorMessages.contains("finitequiz-backend not present")) {
+                            errorMessages.add("finitequiz-backend not present");
+                        }
+                    }
                 }
             case CROSSWORDPUZZLE:
                 if (minigameTask.getConfigurationId() == null) {
@@ -314,19 +361,33 @@ public class CourseService {
                         minigameTask.getIndex()
                     );
                 } else {
-                    CrosswordpuzzleConfiguration config = crosswordpuzzleClient.getConfiguration(
-                        currentAccessToken,
-                        minigameTask.getConfigurationId()
-                    );
-                    config.setId(null);
-                    config.getQuestions().forEach(crosswordpuzzleQuestion -> crosswordpuzzleQuestion.setId(null));
-                    config = crosswordpuzzleClient.postConfiguration(currentAccessToken, config);
-                    return new MinigameTask(
-                        Minigame.CROSSWORDPUZZLE,
-                        minigameTask.getDescription(),
-                        config.getId(),
-                        minigameTask.getIndex()
-                    );
+                    try {
+                        CrosswordpuzzleConfiguration config = crosswordpuzzleClient.getConfiguration(
+                            currentAccessToken,
+                            minigameTask.getConfigurationId()
+                        );
+                        config.setId(null);
+                        config.getQuestions().forEach(crosswordpuzzleQuestion -> crosswordpuzzleQuestion.setId(null));
+                        config = crosswordpuzzleClient.postConfiguration(currentAccessToken, config);
+                        return new MinigameTask(
+                            Minigame.CROSSWORDPUZZLE,
+                            minigameTask.getDescription(),
+                            config.getId(),
+                            minigameTask.getIndex()
+                        );
+                    } catch (final FeignException e) {
+                        if (e.status() == 404) {
+                            errorMessages.add(
+                                String.format(
+                                    "crosswordpuzzle configuration %s not found",
+                                    minigameTask.getConfigurationId()
+                                )
+                            );
+                        }
+                        if (e.status() == 400 && !errorMessages.contains("finitequiz-backend not present")) {
+                            errorMessages.add("crosswordpuzzle-backend not present");
+                        }
+                    }
                 }
             case BUGFINDER:
                 if (minigameTask.getConfigurationId() == null) {
@@ -337,30 +398,39 @@ public class CourseService {
                         minigameTask.getIndex()
                     );
                 } else {
-                    BugfinderConfiguration config = bugfinderClient.getConfiguration(
-                        currentAccessToken,
-                        minigameTask.getConfigurationId()
-                    );
-                    config.setId(null);
-                    config
-                        .getCodes()
-                        .forEach(bugfinderCode -> {
-                            bugfinderCode.setId(null);
-                            bugfinderCode.getWords().forEach(bugfinderWord -> bugfinderWord.setId(null));
-                        });
-                    config = bugfinderClient.postConfiguration(currentAccessToken, config);
-                    return new MinigameTask(
-                        Minigame.BUGFINDER,
-                        minigameTask.getDescription(),
-                        config.getId(),
-                        minigameTask.getIndex()
-                    );
+                    try {
+                        BugfinderConfiguration config = bugfinderClient.getConfiguration(
+                            currentAccessToken,
+                            minigameTask.getConfigurationId()
+                        );
+                        config.setId(null);
+                        config
+                            .getCodes()
+                            .forEach(bugfinderCode -> {
+                                bugfinderCode.setId(null);
+                                bugfinderCode.getWords().forEach(bugfinderWord -> bugfinderWord.setId(null));
+                            });
+                        config = bugfinderClient.postConfiguration(currentAccessToken, config);
+                        return new MinigameTask(
+                            Minigame.BUGFINDER,
+                            minigameTask.getDescription(),
+                            config.getId(),
+                            minigameTask.getIndex()
+                        );
+                    } catch (final FeignException e) {
+                        if (e.status() == 404) {
+                            errorMessages.add(
+                                String.format("bugfinder configuration %s not found", minigameTask.getConfigurationId())
+                            );
+                        }
+                        if (e.status() == 400 && !errorMessages.contains("finitequiz-backend not present")) {
+                            errorMessages.add("bugfinder-backend not present");
+                        }
+                    }
                 }
             default:
-                throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Minigame " + minigameTask.getGame() + "does not exist"
-                );
+                errorMessages.add(String.format("minigame %s doesn't exist", minigameTask.getGame()));
+                return new MinigameTask(Minigame.NONE, "", null, minigameTask.getIndex());
         }
     }
 }
