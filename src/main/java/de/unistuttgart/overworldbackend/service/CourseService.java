@@ -303,6 +303,7 @@ public class CourseService {
                         );
                     } catch (final FeignException e) {
                         if (!errorMessages.contains("chickenshock-backend not present")) {
+                            e.printStackTrace();
                             errorMessages.add("chickenshock-backend not present");
                             return new MinigameTask(Minigame.CHICKENSHOCK, "", null, minigameTask.getIndex());
                         }
@@ -333,6 +334,7 @@ public class CourseService {
                         );
                     } catch (final FeignException e) {
                         if (!errorMessages.contains("finitequiz-backend not present")) {
+                            e.printStackTrace();
                             errorMessages.add("finitequiz-backend not present");
                             return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
                         }
@@ -363,6 +365,7 @@ public class CourseService {
                         );
                     } catch (final FeignException e) {
                         if (!errorMessages.contains("finitequiz-backend not present")) {
+                            e.printStackTrace();
                             errorMessages.add("crosswordpuzzle-backend not present");
                             return new MinigameTask(Minigame.CROSSWORDPUZZLE, "", null, minigameTask.getIndex());
                         }
@@ -398,6 +401,7 @@ public class CourseService {
                         );
                     } catch (final FeignException e) {
                         if (!errorMessages.contains("finitequiz-backend not present")) {
+                            e.printStackTrace();
                             errorMessages.add("bugfinder-backend not present");
                             return new MinigameTask(Minigame.BUGFINDER, "", null, minigameTask.getIndex());
                         }
