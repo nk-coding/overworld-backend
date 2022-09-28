@@ -1,10 +1,12 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.DungeonDTO;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.service.DungeonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 public class DungeonController {
 
   @Autowired
+  JWTValidatorService jwtValidatorService;
+
+  @Autowired
   private DungeonService dungeonService;
 
   @Autowired
@@ -24,7 +29,12 @@ public class DungeonController {
 
   @Operation(summary = "Get all dungeons of a world")
   @GetMapping("")
-  public Set<DungeonDTO> getDungeons(@PathVariable int courseId, @PathVariable int worldIndex) {
+  public Set<DungeonDTO> getDungeons(
+    @PathVariable int courseId,
+    @PathVariable int worldIndex,
+    @CookieValue("access_token") final String accessToken
+  ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get dungeons of world {} of course {}", worldIndex, courseId);
     return dungeonService.getDungeonsFromWorld(courseId, worldIndex);
   }
@@ -34,8 +44,10 @@ public class DungeonController {
   public DungeonDTO getDungeon(
     @PathVariable int courseId,
     @PathVariable int worldIndex,
-    @PathVariable int dungeonIndex
+    @PathVariable int dungeonIndex,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get dungeon {} of world {} of course {}", dungeonIndex, worldIndex, courseId);
     return dungeonMapper.dungeonToDungeonDTO(
       dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex)
@@ -48,8 +60,11 @@ public class DungeonController {
     @PathVariable int courseId,
     @PathVariable int worldIndex,
     @PathVariable int dungeonIndex,
-    @RequestBody DungeonDTO dungeonDTO
+    @RequestBody DungeonDTO dungeonDTO,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
+    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
     log.debug("update dungeon {} of world {} of course {} with {}", dungeonIndex, worldIndex, courseId, dungeonDTO);
     return dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex, dungeonDTO);
   }

@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.CourseDTO;
 import de.unistuttgart.overworldbackend.data.CourseInitialData;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 public class CourseController {
 
   @Autowired
+  JWTValidatorService jwtValidatorService;
+
+  @Autowired
   private CourseRepository courseRepository;
 
   @Autowired
@@ -31,14 +35,16 @@ public class CourseController {
 
   @Operation(summary = "Get all courses")
   @GetMapping("")
-  public List<CourseDTO> getCourses() {
+  public List<CourseDTO> getCourses(@CookieValue("access_token") final String accessToken) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get courses");
     return courseMapper.coursesToCourseDTOs(courseRepository.findAll());
   }
 
   @Operation(summary = "Get a course by its id")
   @GetMapping("/{id}")
-  public CourseDTO getCourse(@PathVariable int id) {
+  public CourseDTO getCourse(@PathVariable int id, @CookieValue("access_token") final String accessToken) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
     log.debug("get course {}", id);
     return courseMapper.courseToCourseDTO(courseService.getCourse(id));
   }
@@ -46,21 +52,34 @@ public class CourseController {
   @Operation(summary = "Create a course")
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("")
-  public CourseDTO createCourse(@Valid @RequestBody CourseInitialData course) {
+  public CourseDTO createCourse(
+    @Valid @RequestBody CourseInitialData course,
+    @CookieValue("access_token") final String accessToken
+  ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
+    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
     log.debug("create course {}");
     return courseService.createCourse(course);
   }
 
   @Operation(summary = "Update a course by its id")
   @PutMapping("/{id}")
-  public CourseDTO updateCourse(@PathVariable int id, @Valid @RequestBody CourseDTO courseDTO) {
+  public CourseDTO updateCourse(
+    @PathVariable int id,
+    @Valid @RequestBody CourseDTO courseDTO,
+    @CookieValue("access_token") final String accessToken
+  ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
+    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
     log.debug("update course {} with {}", id, courseDTO);
     return courseService.updateCourse(id, courseDTO);
   }
 
   @Operation(summary = "Delete a course by its id")
   @DeleteMapping("/{id}")
-  public CourseDTO deleteCourse(@PathVariable int id) {
+  public CourseDTO deleteCourse(@PathVariable int id, @CookieValue("access_token") final String accessToken) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
+    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
     log.debug("delete course {}", id);
     return courseService.deleteCourse(id);
   }
@@ -72,10 +91,12 @@ public class CourseController {
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("/{id}/clone")
   public CourseDTO cloneCourse(
-    @CookieValue("access_token") final String accessToken,
     @PathVariable int id,
-    @Valid @RequestBody CourseInitialData course
+    @Valid @RequestBody CourseInitialData course,
+    @CookieValue("access_token") final String accessToken
   ) {
+    jwtValidatorService.validateTokenOrThrow(accessToken);
+    jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
     log.debug("clone course {}", id);
     return courseService.cloneCourse(id, course, accessToken);
   }

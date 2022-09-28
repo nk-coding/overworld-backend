@@ -2,10 +2,13 @@ package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
@@ -14,12 +17,14 @@ import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import java.util.*;
+import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -51,6 +56,11 @@ class PlayerNPCStatisticControllerTest {
   @Autowired
   private MockMvc mvc;
 
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
+
   @Autowired
   private CourseRepository courseRepository;
 
@@ -70,6 +80,7 @@ class PlayerNPCStatisticControllerTest {
   private NPCMapper npcMapper;
 
   private String fullURL;
+  private String fullURLWithoutPlayerId;
   private ObjectMapper objectMapper;
 
   private Course initialCourse;
@@ -147,11 +158,19 @@ class PlayerNPCStatisticControllerTest {
 
     fullURL =
       String.format(
-        "/courses/%d/playerstatistics/" + initialPlayerStatistic.getUserId() + "/player-npc-statistics",
-        initialCourse.getId()
+        "/courses/%d/playerstatistics/%s/player-npc-statistics",
+        initialCourse.getId(), initialPlayerStatistic.getUserId()
       );
+    fullURLWithoutPlayerId =
+            String.format(
+                    "/courses/%d/playerstatistics/player-npc-statistics",
+                    initialCourse.getId()
+            );
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn(initialPlayerStatistic.getUserId());
   }
 
   @Test
@@ -161,12 +180,29 @@ class PlayerNPCStatisticControllerTest {
     );
 
     final MvcResult result = mvc
-      .perform(get(fullURL).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
     final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
       objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
+    );
+    assertEquals(statistic, playerNPCStatisticDTOs.get(0));
+  }
+
+  @Test
+  void getOwnNPCStatistics() throws Exception {
+    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+    );
+
+    final MvcResult result = mvc
+            .perform(get(fullURLWithoutPlayerId).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
+            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
     );
     assertEquals(statistic, playerNPCStatisticDTOs.get(0));
   }
@@ -178,7 +214,7 @@ class PlayerNPCStatisticControllerTest {
     );
 
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + statistic.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -193,13 +229,34 @@ class PlayerNPCStatisticControllerTest {
   }
 
   @Test
+  void getOwnNPCStatistic() throws Exception {
+    PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+    );
+
+    final MvcResult result = mvc
+            .perform(get(fullURLWithoutPlayerId + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerNPCStatisticDTO.class
+    );
+    assertEquals(statistic, playerNPCStatisticDTO);
+    assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
+    assertNotNull(playerNPCStatisticDTO.getNpc().getArea());
+    assertEquals(initialNpcDTO.getArea(), playerNPCStatisticDTO.getNpc().getArea());
+  }
+
+  @Test
   void getNPCStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
     PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
       new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
     );
 
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + UUID.randomUUID()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }

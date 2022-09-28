@@ -1,11 +1,14 @@
 package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.Course;
 import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
@@ -13,11 +16,13 @@ import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.Arrays;
 import java.util.Set;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -49,6 +54,11 @@ class WorldControllerTest {
 
   @Autowired
   private MockMvc mvc;
+
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
 
   @Autowired
   private CourseRepository courseRepository;
@@ -94,12 +104,15 @@ class WorldControllerTest {
     fullURL = String.format("/courses/%d/worlds", initialCourse.getId());
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
   void getWorldsFromCourse() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -119,7 +132,7 @@ class WorldControllerTest {
   @Test
   void getWorldFromCourse() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialWorldDTO.getIndex()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialWorldDTO.getIndex()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -132,7 +145,7 @@ class WorldControllerTest {
   @Test
   void getWorldFromCourse_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/" + Integer.MAX_VALUE).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + Integer.MAX_VALUE).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -148,7 +161,10 @@ class WorldControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialWorldDTO.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        put(fullURL + "/" + initialWorldDTO.getIndex())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
@@ -181,7 +197,12 @@ class WorldControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updatedWorldDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialWorld.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialWorld.getIndex())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 

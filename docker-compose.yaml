@@ -67,6 +67,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://overworld-db:5432/postgres
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   # --- frontends ---
   landing-page:

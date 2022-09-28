@@ -1,11 +1,14 @@
 package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
@@ -16,12 +19,14 @@ import de.unistuttgart.overworldbackend.repositories.PlayerNPCStatisticRepositor
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import java.util.*;
+import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -53,6 +58,11 @@ class NPCInputControllerTest {
 
   @Autowired
   private MockMvc mvc;
+
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
 
   @Autowired
   private CourseRepository courseRepository;
@@ -153,6 +163,9 @@ class NPCInputControllerTest {
     fullURL = "/internal";
     npcURL = String.format("/courses/%d/worlds/%d/npcs", initialCourse.getId(), initialWorld.getIndex());
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
@@ -165,7 +178,9 @@ class NPCInputControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     final MvcResult result = mvc
-      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/submit-npc-pass").cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -199,7 +214,9 @@ class NPCInputControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     mvc
-      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/submit-npc-pass").cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound());
   }
 
@@ -212,7 +229,9 @@ class NPCInputControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     mvc
-      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/submit-npc-pass").cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound());
   }
 
@@ -226,7 +245,9 @@ class NPCInputControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
 
     final MvcResult result = mvc
-      .perform(post(fullURL + "/submit-npc-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/submit-npc-pass").cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -243,7 +264,10 @@ class NPCInputControllerTest {
 
     final MvcResult resultNPC = mvc
       .perform(
-        put(npcURL + "/" + initialNpcDTO.getIndex()).content(bodyValueNPC).contentType(MediaType.APPLICATION_JSON)
+        put(npcURL + "/" + initialNpcDTO.getIndex())
+          .cookie(cookie)
+          .content(bodyValueNPC)
+          .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();

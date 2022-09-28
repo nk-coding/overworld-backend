@@ -1,11 +1,14 @@
 package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.*;
@@ -14,12 +17,14 @@ import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskActionLogRepository;
 import java.util.*;
+import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -50,6 +55,11 @@ class MinigameInputControllerTest {
 
   @Autowired
   private MockMvc mvc;
+
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
 
   @Autowired
   private CourseRepository courseRepository;
@@ -179,6 +189,9 @@ class MinigameInputControllerTest {
     fullURL = "/internal";
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
@@ -192,7 +205,9 @@ class MinigameInputControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
 
     final MvcResult result = mvc
-      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/submit-game-pass").cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -235,7 +250,9 @@ class MinigameInputControllerTest {
       final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
 
       mvc
-        .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+        .perform(
+          post(fullURL + "/submit-game-pass").cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        )
         .andExpect(status().isOk());
     }
 
@@ -254,7 +271,9 @@ class MinigameInputControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
 
     mvc
-      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/submit-game-pass").cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound());
   }
 
@@ -269,7 +288,9 @@ class MinigameInputControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
 
     mvc
-      .perform(post(fullURL + "/submit-game-pass").content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/submit-game-pass").cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound());
   }
 
@@ -280,7 +301,7 @@ class MinigameInputControllerTest {
     final String bodyValueCourse = objectMapper.writeValueAsString(toCreateCourse);
 
     final MvcResult resultCourse = mvc
-      .perform(post(currentUrl).content(bodyValueCourse).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(currentUrl).content(bodyValueCourse).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
 
@@ -308,6 +329,7 @@ class MinigameInputControllerTest {
           "/minigame-tasks/" +
           updateMinigameTaskDTO.getIndex()
         )
+          .cookie(cookie)
           .content(bodyValueTask)
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -325,6 +347,7 @@ class MinigameInputControllerTest {
     final MvcResult resultStatistic = mvc
       .perform(
         post("/courses/" + createdCourse.getId() + "/playerstatistics")
+          .cookie(cookie)
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -345,7 +368,12 @@ class MinigameInputControllerTest {
     final String bodyValueMinigame = objectMapper.writeValueAsString(playerTaskStatisticData);
 
     final MvcResult resultPlayerStatistic = mvc
-      .perform(post(fullURL + "/submit-game-pass").content(bodyValueMinigame).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        post(fullURL + "/submit-game-pass")
+          .cookie(cookie)
+          .content(bodyValueMinigame)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
