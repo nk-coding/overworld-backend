@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "main"
-      - "feature/dont-interupt-cloning"
     tags:
       - "v*"
   pull_request:
