@@ -12,14 +12,13 @@ import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
+import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
+import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
+import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
-import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
-import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +42,9 @@ class MinigameTaskControllerTest {
 
   @Container
   public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-          .withDatabaseName("postgres")
-          .withUsername("postgres")
-          .withPassword("postgres");
+    .withDatabaseName("postgres")
+    .withUsername("postgres")
+    .withPassword("postgres");
 
   @DynamicPropertySource
   public static void properties(DynamicPropertyRegistry registry) {
@@ -157,31 +156,13 @@ class MinigameTaskControllerTest {
     initialDungeon = initialCourse.getWorlds().stream().findFirst().get().getDungeons().stream().findFirst().get();
     initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
 
-    initialTask1 =
-      initialWorld
-        .getMinigameTasks()
-        .stream()
-        .filter(task -> task.getIndex() == 1)
-        .findAny()
-        .get();
+    initialTask1 = initialWorld.getMinigameTasks().stream().filter(task -> task.getIndex() == 1).findAny().get();
     initialTaskDTO1 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
 
-    initialTask2 =
-      initialWorld
-        .getMinigameTasks()
-        .stream()
-        .filter(task -> task.getIndex() == 2)
-        .findAny()
-        .get();
+    initialTask2 = initialWorld.getMinigameTasks().stream().filter(task -> task.getIndex() == 2).findAny().get();
     initialTaskDTO2 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask2);
 
-    initialTask3 =
-      initialDungeon
-        .getMinigameTasks()
-        .stream()
-        .filter(task -> task.getIndex() == 3)
-        .findAny()
-        .get();
+    initialTask3 = initialDungeon.getMinigameTasks().stream().filter(task -> task.getIndex() == 3).findAny().get();
     initialTaskDTO3 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
 
     assertNotNull(initialWorld.getId());
@@ -346,8 +327,7 @@ class MinigameTaskControllerTest {
   }
 
   @Test
-  void removeMinigame_RemoveConfiguredFlag() throws Exception
-  {
+  void removeMinigame_RemoveConfiguredFlag() throws Exception {
     final Minigame newGame = Minigame.NONE;
     final String newDescription = "";
     final UUID newConfigurationId = null;
@@ -357,7 +337,8 @@ class MinigameTaskControllerTest {
     updateMinigameTaskDTO.setDescription(newDescription);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
-    mvc.perform(
+    mvc
+      .perform(
         put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
@@ -369,8 +350,7 @@ class MinigameTaskControllerTest {
   }
 
   @Test
-  void removeMinigame_NotRemoveConfiguredFlag() throws Exception
-  {
+  void removeMinigame_NotRemoveConfiguredFlag() throws Exception {
     final Minigame newGame = Minigame.NONE;
     final String newDescription = "";
     final UUID newConfigurationId = null;
@@ -380,7 +360,8 @@ class MinigameTaskControllerTest {
     updateMinigameTaskDTO.setDescription(newDescription);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
-    mvc.perform(
+    mvc
+      .perform(
         put(fullURL + "/minigame-tasks/" + initialTask1.getIndex())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
@@ -392,8 +373,7 @@ class MinigameTaskControllerTest {
   }
 
   @Test
-  void addMinigame_SetConfiguredFlag() throws Exception
-  {
+  void addMinigame_SetConfiguredFlag() throws Exception {
     initialDungeon.setConfigured(false);
     initialDungeon = dungeonRepository.save(initialDungeon);
 
@@ -410,7 +390,7 @@ class MinigameTaskControllerTest {
     updateMinigameTaskDTO.setDescription(newDescription);
     String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
-     mvc
+    mvc
       .perform(
         put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
           .content(bodyValue)
