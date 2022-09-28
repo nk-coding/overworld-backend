@@ -15,7 +15,11 @@ import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
+import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
+import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
+import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import javax.servlet.http.Cookie;
@@ -66,10 +70,19 @@ class MinigameTaskControllerTest {
   private CourseRepository courseRepository;
 
   @Autowired
+  private WorldRepository worldRepository;
+
+  @Autowired
+  private DungeonRepository dungeonRepository;
+
+  @Autowired
   private WorldMapper worldMapper;
 
   @Autowired
   private MinigameTaskMapper minigameTaskMapper;
+
+  @Autowired
+  private MinigameTaskRepository minigameTaskRepository;
 
   @Autowired
   private DungeonMapper dungeonMapper;
@@ -110,24 +123,33 @@ class MinigameTaskControllerTest {
     minigameTask3.setGame(Minigame.CROSSWORDPUZZLE);
     minigameTask3.setIndex(3);
 
+    Set<MinigameTask> dungeonMinigames = new HashSet<>();
+    dungeonMinigames.add(minigameTask3);
+
     final Dungeon dungeon = new Dungeon();
     dungeon.setIndex(1);
     dungeon.setStaticName("Dungeon 1");
     dungeon.setTopicName("Testtopic");
     dungeon.setActive(true);
-    dungeon.setMinigameTasks(Set.of(minigameTask3));
+    dungeon.setMinigameTasks(dungeonMinigames);
     dungeon.setNpcs(Set.of());
     dungeon.setBooks(Set.of());
+    dungeon.setConfigured(true);
+
+    Set<MinigameTask> worldMinigames = new HashSet<>();
+    worldMinigames.add(minigameTask1);
+    worldMinigames.add(minigameTask2);
 
     final World world = new World();
     world.setIndex(1);
     world.setStaticName("Winter Wonderland");
     world.setTopicName("UML Winter");
     world.setActive(true);
-    world.setMinigameTasks(Set.of(minigameTask1, minigameTask2));
+    world.setMinigameTasks(worldMinigames);
     world.setNpcs(Set.of());
     world.setBooks(Set.of());
     world.setDungeons(Arrays.asList(dungeon));
+    world.setConfigured(true);
 
     final Course course = new Course(
       "PSE",
@@ -144,31 +166,13 @@ class MinigameTaskControllerTest {
     initialDungeon = initialCourse.getWorlds().stream().findFirst().get().getDungeons().stream().findFirst().get();
     initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
 
-    initialTask1 =
-      initialWorld
-        .getMinigameTasks()
-        .stream()
-        .filter(task -> task.getId().equals(minigameTask1.getId()))
-        .findAny()
-        .get();
+    initialTask1 = initialWorld.getMinigameTasks().stream().filter(task -> task.getIndex() == 1).findAny().get();
     initialTaskDTO1 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
 
-    initialTask2 =
-      initialWorld
-        .getMinigameTasks()
-        .stream()
-        .filter(task -> task.getId().equals(minigameTask2.getId()))
-        .findAny()
-        .get();
+    initialTask2 = initialWorld.getMinigameTasks().stream().filter(task -> task.getIndex() == 2).findAny().get();
     initialTaskDTO2 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask2);
 
-    initialTask3 =
-      initialDungeon
-        .getMinigameTasks()
-        .stream()
-        .filter(task -> task.getId().equals(minigameTask3.getId()))
-        .findAny()
-        .get();
+    initialTask3 = initialDungeon.getMinigameTasks().stream().filter(task -> task.getIndex() == 3).findAny().get();
     initialTaskDTO3 = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
 
     assertNotNull(initialWorld.getId());
@@ -283,11 +287,11 @@ class MinigameTaskControllerTest {
 
   @Test
   void updateMinigameTaskFromWorld() throws Exception {
-    final String newGame = "Crosswordpuzzle";
+    final Minigame newGame = Minigame.CROSSWORDPUZZLE;
     final String newDescription = "New Crosswordpuzzle game";
     final UUID newConfigurationId = UUID.randomUUID();
     final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
-    updateMinigameTaskDTO.setGame(Minigame.CROSSWORDPUZZLE);
+    updateMinigameTaskDTO.setGame(newGame);
     updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
     updateMinigameTaskDTO.setDescription(newDescription);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
@@ -344,5 +348,85 @@ class MinigameTaskControllerTest {
     assertEquals(newGame, updatedMinigameTaskDTOResult.getGame());
     assertEquals(newConfigurationId, updatedMinigameTaskDTOResult.getConfigurationId());
     assertEquals(newDescription, updatedMinigameTaskDTOResult.getDescription());
+  }
+
+  @Test
+  void removeMinigame_RemoveConfiguredFlag() throws Exception {
+    final Minigame newGame = Minigame.NONE;
+    final String newDescription = "";
+    final UUID newConfigurationId = null;
+    final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
+    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
+    final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
+
+    mvc
+      .perform(
+        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk());
+
+    Dungeon dungeon = dungeonRepository.findById(initialDungeon.getId()).get();
+    assertEquals(false, dungeon.isConfigured());
+  }
+
+  @Test
+  void removeMinigame_NotRemoveConfiguredFlag() throws Exception {
+    final Minigame newGame = Minigame.NONE;
+    final String newDescription = "";
+    final UUID newConfigurationId = null;
+    final MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask1);
+    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
+    final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
+
+    mvc
+      .perform(
+        put(fullURL + "/minigame-tasks/" + initialTask1.getIndex())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk());
+
+    World world = worldRepository.findById(initialWorld.getId()).get();
+    assertEquals(true, world.isConfigured());
+  }
+
+  @Test
+  void addMinigame_SetConfiguredFlag() throws Exception {
+    initialDungeon.setConfigured(false);
+    initialDungeon = dungeonRepository.save(initialDungeon);
+
+    initialTask3.setGame(Minigame.NONE);
+    initialTask3.setConfigurationId(null);
+    initialTask3 = minigameTaskRepository.save(initialTask3);
+
+    Minigame newGame = Minigame.CHICKENSHOCK;
+    String newDescription = "New Chickenshock game";
+    UUID newConfigurationId = UUID.randomUUID();
+    MinigameTaskDTO updateMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialTask3);
+    updateMinigameTaskDTO.setGame(newGame);
+    updateMinigameTaskDTO.setConfigurationId(newConfigurationId);
+    updateMinigameTaskDTO.setDescription(newDescription);
+    String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
+
+    mvc
+      .perform(
+        put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status().isOk())
+      .andReturn();
+
+    Dungeon dungeon = dungeonRepository.findById(initialDungeon.getId()).get();
+    assertEquals(true, dungeon.isConfigured());
   }
 }
