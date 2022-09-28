@@ -41,6 +41,19 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class MinigameTaskControllerTest {
 
+  @Container
+  public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
+          .withDatabaseName("postgres")
+          .withUsername("postgres")
+          .withPassword("postgres");
+
+  @DynamicPropertySource
+  public static void properties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
+    registry.add("spring.datasource.username", postgresDB::getUsername);
+    registry.add("spring.datasource.password", postgresDB::getPassword);
+  }
+
   @Autowired
   private MockMvc mvc;
 
