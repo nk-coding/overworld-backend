@@ -149,7 +149,7 @@ class MinigameInputControllerTest {
     world.setDungeons(dungeons);
 
     final World world2 = new World();
-    world.setIndex(2);
+    world2.setIndex(2);
     world2.setStaticName("Blooming Savanna");
     world2.setTopicName("UML Summer");
     world2.setActive(true);
@@ -168,10 +168,10 @@ class MinigameInputControllerTest {
     initialCourse = courseRepository.save(course);
     initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
-    initialWorld = initialCourse.getWorlds().stream().filter(searchWorld -> searchWorld.getIndex() == 1).findFirst().get();
+    initialWorld = initialCourse.getWorlds().stream().filter(searchWorld -> searchWorld.getIndex() == world.getIndex()).findFirst().get();
     initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
 
-    initialWorld2 = initialCourse.getWorlds().stream().filter(searchWorld -> searchWorld.getIndex() == 2).findFirst().get();
+    initialWorld2 = initialCourse.getWorlds().stream().filter(searchWorld -> searchWorld.getIndex() == world2.getIndex()).findFirst().get();
     initialWorld2DTO = worldMapper.worldToWorldDTO(initialWorld2);
 
     initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
