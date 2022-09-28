@@ -2,10 +2,13 @@ package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.BookMapper;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
@@ -13,11 +16,13 @@ import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.Arrays;
 import java.util.Set;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -49,6 +54,11 @@ class BookControllerTest {
 
   @Autowired
   private MockMvc mvc;
+
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
 
   @Autowired
   private CourseRepository courseRepository;
@@ -148,6 +158,9 @@ class BookControllerTest {
       );
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
@@ -156,7 +169,9 @@ class BookControllerTest {
     bookDTO.setText("Hey ho");
     final String bodyValue = objectMapper.writeValueAsString(bookDTO);
     mvc
-      .perform(put(fullURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + Integer.MAX_VALUE).cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -173,7 +188,10 @@ class BookControllerTest {
 
     final MvcResult result = mvc
       .perform(
-        put(fullURL + "/" + initialBookDTO.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+        put(fullURL + "/" + initialBookDTO.getIndex())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk())
       .andReturn();
@@ -195,7 +213,12 @@ class BookControllerTest {
     bookDTO.setText("Hey ho");
     final String bodyValue = objectMapper.writeValueAsString(bookDTO);
     mvc
-      .perform(put(fullDungeonURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullDungeonURL + "/" + Integer.MAX_VALUE)
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -213,6 +236,7 @@ class BookControllerTest {
     final MvcResult result = mvc
       .perform(
         put(fullDungeonURL + "/" + initialDungeonBookDTO.getIndex())
+          .cookie(cookie)
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )

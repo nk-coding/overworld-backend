@@ -2,10 +2,13 @@ package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
@@ -15,11 +18,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -51,6 +56,11 @@ class NPCControllerTest {
 
   @Autowired
   private MockMvc mvc;
+
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
 
   @Autowired
   private CourseRepository courseRepository;
@@ -160,6 +170,9 @@ class NPCControllerTest {
       );
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
@@ -168,7 +181,9 @@ class NPCControllerTest {
     npcDTO.setText(Arrays.asList("Hey ho"));
     final String bodyValue = objectMapper.writeValueAsString(npcDTO);
     mvc
-      .perform(put(fullURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + Integer.MAX_VALUE).cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -184,7 +199,12 @@ class NPCControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(updateNPCDTO);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialNPCDTO.getIndex()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialNPCDTO.getIndex())
+          .content(bodyValue)
+          .cookie(cookie)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -202,7 +222,12 @@ class NPCControllerTest {
     npcDTO.setText(Arrays.asList("Hey ho"));
     final String bodyValue = objectMapper.writeValueAsString(npcDTO);
     mvc
-      .perform(put(fullDungeonURL + "/" + Integer.MAX_VALUE).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullDungeonURL + "/" + Integer.MAX_VALUE)
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isNotFound())
       .andReturn();
   }
@@ -218,6 +243,7 @@ class NPCControllerTest {
     final MvcResult result = mvc
       .perform(
         put(fullDungeonURL + "/" + initialDungeonNPCDTO.getIndex())
+          .cookie(cookie)
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )

@@ -1,10 +1,13 @@
 package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
@@ -14,12 +17,14 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -50,6 +55,11 @@ class CourseControllerTest {
 
   @Autowired
   private MockMvc mvc;
+
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
 
   @Autowired
   private CourseRepository courseRepository;
@@ -121,12 +131,15 @@ class CourseControllerTest {
     fullURL = "/courses";
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
   }
 
   @Test
   void getCourse() throws Exception {
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + initialCourseDTO.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + initialCourseDTO.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -142,14 +155,14 @@ class CourseControllerTest {
   @Test
   void getCourse_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/1").contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/1").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound())
       .andReturn();
   }
 
   @Test
   void getCourses() throws Exception {
-    final MvcResult result = mvc.perform(get(fullURL)).andExpect(status().isOk()).andReturn();
+    final MvcResult result = mvc.perform(get(fullURL).cookie(cookie)).andExpect(status().isOk()).andReturn();
 
     final Set<CourseDTO> courseDTOResult = Set.of(
       objectMapper.readValue(result.getResponse().getContentAsString(), CourseDTO[].class)
@@ -170,7 +183,12 @@ class CourseControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(courseToUpdate);
 
     final MvcResult result = mvc
-      .perform(put(fullURL + "/" + initialCourseDTO.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialCourseDTO.getId())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isOk())
       .andReturn();
 
@@ -191,7 +209,7 @@ class CourseControllerTest {
   @Test
   void deleteCourse() throws Exception {
     final MvcResult result = mvc
-      .perform(delete(fullURL + "/" + initialCourseDTO.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(delete(fullURL + "/" + initialCourseDTO.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -211,7 +229,7 @@ class CourseControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(toCreateCourse);
 
     final MvcResult result = mvc
-      .perform(post(fullURL).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(fullURL).cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
 
@@ -236,6 +254,7 @@ class CourseControllerTest {
     mvc
       .perform(
         post(fullURL + "/" + initialCourseDTO.getId() + "/playerstatistics")
+          .cookie(cookie)
           .content(objectMapper.writeValueAsString(newPlayer))
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -251,6 +270,7 @@ class CourseControllerTest {
     mvc
       .perform(
         post("/internal/submit-game-pass")
+          .cookie(cookie)
           .content(objectMapper.writeValueAsString(playerTaskStatisticData))
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -271,6 +291,7 @@ class CourseControllerTest {
     mvc
       .perform(
         post("/internal/submit-npc-pass")
+          .cookie(cookie)
           .content(objectMapper.writeValueAsString(playerNPCStatisticData))
           .contentType(MediaType.APPLICATION_JSON)
       )
@@ -282,7 +303,7 @@ class CourseControllerTest {
     assertFalse(playerStatistic.get().getPlayerNPCStatistics().isEmpty());
 
     final MvcResult result = mvc
-      .perform(delete(fullURL + "/" + initialCourseDTO.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(delete(fullURL + "/" + initialCourseDTO.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -305,7 +326,7 @@ class CourseControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(toCreateCourse);
 
     mvc
-      .perform(post(fullURL).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(post(fullURL).content(bodyValue).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isBadRequest());
   }
 
@@ -319,7 +340,12 @@ class CourseControllerTest {
     final String bodyValue = objectMapper.writeValueAsString(courseToUpdate);
 
     mvc
-      .perform(put(fullURL + "/" + initialCourseDTO.getId()).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
+      .perform(
+        put(fullURL + "/" + initialCourseDTO.getId())
+          .cookie(cookie)
+          .content(bodyValue)
+          .contentType(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status().isBadRequest());
   }
 }

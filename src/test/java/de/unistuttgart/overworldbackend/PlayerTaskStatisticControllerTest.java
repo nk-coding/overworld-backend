@@ -2,10 +2,13 @@ package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
@@ -16,12 +19,14 @@ import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.service.PlayerTaskStatisticService;
 import java.util.*;
+import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -53,6 +58,11 @@ class PlayerTaskStatisticControllerTest {
   @Autowired
   private MockMvc mvc;
 
+  @MockBean
+  JWTValidatorService jwtValidatorService;
+
+  final Cookie cookie = new Cookie("access_token", "testToken");
+
   @Autowired
   private CourseRepository courseRepository;
 
@@ -72,6 +82,7 @@ class PlayerTaskStatisticControllerTest {
   private MinigameTaskMapper minigameTaskMapper;
 
   private String fullURL;
+  private String fullURLWithoutPlayerId;
   private ObjectMapper objectMapper;
 
   private Course initialCourse;
@@ -159,11 +170,19 @@ class PlayerTaskStatisticControllerTest {
     assertEquals(initialCourse.getId(), initialPlayerStatistic.getCourse().getId());
     fullURL =
       String.format(
-        "/courses/%d/playerstatistics/" + initialPlayerStatistic.getUserId() + "/player-task-statistics",
-        initialCourse.getId()
+        "/courses/%d/playerstatistics/%s/player-task-statistics",
+        initialCourse.getId(), initialPlayerStatistic.getUserId()
       );
+    fullURLWithoutPlayerId =
+            String.format(
+                    "/courses/%d/playerstatistics/player-task-statistics",
+                    initialCourse.getId()
+            );
 
     objectMapper = new ObjectMapper();
+
+    doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
+    when(jwtValidatorService.extractUserId("testToken")).thenReturn(initialPlayerStatistic.getUserId());
   }
 
   @Test
@@ -178,12 +197,34 @@ class PlayerTaskStatisticControllerTest {
     );
 
     final MvcResult result = mvc
-      .perform(get(fullURL).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL).contentType(MediaType.APPLICATION_JSON).cookie(cookie))
       .andExpect(status().isOk())
       .andReturn();
 
     final List<PlayerTaskStatisticDTO> playerTaskStatisticDTOs = Arrays.asList(
       objectMapper.readValue(result.getResponse().getContentAsString(), PlayerTaskStatisticDTO[].class)
+    );
+    assertEquals(playerTaskStatisticDTOs.get(0), statistic);
+  }
+
+  @Test
+  void getOwnTaskStatistics() throws Exception {
+    PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
+            new PlayerTaskStatisticData(
+                    initialMinigameTask.getGame(),
+                    initialMinigameTask.getConfigurationId(),
+                    80,
+                    initialPlayerStatisticDTO.getUserId()
+            )
+    );
+
+    final MvcResult result = mvc
+            .perform(get(fullURLWithoutPlayerId).contentType(MediaType.APPLICATION_JSON).cookie(cookie))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    final List<PlayerTaskStatisticDTO> playerTaskStatisticDTOs = Arrays.asList(
+            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerTaskStatisticDTO[].class)
     );
     assertEquals(playerTaskStatisticDTOs.get(0), statistic);
   }
@@ -200,7 +241,7 @@ class PlayerTaskStatisticControllerTest {
     );
 
     final MvcResult result = mvc
-      .perform(get(fullURL + "/" + statistic.getId()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andReturn();
 
@@ -215,9 +256,35 @@ class PlayerTaskStatisticControllerTest {
   }
 
   @Test
+  void getOwnTaskStatistic() throws Exception {
+    PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
+            new PlayerTaskStatisticData(
+                    initialMinigameTask.getGame(),
+                    initialMinigameTask.getConfigurationId(),
+                    80,
+                    initialPlayerStatisticDTO.getUserId()
+            )
+    );
+
+    final MvcResult result = mvc
+            .perform(get(fullURLWithoutPlayerId + "/" + statistic.getId()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    final PlayerTaskStatisticDTO playerTaskStatisticDTO = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerTaskStatisticDTO.class
+    );
+    assertEquals(statistic, playerTaskStatisticDTO);
+    assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());
+    assertNotNull(playerTaskStatisticDTO.getMinigameTask().getArea());
+    assertEquals(initialMinigameTaskDTO.getArea(), playerTaskStatisticDTO.getMinigameTask().getArea());
+  }
+
+  @Test
   void getTaskStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
     mvc
-      .perform(get(fullURL + "/" + UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
+      .perform(get(fullURL + "/" + UUID.randomUUID()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound());
   }
 }
