@@ -15,6 +15,9 @@ import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
+
+import de.unistuttgart.overworldbackend.repositories.DungeonRepository;
+import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +57,12 @@ class MinigameTaskControllerTest {
 
   @Autowired
   private CourseRepository courseRepository;
+
+  @Autowired
+  private WorldRepository worldRepository;
+
+  @Autowired
+  private DungeonRepository dungeonRepository;
 
   @Autowired
   private WorldMapper worldMapper;
@@ -334,16 +343,16 @@ class MinigameTaskControllerTest {
     updateMinigameTaskDTO.setDescription(newDescription);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
-    final MvcResult result = mvc
-      .perform(
+    mvc.perform(
         put(fullURL + "/dungeons/" + initialDungeon.getIndex() + "/minigame-tasks/" + initialTask3.getIndex())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
-      .andExpect(status().isOk())
-      .andReturn();
+      .andExpect(status().isOk());
 
-    assertEquals(initialDungeon.isConfigured(), false);
+    Dungeon dungeon = dungeonRepository.findById(initialDungeon.getId()).get();
+
+    assertEquals(dungeon.isConfigured(), false);
   }
 
   @Test
@@ -358,16 +367,16 @@ class MinigameTaskControllerTest {
     updateMinigameTaskDTO.setDescription(newDescription);
     final String bodyValue = objectMapper.writeValueAsString(updateMinigameTaskDTO);
 
-    final MvcResult result = mvc
-      .perform(
+    mvc.perform(
         put(fullURL + "/minigame-tasks/" + initialTask1.getIndex())
           .content(bodyValue)
           .contentType(MediaType.APPLICATION_JSON)
       )
-      .andExpect(status().isOk())
-      .andReturn();
+      .andExpect(status().isOk());
 
-    assertEquals(initialWorld.isConfigured(), true);
+    World world = worldRepository.findById(initialWorld.getId()).get();
+
+    assertEquals(world.isConfigured(), true);
   }
 
   @Test
@@ -409,6 +418,8 @@ class MinigameTaskControllerTest {
       .andExpect(status().isOk())
       .andReturn();
 
-    assertEquals(initialWorld.isConfigured(), true);
+    World world = worldRepository.findById(initialWorld.getId()).get();
+    
+    assertEquals(world.isConfigured(), true);
   }
 }
