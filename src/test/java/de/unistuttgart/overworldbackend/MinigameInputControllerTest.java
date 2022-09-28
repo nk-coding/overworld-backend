@@ -98,6 +98,9 @@ class MinigameInputControllerTest {
     private World initialWorld;
     private WorldDTO initialWorldDTO;
 
+    private World initialWorld2;
+    private WorldDTO initialWorld2DTO;
+
     private Dungeon initialDungeon;
     private DungeonDTO initialDungeonDTO;
 
@@ -129,6 +132,7 @@ class MinigameInputControllerTest {
         dungeon.setStaticName("Dark Dungeon");
         dungeon.setTopicName("Dark UML");
         dungeon.setActive(true);
+        dungeon.setConfigured(true);
         dungeon.setMinigameTasks(dungeonMinigameTasks);
         dungeon.setNpcs(Set.of());
         dungeon.setBooks(Set.of());
@@ -144,23 +148,53 @@ class MinigameInputControllerTest {
         minigameTasks.add(minigameTask);
 
         final World world = new World();
+        world.setIndex(1);
         world.setStaticName("Winter Wonderland");
         world.setTopicName("UML Winter");
         world.setActive(true);
+        world.setConfigured(true);
         world.setMinigameTasks(minigameTasks);
         world.setNpcs(Set.of());
         world.setBooks(Set.of());
         world.setDungeons(dungeons);
+
+        final World world2 = new World();
+        world2.setIndex(2);
+        world2.setStaticName("Blooming Savanna");
+        world2.setTopicName("UML Summer");
+        world2.setActive(true);
+        world2.setConfigured(true);
+        world2.setMinigameTasks(Set.of());
+        world2.setNpcs(Set.of());
+        world2.setBooks(Set.of());
+        world2.setDungeons(Arrays.asList());
+
         final List<World> worlds = new ArrayList<>();
         worlds.add(world);
+        worlds.add(world2);
 
         final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
 
         initialCourse = courseRepository.save(course);
         initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
-        initialWorld = initialCourse.getWorlds().stream().findFirst().get();
+        initialWorld =
+            initialCourse
+                .getWorlds()
+                .stream()
+                .filter(searchWorld -> searchWorld.getIndex() == world.getIndex())
+                .findFirst()
+                .get();
         initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
+
+        initialWorld2 =
+            initialCourse
+                .getWorlds()
+                .stream()
+                .filter(searchWorld -> searchWorld.getIndex() == world2.getIndex())
+                .findFirst()
+                .get();
+        initialWorld2DTO = worldMapper.worldToWorldDTO(initialWorld2);
 
         initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
         initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
@@ -267,11 +301,96 @@ class MinigameInputControllerTest {
                 .andExpect(status().isOk());
         }
 
-        assert initialPlayerStatisticDTO.getId() != null;
         final PlayerStatistic playerstatistic = playerstatisticRepository
             .findById(initialPlayerStatisticDTO.getId())
             .get();
         assertSame(1, playerstatistic.getCompletedDungeons().size());
+    }
+
+    @Test
+    void completeWorld_UnlockDungeon() throws Exception {
+        for (final MinigameTaskDTO minigameTask : initialWorldDTO.getMinigameTasks()) {
+            final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+            playerTaskStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
+            playerTaskStatisticData.setGame(minigameTask.getGame());
+            playerTaskStatisticData.setConfigurationId(minigameTask.getConfigurationId());
+            playerTaskStatisticData.setScore(80);
+
+            final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+
+            mvc
+                .perform(
+                    post(fullURL + "/submit-game-pass")
+                        .content(bodyValue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(cookie)
+                )
+                .andExpect(status().isOk());
+        }
+
+        final PlayerStatistic playerstatistic = playerstatisticRepository
+            .findById(initialPlayerStatisticDTO.getId())
+            .get();
+        final List<Area> unlockedAreas = playerstatistic.getUnlockedAreas();
+        assertTrue(unlockedAreas.contains(initialDungeon));
+    }
+
+    @Test
+    void completeWorld_UnlockWorld() throws Exception {
+        initialDungeon.setConfigured(false);
+        for (final MinigameTaskDTO minigameTask : initialWorldDTO.getMinigameTasks()) {
+            final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+            playerTaskStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
+            playerTaskStatisticData.setGame(minigameTask.getGame());
+            playerTaskStatisticData.setConfigurationId(minigameTask.getConfigurationId());
+            playerTaskStatisticData.setScore(80);
+
+            final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+
+            mvc
+                .perform(
+                    post(fullURL + "/submit-game-pass")
+                        .content(bodyValue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(cookie)
+                )
+                .andExpect(status().isOk());
+        }
+        final PlayerStatistic playerstatistic = playerstatisticRepository
+            .findById(initialPlayerStatisticDTO.getId())
+            .get();
+        final List<Area> unlockedAreas = playerstatistic.getUnlockedAreas();
+        assertTrue(unlockedAreas.contains(initialWorld2));
+    }
+
+    @Test
+    void completeWorld_UnlockNothing() throws Exception {
+        final int amountUnlockedAreas = initialPlayerStatisticDTO.getUnlockedAreas().size();
+        initialDungeon.setConfigured(false);
+        initialWorld2.setConfigured(false);
+        for (final MinigameTaskDTO minigameTask : initialWorldDTO.getMinigameTasks()) {
+            final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
+            playerTaskStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
+            playerTaskStatisticData.setGame(minigameTask.getGame());
+            playerTaskStatisticData.setConfigurationId(minigameTask.getConfigurationId());
+            playerTaskStatisticData.setScore(80);
+
+            final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
+
+            mvc
+                .perform(
+                    post(fullURL + "/submit-game-pass")
+                        .content(bodyValue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(cookie)
+                )
+                .andExpect(status().isOk());
+        }
+        final PlayerStatistic playerstatistic = playerstatisticRepository
+            .findById(initialPlayerStatisticDTO.getId())
+            .get();
+        final List<Area> unlockedAreas = playerstatistic.getUnlockedAreas();
+        assertEquals(amountUnlockedAreas, unlockedAreas.size());
     }
 
     @Test
