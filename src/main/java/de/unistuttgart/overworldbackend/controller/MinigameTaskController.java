@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/courses/{courseId}/worlds/{worldIndex}")
 public class MinigameTaskController {
 
+    private static final List<String> writeAccess = List.of("lecturer");
+
     @Autowired
     JWTValidatorService jwtValidatorService;
 
@@ -92,7 +94,7 @@ public class MinigameTaskController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug("update task {} of world {} of course {} with {}", taskIndex, worldIndex, courseId, minigameTaskDTO);
         return minigameTaskService.updateMinigameTaskFromArea(
             courseId,
@@ -114,7 +116,7 @@ public class MinigameTaskController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug(
             "update task {} of dungeon {} from world {} of course {} with {}",
             taskIndex,

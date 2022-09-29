@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/courses/{courseId}/worlds/{worldIndex}")
 public class BookController {
 
+    private static final List<String> writeAccess = List.of("lecturer");
+
     @Autowired
     JWTValidatorService jwtValidatorService;
 
@@ -32,7 +34,7 @@ public class BookController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug("update book {} of world {} of course {}", bookIndex, worldIndex, courseId);
         return bookService.updateBookFromWorld(courseId, worldIndex, bookIndex, bookDTO);
     }
@@ -48,7 +50,7 @@ public class BookController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug(
             "update book {} of dungeon {} from world {} of course {} with {}",
             bookIndex,

@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/courses")
 public class CourseController {
 
+    private static final List<String> writeAccess = List.of("lecturer");
+
     @Autowired
     JWTValidatorService jwtValidatorService;
 
@@ -58,7 +60,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug("create course");
         return courseService.createCourse(course);
     }
@@ -71,7 +73,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug("update course {} with {}", id, courseDTO);
         return courseService.updateCourse(id, courseDTO);
     }
@@ -80,7 +82,7 @@ public class CourseController {
     @DeleteMapping("/{id}")
     public CourseDTO deleteCourse(@PathVariable final int id, @CookieValue("access_token") final String accessToken) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug("delete course {}", id);
         return courseService.deleteCourse(id);
     }
@@ -97,7 +99,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug("clone course {}", id);
         return courseService.cloneCourse(id, course, accessToken);
     }

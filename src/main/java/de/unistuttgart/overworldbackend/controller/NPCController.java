@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/courses/{courseId}/worlds/{worldIndex}")
 public class NPCController {
 
+    private static final List<String> writeAccess = List.of("lecturer");
+
     @Autowired
     JWTValidatorService jwtValidatorService;
 
@@ -32,7 +34,7 @@ public class NPCController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug("update npc {} of world {} of course {}", npcIndex, worldIndex, courseId);
         return npcService.updateNPCFromWorld(courseId, worldIndex, npcIndex, npcDTO);
     }
@@ -48,7 +50,7 @@ public class NPCController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
         log.debug(
             "update npc {} of dungeon {} from world {} of course {} with {}",
             npcIndex,
