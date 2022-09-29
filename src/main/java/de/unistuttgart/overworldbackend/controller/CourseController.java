@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 
 @Tag(name = "Course", description = "Modify course")
 @RestController
@@ -61,7 +61,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("create course");
         return courseService.createCourse(course);
     }
@@ -74,7 +74,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("update course {} with {}", id, courseDTO);
         return courseService.updateCourse(id, courseDTO);
     }
@@ -83,7 +83,7 @@ public class CourseController {
     @DeleteMapping("/{id}")
     public CourseDTO deleteCourse(@PathVariable final int id, @CookieValue("access_token") final String accessToken) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("delete course {}", id);
         return courseService.deleteCourse(id);
     }
@@ -100,7 +100,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("clone course {}", id);
         return courseService.cloneCourse(id, course, accessToken);
     }

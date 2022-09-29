@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.Set;
 
-import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 
 @Tag(name = "Minigame Task", description = "Get and update minigame tasks from areas (world or dungeons)")
 @RestController
@@ -94,7 +94,7 @@ public class MinigameTaskController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("update task {} of world {} of course {} with {}", taskIndex, worldIndex, courseId, minigameTaskDTO);
         return minigameTaskService.updateMinigameTaskFromArea(
             courseId,
@@ -116,7 +116,7 @@ public class MinigameTaskController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug(
             "update task {} of dungeon {} from world {} of course {} with {}",
             taskIndex,

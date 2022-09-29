@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
-import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 
 @Tag(name = "Dungeon", description = "Get and update dungeons from worlds")
 @RestController
@@ -66,7 +66,7 @@ public class DungeonController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("update dungeon {} of world {} of course {} with {}", dungeonIndex, worldIndex, courseId, dungeonDTO);
         return dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex, dungeonDTO);
     }

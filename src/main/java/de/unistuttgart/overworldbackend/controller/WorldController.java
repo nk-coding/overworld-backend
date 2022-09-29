@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
-import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 
 @Tag(name = "World", description = "Get and update worlds from a course")
 @RestController
@@ -65,7 +65,7 @@ public class WorldController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("update world by index {} of course {} with {}", worldIndex, courseId, worldDTO);
         return worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
     }

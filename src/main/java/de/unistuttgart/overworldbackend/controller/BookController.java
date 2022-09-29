@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 
 @Tag(name = "Book", description = "Get and update books from areas")
 @RestController
@@ -33,7 +33,7 @@ public class BookController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("update book {} of world {} of course {}", bookIndex, worldIndex, courseId);
         return bookService.updateBookFromWorld(courseId, worldIndex, bookIndex, bookDTO);
     }
@@ -49,7 +49,7 @@ public class BookController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug(
             "update book {} of dungeon {} from world {} of course {} with {}",
             bookIndex,
