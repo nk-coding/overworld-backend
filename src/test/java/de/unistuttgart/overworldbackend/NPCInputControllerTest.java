@@ -211,6 +211,70 @@ class NPCInputControllerTest {
     }
 
     @Test
+    void submitNPCDataTwice() throws Exception {
+        final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+        playerNPCStatisticData.setUserId(initialPlayerStatistic.getUserId());
+        playerNPCStatisticData.setNpcId(initialNpcDTO.getId());
+        playerNPCStatisticData.setCompleted(false);
+
+        final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
+
+        final MvcResult result = mvc
+            .perform(
+                post(fullURL + "/submit-npc-pass")
+                    .cookie(cookie)
+                    .content(bodyValue)
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andReturn();
+
+        final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerNPCStatisticDTO.class
+        );
+        assertEquals(playerNPCStatisticData.isCompleted(), playerNPCStatisticDTO.isCompleted());
+
+        // check that action log was created
+        final PlayerNPCActionLog actionLog = playerNPCActionLogRepository
+            .findAll()
+            .stream()
+            .filter(log ->
+                log.getPlayerNPCStatistic().getPlayerStatistic().getId().equals(initialPlayerStatistic.getId())
+            )
+            .findAny()
+            .get();
+        assertNotNull(actionLog);
+        assertEquals(playerNPCStatisticData.getNpcId(), actionLog.getPlayerNPCStatistic().getNpc().getId());
+        assertEquals(
+            ReflectionTestUtils.getField(playerNPCStatisticService, "GAINED_KNOWLEDGE_PER_NPC"),
+            actionLog.getGainedKnowledge()
+        );
+
+        final PlayerNPCStatisticData playerNPCStatisticData2 = new PlayerNPCStatisticData();
+        playerNPCStatisticData2.setUserId(initialPlayerStatistic.getUserId());
+        playerNPCStatisticData2.setNpcId(initialNpcDTO.getId());
+        playerNPCStatisticData2.setCompleted(true);
+
+        final String bodyValue2 = objectMapper.writeValueAsString(playerNPCStatisticData2);
+
+        final MvcResult result2 = mvc
+            .perform(
+                post(fullURL + "/submit-npc-pass")
+                    .cookie(cookie)
+                    .content(bodyValue2)
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andReturn();
+        final PlayerNPCStatisticDTO playerNPCStatisticDTO2 = objectMapper.readValue(
+            result2.getResponse().getContentAsString(),
+            PlayerNPCStatisticDTO.class
+        );
+        assertEquals(playerNPCStatisticData2.isCompleted(), playerNPCStatisticDTO2.isCompleted());
+    }
+
+    @Test
     void submitNPCData_PlayerDoesNotExist_ThrowNotFound() throws Exception {
         final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
         playerNPCStatisticData.setUserId(UUID.randomUUID().toString());
