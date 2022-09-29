@@ -16,6 +16,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
-      - name: Run tests
-        run: mvn clean test -Dtest=CloneTest+CloneTestWithoutBackends
+      - name: Run clone tests
+        run: mvn clean test -Dtest=CloneTest
+        shell: bash
+      - name: Run clone tests without backends
+        run: mvn clean test -Dtest=CloneTestWithoutBackends
         shell: bash
