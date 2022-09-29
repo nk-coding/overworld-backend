@@ -1,13 +1,14 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 /**
  * Represents an area of the overworld map.
@@ -82,6 +83,26 @@ public class Area {
         this.staticName = staticName;
         this.topicName = topicName;
         this.active = active;
+        this.minigameTasks = minigameTasks;
+        this.npcs = npcs;
+        this.books = books;
+        this.index = index;
+    }
+
+    protected Area(
+            final String staticName,
+            final String topicName,
+            final boolean active,
+            final boolean configured,
+            final Set<MinigameTask> minigameTasks,
+            final Set<NPC> npcs,
+            final Set<Book> books,
+            final int index
+    ) {
+        this.staticName = staticName;
+        this.topicName = topicName;
+        this.active = active;
+        this.configured = configured;
         this.minigameTasks = minigameTasks;
         this.npcs = npcs;
         this.books = books;

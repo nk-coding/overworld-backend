@@ -1,14 +1,15 @@
 package de.unistuttgart.overworldbackend.data;
 
-import java.util.Objects;
-import java.util.Set;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A dungeon is an instance of an Area.
@@ -36,6 +37,19 @@ public class Dungeon extends Area {
         final int index
     ) {
         super(staticName, topicName, active, minigameTasks, npcs, books, index);
+    }
+
+    public Dungeon(
+            final String staticName,
+            final String topicName,
+            final boolean active,
+            final boolean configured,
+            final Set<MinigameTask> minigameTasks,
+            final Set<NPC> npcs,
+            final Set<Book> books,
+            final int index
+    ) {
+        super(staticName, topicName, active, configured, minigameTasks, npcs, books, index);
     }
 
     @Override
