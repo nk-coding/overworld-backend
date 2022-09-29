@@ -1,5 +1,7 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
+
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.CourseCloneDTO;
 import de.unistuttgart.overworldbackend.data.CourseDTO;
@@ -9,15 +11,12 @@ import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.List;
-
-import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 
 @Tag(name = "Course", description = "Modify course")
 @RestController

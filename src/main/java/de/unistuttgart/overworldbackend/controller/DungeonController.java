@@ -1,18 +1,17 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
+
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.DungeonDTO;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.service.DungeonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
-
-import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 
 @Tag(name = "Dungeon", description = "Get and update dungeons from worlds")
 @RestController

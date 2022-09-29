@@ -1,5 +1,7 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
+
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.BookDTO;
 import de.unistuttgart.overworldbackend.service.BookService;
@@ -8,8 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 
 @Tag(name = "Book", description = "Get and update books from areas")
 @RestController
