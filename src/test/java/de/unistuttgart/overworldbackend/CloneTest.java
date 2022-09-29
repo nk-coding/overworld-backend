@@ -78,7 +78,7 @@ public class CloneTest {
         )
         .waitingFor(
             "reverse-proxy",
-            Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(200)
+            Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(400)
         )
         .waitingFor(
             "reverse-proxy",
