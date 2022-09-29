@@ -6,19 +6,19 @@ import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.service.DungeonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+
+import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
 
 @Tag(name = "Dungeon", description = "Get and update dungeons from worlds")
 @RestController
 @Slf4j
 @RequestMapping("/courses/{courseId}/worlds/{worldIndex}/dungeons")
 public class DungeonController {
-
-    private static final List<String> writeAccess = List.of("lecturer");
 
     @Autowired
     JWTValidatorService jwtValidatorService;
@@ -66,7 +66,7 @@ public class DungeonController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug("update dungeon {} of world {} of course {} with {}", dungeonIndex, worldIndex, courseId, dungeonDTO);
         return dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex, dungeonDTO);
     }

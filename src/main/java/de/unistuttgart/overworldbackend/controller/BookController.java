@@ -5,18 +5,17 @@ import de.unistuttgart.overworldbackend.data.BookDTO;
 import de.unistuttgart.overworldbackend.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
 
 @Tag(name = "Book", description = "Get and update books from areas")
 @RestController
 @Slf4j
 @RequestMapping("/courses/{courseId}/worlds/{worldIndex}")
 public class BookController {
-
-    private static final List<String> writeAccess = List.of("lecturer");
 
     @Autowired
     JWTValidatorService jwtValidatorService;
@@ -34,7 +33,7 @@ public class BookController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug("update book {} of world {} of course {}", bookIndex, worldIndex, courseId);
         return bookService.updateBookFromWorld(courseId, worldIndex, bookIndex, bookDTO);
     }
@@ -50,7 +49,7 @@ public class BookController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug(
             "update book {} of dungeon {} from world {} of course {} with {}",
             bookIndex,

@@ -9,20 +9,21 @@ import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
 
 @Tag(name = "Course", description = "Modify course")
 @RestController
 @Slf4j
 @RequestMapping("/courses")
 public class CourseController {
-
-    private static final List<String> writeAccess = List.of("lecturer");
 
     @Autowired
     JWTValidatorService jwtValidatorService;
@@ -60,7 +61,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug("create course");
         return courseService.createCourse(course);
     }
@@ -73,7 +74,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug("update course {} with {}", id, courseDTO);
         return courseService.updateCourse(id, courseDTO);
     }
@@ -82,7 +83,7 @@ public class CourseController {
     @DeleteMapping("/{id}")
     public CourseDTO deleteCourse(@PathVariable final int id, @CookieValue("access_token") final String accessToken) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug("delete course {}", id);
         return courseService.deleteCourse(id);
     }
@@ -99,7 +100,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug("clone course {}", id);
         return courseService.cloneCourse(id, course, accessToken);
     }

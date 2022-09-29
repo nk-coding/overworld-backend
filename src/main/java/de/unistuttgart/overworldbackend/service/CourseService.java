@@ -18,17 +18,18 @@ import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.Crossword
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import feign.FeignException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -319,7 +320,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("bugfinder-backend not present")) {
-                    log.debug(e.getMessage());
+                    log.debug("Encountered Exception", e);
                     errorMessages.add("bugfinder-backend not present");
                     return new MinigameTask(Minigame.BUGFINDER, "", null, minigameTask.getIndex());
                 }
@@ -353,7 +354,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("crosswordpuzzle-backend not present")) {
-                    log.debug(e.getMessage());
+                    log.debug("Encountered Exception", e);
                     errorMessages.add("crosswordpuzzle-backend not present");
                     return new MinigameTask(Minigame.CROSSWORDPUZZLE, "", null, minigameTask.getIndex());
                 }
@@ -382,7 +383,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("finitequiz-backend not present")) {
-                    log.debug(e.getMessage());
+                    log.debug("Encountered Exception", e);
                     errorMessages.add("finitequiz-backend not present");
                     return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
                 }
@@ -416,7 +417,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("chickenshock-backend not present")) {
-                    log.debug(e.getMessage());
+                    log.debug("Encountered Exception", e);
                     errorMessages.add("chickenshock-backend not present");
                     return new MinigameTask(Minigame.CHICKENSHOCK, "", null, minigameTask.getIndex());
                 }

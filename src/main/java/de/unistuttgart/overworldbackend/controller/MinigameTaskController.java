@@ -5,20 +5,20 @@ import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import de.unistuttgart.overworldbackend.service.MinigameTaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+import java.util.Set;
+
+import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
 
 @Tag(name = "Minigame Task", description = "Get and update minigame tasks from areas (world or dungeons)")
 @RestController
 @Slf4j
 @RequestMapping("/courses/{courseId}/worlds/{worldIndex}")
 public class MinigameTaskController {
-
-    private static final List<String> writeAccess = List.of("lecturer");
 
     @Autowired
     JWTValidatorService jwtValidatorService;
@@ -94,7 +94,7 @@ public class MinigameTaskController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug("update task {} of world {} of course {} with {}", taskIndex, worldIndex, courseId, minigameTaskDTO);
         return minigameTaskService.updateMinigameTaskFromArea(
             courseId,
@@ -116,7 +116,7 @@ public class MinigameTaskController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug(
             "update task {} of dungeon {} from world {} of course {} with {}",
             taskIndex,

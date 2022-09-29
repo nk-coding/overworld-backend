@@ -7,19 +7,19 @@ import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import de.unistuttgart.overworldbackend.service.WorldService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+
+import static de.unistuttgart.overworldbackend.data.configuration.WRITE_ACCESS;
 
 @Tag(name = "World", description = "Get and update worlds from a course")
 @RestController
 @Slf4j
 @RequestMapping("/courses/{courseId}/worlds")
 public class WorldController {
-
-    private static final List<String> writeAccess = List.of("lecturer");
 
     @Autowired
     JWTValidatorService jwtValidatorService;
@@ -65,7 +65,7 @@ public class WorldController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, writeAccess);
+        jwtValidatorService.hasRolesOrThrow(accessToken, WRITE_ACCESS);
         log.debug("update world by index {} of course {} with {}", worldIndex, courseId, worldDTO);
         return worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
     }
