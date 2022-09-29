@@ -78,7 +78,7 @@ public class CloneTest {
         )
         .waitingFor(
             "reverse-proxy",
-            Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(200)
+            Wait.forHttp("/minigames/crosswordpuzzle/api/v1/configurations").forPort(80).forStatusCode(400)
         )
         .waitingFor(
             "reverse-proxy",
@@ -306,6 +306,12 @@ public class CloneTest {
             return;
         }
         if (minigameTask1.getGame() == null) {
+            return;
+        }
+        if (minigameTask1.getConfigurationId() == null) {
+            return;
+        }
+        if (minigameTask2.getConfigurationId() == null) {
             return;
         }
         switch (minigameTask1.getGame()) {

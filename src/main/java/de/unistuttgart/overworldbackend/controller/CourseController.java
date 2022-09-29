@@ -1,5 +1,7 @@
 package de.unistuttgart.overworldbackend.controller;
 
+import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
+
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.CourseCloneDTO;
 import de.unistuttgart.overworldbackend.data.CourseDTO;
@@ -58,7 +60,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("create course");
         return courseService.createCourse(course);
     }
@@ -71,7 +73,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("update course {} with {}", id, courseDTO);
         return courseService.updateCourse(id, courseDTO);
     }
@@ -80,7 +82,7 @@ public class CourseController {
     @DeleteMapping("/{id}")
     public CourseDTO deleteCourse(@PathVariable final int id, @CookieValue("access_token") final String accessToken) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("delete course {}", id);
         return courseService.deleteCourse(id);
     }
@@ -97,7 +99,7 @@ public class CourseController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        jwtValidatorService.hasRolesOrThrow(accessToken, List.of("lecturer"));
+        jwtValidatorService.hasRolesOrThrow(accessToken, LECTURER_ROLE);
         log.debug("clone course {}", id);
         return courseService.cloneCourse(id, course, accessToken);
     }

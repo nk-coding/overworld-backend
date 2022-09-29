@@ -87,6 +87,8 @@ class PlayerStatisticControllerTest {
     private World initialWorld;
     private WorldDTO initialWorldDTO;
 
+    private World initialWorld2;
+
     private Dungeon initialDungeon;
     private DungeonDTO initialDungeonDTO;
 
@@ -109,24 +111,37 @@ class PlayerStatisticControllerTest {
         final List<Dungeon> dungeons = new ArrayList<>();
         dungeons.add(dungeon);
 
-        final World world = new World();
-        world.setIndex(1);
-        world.setStaticName("Winter Wonderland");
-        world.setTopicName("UML Winter");
-        world.setActive(true);
-        world.setMinigameTasks(Set.of());
-        world.setNpcs(Set.of());
-        world.setDungeons(dungeons);
-        world.setBooks(Set.of());
+        final World world1 = new World();
+        world1.setIndex(1);
+        world1.setStaticName("Winter Wonderland");
+        world1.setTopicName("UML Winter");
+        world1.setActive(true);
+        world1.setMinigameTasks(Set.of());
+        world1.setNpcs(Set.of());
+        world1.setDungeons(dungeons);
+        world1.setBooks(Set.of());
         final List<World> worlds = new ArrayList<>();
-        worlds.add(world);
+        worlds.add(world1);
+
+        final World world2 = new World();
+        world2.setIndex(2);
+        world2.setStaticName("Blooming Savanna");
+        world2.setTopicName("UML Summer");
+        world2.setActive(true);
+        world2.setMinigameTasks(Set.of());
+        world2.setNpcs(Set.of());
+        world2.setDungeons(List.of());
+        world2.setBooks(Set.of());
+        worlds.add(world2);
 
         final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
         initialCourse = courseRepository.save(course);
         initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
-        initialWorld = initialCourse.getWorlds().stream().findFirst().get();
+        initialWorld = initialCourse.getWorlds().stream().filter(world -> world.getIndex() == 1).findFirst().get();
         initialWorldDTO = worldMapper.worldToWorldDTO(initialWorld);
+
+        initialWorld2 = initialCourse.getWorlds().stream().filter(world -> world.getIndex() == 2).findFirst().get();
 
         initialDungeon = initialWorld.getDungeons().stream().findFirst().get();
         initialDungeonDTO = dungeonMapper.dungeonToDungeonDTO(initialDungeon);
@@ -230,6 +245,37 @@ class PlayerStatisticControllerTest {
             initialPlayerStatistic
         );
         final AreaLocationDTO newAreaLocation = new AreaLocationDTO(initialWorld.getIndex(), initialDungeon.getIndex());
+        updatedPlayerStatistic.setCurrentArea(newAreaLocation);
+
+        final String bodyValue = objectMapper.writeValueAsString(updatedPlayerStatistic);
+
+        final MvcResult result = mvc
+            .perform(
+                put(fullURL + "/" + initialPlayerStatisticDTO.getUserId())
+                    .cookie(cookie)
+                    .content(bodyValue)
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andReturn();
+
+        final PlayerStatisticDTO updatedPlayerStatisticDTOResult = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerStatisticDTO.class
+        );
+
+        assertEquals(newAreaLocation, updatedPlayerStatisticDTOResult.getCurrentArea());
+        assertEquals(initialPlayerStatistic.getId(), updatedPlayerStatisticDTOResult.getId());
+        assertEquals(initialPlayerStatistic.getUserId(), updatedPlayerStatisticDTOResult.getUserId());
+        assertEquals(initialPlayerStatistic.getUsername(), updatedPlayerStatisticDTOResult.getUsername());
+    }
+
+    @Test
+    void updatePlayerStatisticWorld() throws Exception {
+        final PlayerStatisticDTO updatedPlayerStatistic = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(
+            initialPlayerStatistic
+        );
+        final AreaLocationDTO newAreaLocation = new AreaLocationDTO(initialWorld2.getIndex(), null);
         updatedPlayerStatistic.setCurrentArea(newAreaLocation);
 
         final String bodyValue = objectMapper.writeValueAsString(updatedPlayerStatistic);

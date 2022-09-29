@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Nullable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
+@Slf4j
 public class CourseService {
 
     private static final boolean DEFAULT_IS_ACTIVE = true;
@@ -280,24 +281,19 @@ public class CourseService {
             case NONE:
                 return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
             case CHICKENSHOCK:
-                final MinigameTask CHICKENSHOCK = cloneChickenshock(minigameTask, accessToken);
-                if (CHICKENSHOCK != null) return CHICKENSHOCK;
+                return cloneChickenshock(minigameTask, accessToken);
             case FINITEQUIZ:
-                final MinigameTask FINITEQUIZ = cloneFinitequiz(minigameTask, accessToken);
-                if (FINITEQUIZ != null) return FINITEQUIZ;
+                return cloneFinitequiz(minigameTask, accessToken);
             case CROSSWORDPUZZLE:
-                final MinigameTask CROSSWORDPUZZLE = cloneCrosswordpuzzle(minigameTask, accessToken);
-                if (CROSSWORDPUZZLE != null) return CROSSWORDPUZZLE;
+                return cloneCrosswordpuzzle(minigameTask, accessToken);
             case BUGFINDER:
-                final MinigameTask BUGFINDER = cloneBugfinder(minigameTask, accessToken);
-                if (BUGFINDER != null) return BUGFINDER;
+                return cloneBugfinder(minigameTask, accessToken);
             default:
                 errorMessages.add(String.format("minigame %s doesn't exist", minigameTask.getGame()));
                 return new MinigameTask(Minigame.NONE, "", null, minigameTask.getIndex());
         }
     }
 
-    @Nullable
     private MinigameTask cloneBugfinder(final MinigameTask minigameTask, final String accessToken) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(Minigame.BUGFINDER, minigameTask.getDescription(), null, minigameTask.getIndex());
@@ -322,8 +318,8 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                if (!errorMessages.contains("finitequiz-backend not present")) {
-                    e.printStackTrace();
+                if (!errorMessages.contains("bugfinder-backend not present")) {
+                    log.debug("Encountered Exception", e);
                     errorMessages.add("bugfinder-backend not present");
                     return new MinigameTask(Minigame.BUGFINDER, "", null, minigameTask.getIndex());
                 }
@@ -332,7 +328,6 @@ public class CourseService {
         return null;
     }
 
-    @Nullable
     private MinigameTask cloneCrosswordpuzzle(final MinigameTask minigameTask, final String accessToken) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(
@@ -357,8 +352,8 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                if (!errorMessages.contains("finitequiz-backend not present")) {
-                    e.printStackTrace();
+                if (!errorMessages.contains("crosswordpuzzle-backend not present")) {
+                    log.debug("Encountered Exception", e);
                     errorMessages.add("crosswordpuzzle-backend not present");
                     return new MinigameTask(Minigame.CROSSWORDPUZZLE, "", null, minigameTask.getIndex());
                 }
@@ -367,7 +362,6 @@ public class CourseService {
         return null;
     }
 
-    @Nullable
     private MinigameTask cloneFinitequiz(final MinigameTask minigameTask, final String accessToken) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(Minigame.FINITEQUIZ, minigameTask.getDescription(), null, minigameTask.getIndex());
@@ -388,7 +382,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("finitequiz-backend not present")) {
-                    e.printStackTrace();
+                    log.debug("Encountered Exception", e);
                     errorMessages.add("finitequiz-backend not present");
                     return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
                 }
@@ -397,7 +391,6 @@ public class CourseService {
         return null;
     }
 
-    @Nullable
     private MinigameTask cloneChickenshock(final MinigameTask minigameTask, final String accessToken) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(
@@ -423,7 +416,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("chickenshock-backend not present")) {
-                    e.printStackTrace();
+                    log.debug("Encountered Exception", e);
                     errorMessages.add("chickenshock-backend not present");
                     return new MinigameTask(Minigame.CHICKENSHOCK, "", null, minigameTask.getIndex());
                 }
