@@ -308,6 +308,12 @@ public class CloneTest {
         if (minigameTask1.getGame() == null) {
             return;
         }
+        if (minigameTask1.getConfigurationId() == null) {
+            return;
+        }
+        if (minigameTask2.getConfigurationId() == null) {
+            return;
+        }
         switch (minigameTask1.getGame()) {
             case CHICKENSHOCK -> {
                 final ChickenshockConfiguration config1 = chickenshockClient.getConfiguration(

@@ -1,12 +1,5 @@
 package de.unistuttgart.overworldbackend;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
@@ -18,9 +11,6 @@ import de.unistuttgart.overworldbackend.repositories.PlayerNPCActionLogRepositor
 import de.unistuttgart.overworldbackend.repositories.PlayerNPCStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
-import java.util.*;
-import javax.servlet.http.Cookie;
-import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +26,17 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import javax.servlet.http.Cookie;
+import javax.transaction.Transactional;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @Transactional
@@ -208,6 +209,70 @@ class NPCInputControllerTest {
             ReflectionTestUtils.getField(playerNPCStatisticService, "GAINED_KNOWLEDGE_PER_NPC"),
             actionLog.getGainedKnowledge()
         );
+    }
+
+    @Test
+    void submitNPCDataTwice() throws Exception {
+        final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
+        playerNPCStatisticData.setUserId(initialPlayerStatistic.getUserId());
+        playerNPCStatisticData.setNpcId(initialNpcDTO.getId());
+        playerNPCStatisticData.setCompleted(false);
+
+        final String bodyValue = objectMapper.writeValueAsString(playerNPCStatisticData);
+
+        final MvcResult result = mvc
+                .perform(
+                        post(fullURL + "/submit-npc-pass")
+                                .cookie(cookie)
+                                .content(bodyValue)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                PlayerNPCStatisticDTO.class
+        );
+        assertEquals(playerNPCStatisticData.isCompleted(), playerNPCStatisticDTO.isCompleted());
+
+        // check that action log was created
+        final PlayerNPCActionLog actionLog = playerNPCActionLogRepository
+                .findAll()
+                .stream()
+                .filter(log ->
+                        log.getPlayerNPCStatistic().getPlayerStatistic().getId().equals(initialPlayerStatistic.getId())
+                )
+                .findAny()
+                .get();
+        assertNotNull(actionLog);
+        assertEquals(playerNPCStatisticData.getNpcId(), actionLog.getPlayerNPCStatistic().getNpc().getId());
+        assertEquals(
+                ReflectionTestUtils.getField(playerNPCStatisticService, "GAINED_KNOWLEDGE_PER_NPC"),
+                actionLog.getGainedKnowledge()
+        );
+
+        final PlayerNPCStatisticData playerNPCStatisticData2 = new PlayerNPCStatisticData();
+        playerNPCStatisticData2.setUserId(initialPlayerStatistic.getUserId());
+        playerNPCStatisticData2.setNpcId(initialNpcDTO.getId());
+        playerNPCStatisticData2.setCompleted(true);
+
+        final String bodyValue2 = objectMapper.writeValueAsString(playerNPCStatisticData2);
+
+        final MvcResult result2 = mvc
+                .perform(
+                        post(fullURL + "/submit-npc-pass")
+                                .cookie(cookie)
+                                .content(bodyValue2)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+        final PlayerNPCStatisticDTO playerNPCStatisticDTO2 = objectMapper.readValue(
+                result2.getResponse().getContentAsString(),
+                PlayerNPCStatisticDTO.class
+        );
+        assertEquals(playerNPCStatisticData2.isCompleted(), playerNPCStatisticDTO2.isCompleted());
     }
 
     @Test
