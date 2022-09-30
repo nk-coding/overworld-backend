@@ -37,6 +37,8 @@ public class CourseService {
 
     private static final boolean DEFAULT_IS_ACTIVE = true;
 
+    private static final String CLONE_ERROR_MESSAGE = "Encountered Exception";
+
     CourseConfig configCourse;
 
     @Autowired
@@ -321,7 +323,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("bugfinder-backend not present")) {
-                    log.debug("Encountered Exception", e);
+                    log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("bugfinder-backend not present");
                     return new MinigameTask(Minigame.BUGFINDER, "", null, minigameTask.getIndex());
                 }
@@ -355,7 +357,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("crosswordpuzzle-backend not present")) {
-                    log.debug("Encountered Exception", e);
+                    log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("crosswordpuzzle-backend not present");
                     return new MinigameTask(Minigame.CROSSWORDPUZZLE, "", null, minigameTask.getIndex());
                 }
@@ -384,7 +386,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("finitequiz-backend not present")) {
-                    log.debug("Encountered Exception", e);
+                    log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("finitequiz-backend not present");
                     return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
                 }
@@ -418,7 +420,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("chickenshock-backend not present")) {
-                    log.debug("Encountered Exception", e);
+                    log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("chickenshock-backend not present");
                     return new MinigameTask(Minigame.CHICKENSHOCK, "", null, minigameTask.getIndex());
                 }
