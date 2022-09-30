@@ -150,7 +150,6 @@ services:
       - OVERWORLD_URL=http://overworld-backend/api/v1
       - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
-      - OVERWORLD_URL=http://overworld-backend/api/v1
 
   finitequiz-backend:
     container_name: finitequiz-backend

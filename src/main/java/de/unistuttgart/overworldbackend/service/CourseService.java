@@ -233,7 +233,7 @@ public class CourseService {
             oldWorld.getStaticName(),
             oldWorld.getTopicName(),
             false,
-            oldWorld.getMinigameTasks().stream().findAny().isPresent(),
+            oldWorld.getMinigameTasks().stream().anyMatch(minigame -> Minigame.isConfigured(minigame.getGame())),
             oldWorld
                 .getMinigameTasks()
                 .parallelStream()
@@ -256,7 +256,7 @@ public class CourseService {
             oldDungeon.getStaticName(),
             oldDungeon.getTopicName(),
             false,
-            oldDungeon.getMinigameTasks().stream().findAny().isPresent(),
+            oldDungeon.getMinigameTasks().stream().anyMatch(minigame -> Minigame.isConfigured(minigame.getGame())),
             oldDungeon
                 .getMinigameTasks()
                 .parallelStream()
