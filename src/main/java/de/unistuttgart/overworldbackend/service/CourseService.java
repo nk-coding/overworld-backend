@@ -229,6 +229,14 @@ public class CourseService {
         );
     }
 
+    /**
+     * Clones a world
+     *
+     * Configured needs to calculated because minigames can become not configured if the minigame-backend isn't available.
+     * @param oldWorld world to be cloned
+     * @param accessToken access Token in the cookie
+     * @return cloned world
+     */
     private World cloneWorld(final World oldWorld, final String accessToken) {
         final World world = new World(
             oldWorld.getStaticName(),
@@ -256,6 +264,14 @@ public class CourseService {
         return world;
     }
 
+    /**
+     * Clones a dungeon
+     *
+     * Configured needs to calculated because minigames can become not configured if the minigame-backend isn't available.
+     * @param oldDungeon dungeon to be cloned
+     * @param accessToken access Token in the cookie
+     * @return cloned dungeon
+     */
     private Dungeon cloneDungeon(final Dungeon oldDungeon, final String accessToken) {
         final Dungeon dungeon = new Dungeon(
             oldDungeon.getStaticName(),
