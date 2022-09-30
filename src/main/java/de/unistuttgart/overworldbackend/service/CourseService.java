@@ -230,7 +230,7 @@ public class CourseService {
     }
 
     private World cloneWorld(final World oldWorld, final String accessToken) {
-        return new World(
+        final World world = new World(
             oldWorld.getStaticName(),
             oldWorld.getTopicName(),
             false,
@@ -250,14 +250,17 @@ public class CourseService {
                 .collect(Collectors.toCollection(ArrayList::new)),
             oldWorld.getIndex()
         );
+        world.setConfigured(
+            world.getMinigameTasks().stream().anyMatch((minigameTask -> Minigame.isConfigured(minigameTask.getGame())))
+        );
+        return world;
     }
 
     private Dungeon cloneDungeon(final Dungeon oldDungeon, final String accessToken) {
-        return new Dungeon(
+        final Dungeon dungeon = new Dungeon(
             oldDungeon.getStaticName(),
             oldDungeon.getTopicName(),
             false,
-            oldDungeon.getMinigameTasks().stream().anyMatch(minigame -> Minigame.isConfigured(minigame.getGame())),
             oldDungeon
                 .getMinigameTasks()
                 .parallelStream()
@@ -267,6 +270,13 @@ public class CourseService {
             oldDungeon.getBooks().parallelStream().map(this::cloneBook).collect(Collectors.toCollection(HashSet::new)),
             oldDungeon.getIndex()
         );
+        dungeon.setConfigured(
+            dungeon
+                .getMinigameTasks()
+                .stream()
+                .anyMatch((minigameTask -> Minigame.isConfigured(minigameTask.getGame())))
+        );
+        return dungeon;
     }
 
     private NPC cloneNPC(final NPC npc) {
