@@ -46,7 +46,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureMockMvc
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CloneTestWithoutBackends {
+public class CloneWithoutBackendsTest {
 
     @Container
     public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
@@ -86,6 +86,10 @@ public class CloneTestWithoutBackends {
                     compose.getServicePort("overworld-db", 5432)
                 )
         );
+        registry.add("chickenshock.url", () -> "http://s/minigame/chickenshock/api/v1");
+        registry.add("finitequiz.url", () -> "http://s/minigame/chickenshock/api/v1");
+        registry.add("crosswordpuzzle.url", () -> "http://s/minigame/chickenshock/api/v1");
+        registry.add("bugfinder.url", () -> "http://s/minigame/chickenshock/api/v1");
     }
 
     @Autowired

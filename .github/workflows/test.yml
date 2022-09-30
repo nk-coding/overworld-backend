@@ -17,6 +17,6 @@ jobs:
         with:
           java-version: 17
       - name: Run tests
-        run: mvn clean test -Dtest="!CloneTest,!CloneTestWithoutBackends"
+        run: mvn clean test -Dtest="!CloneTest,!CloneWithoutBackendsTest"
         shell: bash
 

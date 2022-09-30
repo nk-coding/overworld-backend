@@ -88,6 +88,26 @@ public class Area {
         this.index = index;
     }
 
+    protected Area(
+        final String staticName,
+        final String topicName,
+        final boolean active,
+        final boolean configured,
+        final Set<MinigameTask> minigameTasks,
+        final Set<NPC> npcs,
+        final Set<Book> books,
+        final int index
+    ) {
+        this.staticName = staticName;
+        this.topicName = topicName;
+        this.active = active;
+        this.configured = configured;
+        this.minigameTasks = minigameTasks;
+        this.npcs = npcs;
+        this.books = books;
+        this.index = index;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

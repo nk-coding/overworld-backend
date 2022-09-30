@@ -38,6 +38,19 @@ public class Dungeon extends Area {
         super(staticName, topicName, active, minigameTasks, npcs, books, index);
     }
 
+    public Dungeon(
+        final String staticName,
+        final String topicName,
+        final boolean active,
+        final boolean configured,
+        final Set<MinigameTask> minigameTasks,
+        final Set<NPC> npcs,
+        final Set<Book> books,
+        final int index
+    ) {
+        super(staticName, topicName, active, configured, minigameTasks, npcs, books, index);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

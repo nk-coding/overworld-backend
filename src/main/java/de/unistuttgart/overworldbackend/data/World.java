@@ -40,6 +40,21 @@ public class World extends Area {
         this.dungeons = dungeons;
     }
 
+    public World(
+        final String staticName,
+        final String topicName,
+        final boolean active,
+        final boolean configured,
+        final Set<MinigameTask> minigameTasks,
+        final Set<NPC> npcs,
+        final Set<Book> books,
+        final List<Dungeon> dungeons,
+        final int index
+    ) {
+        super(staticName, topicName, active, configured, minigameTasks, npcs, books, index);
+        this.dungeons = dungeons;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

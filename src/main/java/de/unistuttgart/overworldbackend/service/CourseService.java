@@ -37,6 +37,8 @@ public class CourseService {
 
     private static final boolean DEFAULT_IS_ACTIVE = true;
 
+    private static final String CLONE_ERROR_MESSAGE = "Encountered Exception";
+
     CourseConfig configCourse;
 
     @Autowired
@@ -227,11 +229,20 @@ public class CourseService {
         );
     }
 
+    /**
+     * Clones a world
+     *
+     * Configured needs to calculated because minigames can become not configured if the minigame-backend isn't available.
+     * @param oldWorld world to be cloned
+     * @param accessToken access Token in the cookie
+     * @return cloned world
+     */
     private World cloneWorld(final World oldWorld, final String accessToken) {
-        return new World(
+        final World world = new World(
             oldWorld.getStaticName(),
             oldWorld.getTopicName(),
             false,
+            oldWorld.getMinigameTasks().stream().anyMatch(minigame -> Minigame.isConfigured(minigame.getGame())),
             oldWorld
                 .getMinigameTasks()
                 .parallelStream()
@@ -247,10 +258,22 @@ public class CourseService {
                 .collect(Collectors.toCollection(ArrayList::new)),
             oldWorld.getIndex()
         );
+        world.setConfigured(
+            world.getMinigameTasks().stream().anyMatch((minigameTask -> Minigame.isConfigured(minigameTask.getGame())))
+        );
+        return world;
     }
 
+    /**
+     * Clones a dungeon
+     *
+     * Configured needs to calculated because minigames can become not configured if the minigame-backend isn't available.
+     * @param oldDungeon dungeon to be cloned
+     * @param accessToken access Token in the cookie
+     * @return cloned dungeon
+     */
     private Dungeon cloneDungeon(final Dungeon oldDungeon, final String accessToken) {
-        return new Dungeon(
+        final Dungeon dungeon = new Dungeon(
             oldDungeon.getStaticName(),
             oldDungeon.getTopicName(),
             false,
@@ -263,6 +286,13 @@ public class CourseService {
             oldDungeon.getBooks().parallelStream().map(this::cloneBook).collect(Collectors.toCollection(HashSet::new)),
             oldDungeon.getIndex()
         );
+        dungeon.setConfigured(
+            dungeon
+                .getMinigameTasks()
+                .stream()
+                .anyMatch((minigameTask -> Minigame.isConfigured(minigameTask.getGame())))
+        );
+        return dungeon;
     }
 
     private NPC cloneNPC(final NPC npc) {
@@ -319,7 +349,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("bugfinder-backend not present")) {
-                    log.debug("Encountered Exception", e);
+                    log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("bugfinder-backend not present");
                     return new MinigameTask(Minigame.BUGFINDER, "", null, minigameTask.getIndex());
                 }
@@ -353,7 +383,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("crosswordpuzzle-backend not present")) {
-                    log.debug("Encountered Exception", e);
+                    log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("crosswordpuzzle-backend not present");
                     return new MinigameTask(Minigame.CROSSWORDPUZZLE, "", null, minigameTask.getIndex());
                 }
@@ -382,7 +412,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("finitequiz-backend not present")) {
-                    log.debug("Encountered Exception", e);
+                    log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("finitequiz-backend not present");
                     return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
                 }
@@ -416,7 +446,7 @@ public class CourseService {
                 );
             } catch (final FeignException e) {
                 if (!errorMessages.contains("chickenshock-backend not present")) {
-                    log.debug("Encountered Exception", e);
+                    log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("chickenshock-backend not present");
                     return new MinigameTask(Minigame.CHICKENSHOCK, "", null, minigameTask.getIndex());
                 }
