@@ -5,6 +5,7 @@ import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
+import de.unistuttgart.overworldbackend.repositories.AreaBaseRepository;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import java.util.Optional;
 import java.util.Set;
@@ -22,16 +23,13 @@ public class MinigameTaskService {
     private MinigameTaskRepository minigameTaskRepository;
 
     @Autowired
+    private AreaService areaService;
+
+    @Autowired
     private WorldService worldService;
 
     @Autowired
-    private WorldMapper worldMapper;
-
-    @Autowired
     private DungeonService dungeonService;
-
-    @Autowired
-    private DungeonMapper dungeonMapper;
 
     @Autowired
     private MinigameTaskMapper minigameTaskMapper;
@@ -52,44 +50,23 @@ public class MinigameTaskService {
         final Optional<Integer> dungeonIndex,
         final int taskIndex
     ) {
-        if (dungeonIndex.isEmpty()) {
-            return worldService
-                .getWorldByIndexFromCourse(courseId, worldIndex)
-                .getMinigameTasks()
-                .parallelStream()
-                .filter(minigameTask -> minigameTask.getIndex() == taskIndex)
-                .findAny()
-                .orElseThrow(() ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        String.format(
-                            "Task not found with index %s in course %s in world %s.",
-                            taskIndex,
-                            courseId,
-                            worldIndex
-                        )
+        return areaService
+            .getAreaFromIndex(courseId, worldIndex, dungeonIndex)
+            .getMinigameTasks()
+            .parallelStream()
+            .filter(minigameTask -> minigameTask.getIndex() == taskIndex)
+            .findAny()
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    String.format(
+                        "Task not found with index %s in course %s in world %s.",
+                        taskIndex,
+                        courseId,
+                        worldIndex
                     )
-                );
-        } else {
-            return dungeonService
-                .getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex.get())
-                .getMinigameTasks()
-                .parallelStream()
-                .filter(minigameTask -> minigameTask.getIndex() == taskIndex)
-                .findAny()
-                .orElseThrow(() ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        String.format(
-                            "Task not found with index %s in course %s in world %s in dungeon %s.",
-                            taskIndex,
-                            courseId,
-                            worldIndex,
-                            dungeonIndex.get()
-                        )
-                    )
-                );
-        }
+                )
+            );
     }
 
     /**
@@ -196,24 +173,9 @@ public class MinigameTaskService {
      * @param dungeonIndex the index of the dungeon the minigame is in
      */
     private void minigameAdded(final int courseId, final int worldIndex, final Optional<Integer> dungeonIndex) {
-        if (dungeonIndex.isEmpty()) {
-            final World world = worldService.getWorldByIndexFromCourse(courseId, worldIndex);
-            if (!world.isConfigured()) {
-                world.setConfigured(true);
-                final WorldDTO worldDTO = worldMapper.worldToWorldDTO(world);
-                worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
-            }
-        } else {
-            final Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(
-                courseId,
-                worldIndex,
-                dungeonIndex.get()
-            );
-            if (!dungeon.isConfigured()) {
-                dungeon.setConfigured(true);
-                final DungeonDTO dungeonDTO = dungeonMapper.dungeonToDungeonDTO(dungeon);
-                dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
-            }
+        final Area area = areaService.getAreaFromIndex(courseId, worldIndex, dungeonIndex);
+        if (!area.isConfigured()) {
+            area.setConfigured(true);
         }
     }
 
@@ -224,29 +186,11 @@ public class MinigameTaskService {
      * @param dungeonIndex the index of the dungeon the minigame is in
      */
     private void minigameRemoved(final int courseId, final int worldIndex, final Optional<Integer> dungeonIndex) {
-        final Set<MinigameTask> minigames;
-        if (dungeonIndex.isEmpty()) {
-            final World world = worldService.getWorldByIndexFromCourse(courseId, worldIndex);
-            minigames = world.getMinigameTasks();
-            final int amountOfConfiguredMinigames = getAmountOfConfiguredMinigames(minigames);
-            if (amountOfConfiguredMinigames <= 0) {
-                world.setConfigured(false);
-                final WorldDTO worldDTO = worldMapper.worldToWorldDTO(world);
-                worldService.updateWorldFromCourse(courseId, worldIndex, worldDTO);
-            }
-        } else {
-            final Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(
-                courseId,
-                worldIndex,
-                dungeonIndex.get()
-            );
-            minigames = dungeon.getMinigameTasks();
-            final int amountOfConfiguredMinigames = getAmountOfConfiguredMinigames(minigames);
-            if (amountOfConfiguredMinigames <= 0) {
-                dungeon.setConfigured(false);
-                final DungeonDTO dungeonDTO = dungeonMapper.dungeonToDungeonDTO(dungeon);
-                dungeonService.updateDungeonFromCourse(courseId, worldIndex, dungeonIndex.get(), dungeonDTO);
-            }
+        final Area area = areaService.getAreaFromIndex(courseId, worldIndex, dungeonIndex);
+        final Set<MinigameTask> minigames = area.getMinigameTasks();
+        final int amountOfConfiguredMinigames = getAmountOfConfiguredMinigames(minigames);
+        if (amountOfConfiguredMinigames <= 0) {
+            area.setConfigured(false);
         }
     }
 
