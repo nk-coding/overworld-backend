@@ -169,7 +169,7 @@ public class MinigameTaskService {
 
     /**
      * If a minigame is added, the configured flag of the area is set
-     * @param courseId the if of the course the minigame is in
+     * @param courseId the id of the course the minigame is in
      * @param worldIndex the index of the world the minigame is in
      * @param dungeonIndex the index of the dungeon the minigame is in
      */
@@ -182,7 +182,7 @@ public class MinigameTaskService {
 
     /**
      * If a minigame is removed, it is checked whether the configured flag of the area needs to be changed
-     * @param courseId the if of the course the minigame is in
+     * @param courseId the id of the course the minigame is in
      * @param worldIndex the index of the world the minigame is in
      * @param dungeonIndex the index of the dungeon the minigame is in
      */
