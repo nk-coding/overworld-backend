@@ -70,7 +70,7 @@ public class MinigameTaskService {
     }
 
     /**
-     * Get a list of minigame tasks of a course and an area
+     * Get a list of minigame tasks of a course and a world
      *
      * @throws ResponseStatusException (404) if course or area with its id do not exist
      * @param courseId the id of the course the minigame tasks should be part of
@@ -97,8 +97,9 @@ public class MinigameTaskService {
         final int worldIndex,
         final int dungeonIndex
     ) {
-        final Dungeon dungeon = dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex);
-        return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(dungeon.getMinigameTasks());
+        return minigameTaskMapper.minigameTasksToMinigameTaskDTOs(
+            dungeonService.getDungeonByIndexFromCourse(courseId, worldIndex, dungeonIndex).getMinigameTasks()
+        );
     }
 
     /**
