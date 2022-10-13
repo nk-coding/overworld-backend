@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class MinigameTaskController {
 
     @Autowired
-    JWTValidatorService jwtValidatorService;
+    private JWTValidatorService jwtValidatorService;
 
     @Autowired
     private MinigameTaskService minigameTaskService;
