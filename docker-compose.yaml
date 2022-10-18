@@ -1,8 +1,29 @@
+# Docker-compose file for development of the overworld-backend.
+# The Gamify-IT project consists of multiple microservices.
+# This docker-compose deployment starts all databases and services needed for manual testing of the overworld-backend.
+#
+# >> In this file, the overworld-backend is started using its Dockerfile.
+#
+# Docker-compose documentation for developers:
+#   https://gamifyit-docs.readthedocs.io/en/latest/dev-manuals/languages/docker/docker-compose.html
+#
+# Environment variables and options of the different Gamify-IT services:
+#   https://gamifyit-docs.readthedocs.io/en/latest/install-manuals/index.html
+#
+# Configuration options for Keycloak:
+#   https://www.keycloak.org/server/all-config
+
 version: "3.7"
 
 services:
 
   # --- databases ---
+  # The databases are used to store the data of the different Gamify-IT services.
+  # They are non-persistent, meaning that they always contain a clean set of data from our test data.
+  # To reset the databases, simply remove the containers and restart the docker-compose file.
+
+  # The setup container fills the databases with the test data.
+  # The available datasets are stored here: https://github.com/gamify-it/test-data
   setup:
     container_name: setup
     image: ghcr.io/gamify-it/test-data:latest
@@ -34,6 +55,7 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   # --- backends ---
+  # These backend services contain the logic of the Gamify-IT services.
   keycloak:
     container_name: keycloak
     expose:
@@ -55,6 +77,9 @@ services:
       KC_HTTP_RELATIVE_PATH: /keycloak
       KC_HTTP_PORT: 80
 
+  # The overworld backend is the backend that we are currently developing.
+  # Note that this container is NOT pulled as a pre-built image, but instead contains your local code.
+  # When you change the code, you need to rebuild and restart the container.
   overworld-backend:
     container_name:   overworld-backend
     build: .
@@ -71,6 +96,8 @@ services:
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   # --- frontends ---
+  # These frontend services contain the user interface of the Gamify-IT services.
+  # They are pre-built and pulled from the Gamify-IT Docker registry.
   landing-page:
     container_name: landing-page
     image: ghcr.io/gamify-it/landing-page:main
@@ -88,6 +115,9 @@ services:
       - "80"
 
   # --- reverse proxy ---
+  # The reverse proxy is used to route the requests to the different services.
+  # None of the services are exposed to the outside world, but instead this reverse proxy is.
+  # When started, you can access it with your browser via: http://localhost
   reverse-proxy:
     container_name: reverse-proxy
     image: nginx
