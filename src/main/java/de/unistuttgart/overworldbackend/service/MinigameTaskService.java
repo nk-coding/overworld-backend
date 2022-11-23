@@ -60,10 +60,11 @@ public class MinigameTaskService {
                 new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     String.format(
-                        "Task not found with index %s in course %s in world %s.",
+                        "Task not found with index %s in course %s in world %s%s.",
                         taskIndex,
                         courseId,
-                        worldIndex
+                        worldIndex,
+                        dungeonIndex.map(index -> " and dungeon " + index).orElse("")
                     )
                 )
             );
