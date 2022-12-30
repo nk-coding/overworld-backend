@@ -29,7 +29,12 @@ public class AchievementStatisticService {
      * @return a list of achievement statistics for the given player
      */
     public List<AchievementStatistic> getAchievementStatisticsFromPlayer(final String playerId) {
-        return achievementStatisticRepository.findAllByPlayerUserId(playerId);
+        return playerRepository
+            .findById(playerId)
+            .orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Player with id " + playerId + " does not exist")
+            )
+            .getAchievementStatistics();
     }
 
     /**

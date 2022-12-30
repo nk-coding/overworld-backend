@@ -13,6 +13,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,7 @@ public class AchievementService {
     @Autowired
     private AchievementStatisticRepository achievementStatisticRepository;
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void init() {
         final Achievement achievement1 = new Achievement(
             AchievementTitle.GO_FOR_A_WALK,
@@ -52,11 +54,7 @@ public class AchievementService {
 
         final List<Achievement> achievements = achievementRepository.findAll();
 
-        /* Not working yet, achievement statistics is always empty /:
-
         for (final Player player : playerRepository.findAll()) {
-            log.info("PLAYER " + player.getUserId());
-            log.info(player.getAchievementStatistics().toString());
             // add statistic for achievement if not exists
             for (final Achievement achievement : achievements) {
                 if (
@@ -70,24 +68,22 @@ public class AchievementService {
                                 .equals(achievement.getAchievementTitle())
                         )
                 ) {
-                    log.info(
-                        "Create new achievement for " + player.getUserId() + " ach " + achievement.getAchievementTitle()
-                    );
                     player.getAchievementStatistics().add(new AchievementStatistic(player, achievement));
                 }
             }
             // remove statistic for achievement if not exists
-            player.getAchievementStatistics().removeIf(achievementStatistic ->
-                achievements
-                    .stream()
-                    .noneMatch(achievement ->
-                        achievement
-                            .getAchievementTitle()
-                            .equals(achievementStatistic.getAchievement().getAchievementTitle())
-                    )
-            );
+            player
+                .getAchievementStatistics()
+                .removeIf(achievementStatistic ->
+                    achievements
+                        .stream()
+                        .noneMatch(achievement ->
+                            achievement
+                                .getAchievementTitle()
+                                .equals(achievementStatistic.getAchievement().getAchievementTitle())
+                        )
+                );
             playerRepository.save(player);
         }
-        */
     }
 }

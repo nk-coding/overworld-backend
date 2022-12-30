@@ -31,8 +31,7 @@ public class PlayerService {
      *
      * @return a list containing all players
      */
-    public List<PlayerDTO> getPlayers()
-    {
+    public List<PlayerDTO> getPlayers() {
         return playerMapper.playersToPlayerDTOs(playerRepository.findAll());
     }
 
@@ -43,8 +42,7 @@ public class PlayerService {
      * @return the found player
      * @throws ResponseStatusException (400) when no player with the playerId is found
      */
-    public PlayerDTO getPlayer(final String playerId)
-    {
+    public PlayerDTO getPlayer(final String playerId) {
         Optional<Player> player = playerRepository.findById(playerId);
         if (player.isPresent()) {
             return playerMapper.playerToPlayerDTO(player.get());
@@ -63,11 +61,8 @@ public class PlayerService {
      * @return the created player as DTO
      * @throws ResponseStatusException (400) when a player with the playerId already exists
      */
-    public PlayerDTO createPlayer(final PlayerInitialData playerInitialData)
-    {
-        final Optional<Player> existingPlayer = playerRepository.findById(
-                playerInitialData.getUserId()
-        );
+    public PlayerDTO createPlayer(final PlayerInitialData playerInitialData) {
+        final Optional<Player> existingPlayer = playerRepository.findById(playerInitialData.getUserId());
         if (existingPlayer.isPresent()) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
