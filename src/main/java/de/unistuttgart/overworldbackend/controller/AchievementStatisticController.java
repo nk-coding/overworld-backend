@@ -27,14 +27,7 @@ public class AchievementStatisticController {
 
     @Operation(summary = "Get all achievements")
     @GetMapping("")
-<<<<<<< Updated upstream
-    public List<AchievementStatistic> getAchievementStatistics(
-        @PathVariable final String playerId,
-        @CookieValue("access_token") final String accessToken
-    ) {
-=======
     public List<AchievementStatistic> getAchievementStatistics(@PathVariable final String playerId, @CookieValue("access_token") final String accessToken) {
->>>>>>> Stashed changes
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("get achievements");
         return playerRepository
@@ -51,15 +44,9 @@ public class AchievementStatisticController {
     @Operation(summary = "Get achievement by its title")
     @GetMapping("/{title}")
     public AchievementStatistic getAchievementStatisitc(
-<<<<<<< Updated upstream
         @PathVariable final String playerId,
         @PathVariable final AchievementTitle title,
         @CookieValue("access_token") final String accessToken
-=======
-            @PathVariable final String playerId,
-            @PathVariable final AchievementTitle title,
-            @CookieValue("access_token") final String accessToken
->>>>>>> Stashed changes
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("get achievements {} ", title);
