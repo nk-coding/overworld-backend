@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Achievement", description = "Modify achievement")
+@Tag(name = "Player", description = "Modify player")
 @RestController
 @Slf4j
-@RequestMapping("/players/{playerId}/achievements")
-public class AchievementController {
+@RequestMapping("/players")
+public class PlayerController {
 
     @Autowired
     JWTValidatorService jwtValidatorService;
