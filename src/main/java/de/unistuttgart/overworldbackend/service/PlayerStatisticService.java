@@ -68,22 +68,22 @@ public class PlayerStatisticService {
      * Create a playerstatistic with initial data in a course.
      *
      * @param courseId the id of the course where the playerstatistic will be created
-     * @param player   the player with its userId and username
+     * @param playerDTO   the player with its userId and username
      * @return the created playerstatistic as DTO
      * @throws ResponseStatusException (404) when course with its id does not exist
      *                                 (400) when a player with the playerId already has a playerstatistic
      */
-    public PlayerStatisticDTO createPlayerStatisticInCourse(final int courseId, final Player player) {
+    public PlayerStatisticDTO createPlayerStatisticInCourse(final int courseId, final PlayerDTO playerDTO) {
         final Optional<PlayerStatistic> existingPlayerstatistic = playerstatisticRepository.findByCourseIdAndUserId(
             courseId,
-            player.getUserId()
+            playerDTO.getUserId()
         );
         if (existingPlayerstatistic.isPresent()) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 String.format(
                     "There is already a playerstatistic for userId %s in course %s",
-                    player.getUserId(),
+                    playerDTO.getUserId(),
                     courseId
                 )
             );
@@ -98,12 +98,12 @@ public class PlayerStatisticService {
         unlockedAreas.add(firstWorld);
 
         playerstatistic.setUnlockedAreas(unlockedAreas);
-        playerstatistic.setUserId(player.getUserId());
-        playerstatistic.setUsername(player.getUsername());
+        playerstatistic.setUserId(playerDTO.getUserId());
+        playerstatistic.setUsername(playerDTO.getUsername());
         playerstatistic.setCurrentArea(firstWorld);
         playerstatistic.setKnowledge(0);
         course.addPlayerStatistic(playerstatistic);
-        final PlayerStatistic savedPlayerStatistic = getPlayerStatisticFromCourse(courseId, player.getUserId());
+        final PlayerStatistic savedPlayerStatistic = getPlayerStatisticFromCourse(courseId, playerDTO.getUserId());
         return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(savedPlayerStatistic);
     }
 

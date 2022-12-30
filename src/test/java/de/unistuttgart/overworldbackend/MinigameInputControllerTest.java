@@ -480,8 +480,8 @@ class MinigameInputControllerTest {
             MinigameTaskDTO.class
         );
 
-        final Player newPlayer = new Player("n423l34213", "newPlayer");
-        final String bodyValue = objectMapper.writeValueAsString(newPlayer);
+        final PlayerDTO newPlayerDTO = new PlayerDTO("n423l34213", "newPlayer");
+        final String bodyValue = objectMapper.writeValueAsString(newPlayerDTO);
 
         final MvcResult resultStatistic = mvc
             .perform(

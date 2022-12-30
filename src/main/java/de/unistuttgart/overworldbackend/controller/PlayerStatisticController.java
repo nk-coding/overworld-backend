@@ -1,7 +1,7 @@
 package de.unistuttgart.overworldbackend.controller;
 
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
-import de.unistuttgart.overworldbackend.data.Player;
+import de.unistuttgart.overworldbackend.data.PlayerDTO;
 import de.unistuttgart.overworldbackend.data.PlayerStatisticDTO;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.service.PlayerStatisticService;
@@ -61,12 +61,12 @@ public class PlayerStatisticController {
     @PostMapping("")
     public PlayerStatisticDTO createPlayerstatistic(
         @PathVariable final int courseId,
-        @Valid @RequestBody final Player player,
+        @Valid @RequestBody final PlayerDTO playerDTO,
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        log.debug("create playerstatistic for userId {} in course {}", player, courseId);
-        return playerStatisticService.createPlayerStatisticInCourse(courseId, player);
+        log.debug("create playerstatistic for userId {} in course {}", playerDTO, courseId);
+        return playerStatisticService.createPlayerStatisticInCourse(courseId, playerDTO);
     }
 
     @Operation(summary = "Update a playerStatistic in a course by playerId")

@@ -38,7 +38,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Transactional
 @SpringBootTest
 @Testcontainers
-class PlayerNPCStatisticControllerTest {
+class PlayerDTONPCStatisticControllerTest {
 
     @Container
     public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")

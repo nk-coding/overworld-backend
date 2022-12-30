@@ -38,7 +38,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Transactional
 @SpringBootTest
 @Testcontainers
-class PlayerStatisticControllerTest {
+class PlayerDTOStatisticControllerTest {
 
     @Container
     public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
@@ -219,8 +219,8 @@ class PlayerStatisticControllerTest {
 
     @Test
     void createPlayerStatistic() throws Exception {
-        final Player newPlayer = new Player("n423l34213", "newPlayer");
-        final String bodyValue = objectMapper.writeValueAsString(newPlayer);
+        final PlayerDTO newPlayerDTO = new PlayerDTO("n423l34213", "newPlayer");
+        final String bodyValue = objectMapper.writeValueAsString(newPlayerDTO);
 
         final MvcResult result = mvc
             .perform(post(fullURL).content(bodyValue).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
@@ -233,8 +233,8 @@ class PlayerStatisticControllerTest {
         );
 
         assertEquals(0, createdPlayerStatisticDTOResult.getKnowledge());
-        assertEquals(newPlayer.getUserId(), createdPlayerStatisticDTOResult.getUserId());
-        assertEquals(newPlayer.getUsername(), createdPlayerStatisticDTOResult.getUsername());
+        assertEquals(newPlayerDTO.getUserId(), createdPlayerStatisticDTOResult.getUserId());
+        assertEquals(newPlayerDTO.getUsername(), createdPlayerStatisticDTOResult.getUsername());
         assertEquals(new AreaLocationDTO(1, null), createdPlayerStatisticDTOResult.getCurrentArea());
         assertEquals(Arrays.asList(new AreaLocationDTO(1, null)), createdPlayerStatisticDTOResult.getUnlockedAreas());
     }
