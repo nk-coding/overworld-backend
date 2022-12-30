@@ -4,15 +4,14 @@ import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerMapper;
 import de.unistuttgart.overworldbackend.repositories.AchievementRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
+import java.util.List;
+import java.util.Optional;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -47,17 +46,12 @@ public class PlayerService {
     public PlayerDTO getPlayer(final String playerId)
     {
         Optional<Player> player = playerRepository.findById(playerId);
-        if(player.isPresent())
-        {
+        if (player.isPresent()) {
             return playerMapper.playerToPlayerDTO(player.get());
-        }
-        else
-        {
+        } else {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    String.format(
-                            "There is no player with playerId %s", playerId
-                    )
+                HttpStatus.BAD_REQUEST,
+                String.format("There is no player with playerId %s", playerId)
             );
         }
     }

@@ -8,13 +8,12 @@ import de.unistuttgart.overworldbackend.data.mapper.PlayerMapper;
 import de.unistuttgart.overworldbackend.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Player", description = "Modify player")
 @RestController
@@ -30,8 +29,7 @@ public class PlayerController {
 
     @Operation(summary = "Get all players")
     @GetMapping("")
-    public List<PlayerDTO> getPlayers(@CookieValue("access_token") final String accessToken)
-    {
+    public List<PlayerDTO> getPlayers(@CookieValue("access_token") final String accessToken) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("get players");
         return playerService.getPlayers();
@@ -39,8 +37,10 @@ public class PlayerController {
 
     @Operation(summary = "Get player with playerId")
     @GetMapping("/{playerId}")
-    public PlayerDTO getPlayer(@PathVariable final String playerId, @CookieValue("access_token") final String accessToken)
-    {
+    public PlayerDTO getPlayer(
+        @PathVariable final String playerId,
+        @CookieValue("access_token") final String accessToken
+    ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("get players");
         return playerService.getPlayer(playerId);

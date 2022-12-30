@@ -25,11 +25,10 @@ public class Player {
 
     @JsonManagedReference(value = "player-achievements")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = AchievementStatistic.class)
-    List<AchievementStatistic> achievementStatistics;
+    List<AchievementStatistic> achievementStatistics = new ArrayList<>();
 
     public Player(String userId, String username) {
         this.userId = userId;
         this.username = username;
-        this.achievementStatistics = new ArrayList<>();
     }
 }
