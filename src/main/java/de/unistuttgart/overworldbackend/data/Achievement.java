@@ -1,6 +1,8 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import de.unistuttgart.overworldbackend.data.enums.AchievementCategory;
+import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,9 +19,11 @@ import javax.persistence.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Achievement {
     @Id
-    String title;
+    AchievementTitle achievementTitle;
 
-    @JsonBackReference(value = "achievmenet-player")
-    @ManyToOne
-    Player player;
+    String description;
+    String imageName;
+    int amountRequired;
+    @ElementCollection
+    List<AchievementCategory> categories;
 }
