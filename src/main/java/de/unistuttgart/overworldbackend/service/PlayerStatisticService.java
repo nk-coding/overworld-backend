@@ -73,7 +73,10 @@ public class PlayerStatisticService {
      * @throws ResponseStatusException (404) when course with its id does not exist
      *                                 (400) when a player with the playerId already has a playerstatistic
      */
-    public PlayerStatisticDTO createPlayerStatisticInCourse(final int courseId, final PlayerInitialData playerInitialData) {
+    public PlayerStatisticDTO createPlayerStatisticInCourse(
+        final int courseId,
+        final PlayerInitialData playerInitialData
+    ) {
         final Optional<PlayerStatistic> existingPlayerstatistic = playerstatisticRepository.findByCourseIdAndUserId(
             courseId,
             playerInitialData.getUserId()
@@ -103,7 +106,10 @@ public class PlayerStatisticService {
         playerstatistic.setCurrentArea(firstWorld);
         playerstatistic.setKnowledge(0);
         course.addPlayerStatistic(playerstatistic);
-        final PlayerStatistic savedPlayerStatistic = getPlayerStatisticFromCourse(courseId, playerInitialData.getUserId());
+        final PlayerStatistic savedPlayerStatistic = getPlayerStatisticFromCourse(
+            courseId,
+            playerInitialData.getUserId()
+        );
         return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(savedPlayerStatistic);
     }
 

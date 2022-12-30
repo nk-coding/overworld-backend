@@ -325,7 +325,9 @@ class CourseControllerTest {
         assertEquals(initialCourseDTO, courseDTOResult);
         assertEquals(initialCourseDTO.getId(), courseDTOResult.getId());
         assertTrue(
-            playerStatisticRepository.findByCourseIdAndUserId(initialCourse.getId(), newPlayerInitialData.getUserId()).isEmpty()
+            playerStatisticRepository
+                .findByCourseIdAndUserId(initialCourse.getId(), newPlayerInitialData.getUserId())
+                .isEmpty()
         );
         assertTrue(courseRepository.findAll().isEmpty());
     }
