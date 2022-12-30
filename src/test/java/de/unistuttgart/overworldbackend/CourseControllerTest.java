@@ -258,12 +258,12 @@ class CourseControllerTest {
     @Test
     void deleteCourseWithPlayerStatistics() throws Exception {
         // create playerstatstic
-        final PlayerDTO newPlayerDTO = new PlayerDTO("n423l34213", "newPlayer");
+        final PlayerInitialData newPlayerInitialData = new PlayerInitialData("n423l34213", "newPlayer");
         mvc
             .perform(
                 post(fullURL + "/" + initialCourseDTO.getId() + "/playerstatistics")
                     .cookie(cookie)
-                    .content(objectMapper.writeValueAsString(newPlayerDTO))
+                    .content(objectMapper.writeValueAsString(newPlayerInitialData))
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andExpect(status().isCreated())
@@ -271,7 +271,7 @@ class CourseControllerTest {
 
         // submit a playertaskstatstic
         final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
-        playerTaskStatisticData.setUserId(newPlayerDTO.getUserId());
+        playerTaskStatisticData.setUserId(newPlayerInitialData.getUserId());
         playerTaskStatisticData.setGame(initialMinigameTask.getGame());
         playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
         playerTaskStatisticData.setScore(80);
@@ -287,13 +287,13 @@ class CourseControllerTest {
 
         // submit a npc statistic
         final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
-        playerNPCStatisticData.setUserId(newPlayerDTO.getUserId());
+        playerNPCStatisticData.setUserId(newPlayerInitialData.getUserId());
         playerNPCStatisticData.setNpcId(initialNPC.getId());
         playerNPCStatisticData.setCompleted(true);
 
         final Optional<PlayerStatistic> playerStatistic = playerStatisticRepository.findByCourseIdAndUserId(
             initialCourse.getId(),
-            newPlayerDTO.getUserId()
+            newPlayerInitialData.getUserId()
         );
 
         mvc
@@ -325,7 +325,7 @@ class CourseControllerTest {
         assertEquals(initialCourseDTO, courseDTOResult);
         assertEquals(initialCourseDTO.getId(), courseDTOResult.getId());
         assertTrue(
-            playerStatisticRepository.findByCourseIdAndUserId(initialCourse.getId(), newPlayerDTO.getUserId()).isEmpty()
+            playerStatisticRepository.findByCourseIdAndUserId(initialCourse.getId(), newPlayerInitialData.getUserId()).isEmpty()
         );
         assertTrue(courseRepository.findAll().isEmpty());
     }

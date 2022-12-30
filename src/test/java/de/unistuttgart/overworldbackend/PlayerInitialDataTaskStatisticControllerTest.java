@@ -40,7 +40,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Transactional
 @SpringBootTest
 @Testcontainers
-class PlayerDTOTaskStatisticControllerTest {
+class PlayerInitialDataTaskStatisticControllerTest {
 
     @Container
     public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")

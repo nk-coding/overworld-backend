@@ -2,7 +2,8 @@ package de.unistuttgart.overworldbackend.controller;
 
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.Player;
-import de.unistuttgart.overworldbackend.data.PlayerDTO;
+import de.unistuttgart.overworldbackend.data.PlayerInitialData;
+import de.unistuttgart.overworldbackend.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +22,18 @@ public class PlayerController {
     @Autowired
     JWTValidatorService jwtValidatorService;
 
+    @Autowired
+    private PlayerService playerService;
+
     @Operation(summary = "Create a playerStatistic in a course by playerId")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public PlayerDTO createPlayer(
-            @Valid @RequestBody final PlayerDTO playerDTO,
+    public Player createPlayer(
+            @Valid @RequestBody final PlayerInitialData playerInitialData,
             @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        log.debug("create player for userId {}", playerDTO.getUserId());
-
+        log.debug("create player for userId {}", playerInitialData.getUserId());
+        return playerService.createPlayer(playerInitialData);
     }
 }
