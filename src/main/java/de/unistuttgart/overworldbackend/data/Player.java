@@ -2,6 +2,7 @@ package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import lombok.AccessLevel;
@@ -23,6 +24,12 @@ public class Player {
     String username;
 
     @JsonManagedReference(value = "player-achievements")
-    @OneToMany(cascade = CascadeType.ALL, targetEntity = AchievementStatistic.class)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = AchievementStatistic.class)
     List<AchievementStatistic> achievementStatistics;
+
+    public Player(String userId, String username) {
+        this.userId = userId;
+        this.username = username;
+        this.achievementStatistics = new ArrayList<>();
+    }
 }

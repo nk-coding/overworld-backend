@@ -1,10 +1,14 @@
 package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.Achievement;
+import de.unistuttgart.overworldbackend.data.AchievementStatistic;
+import de.unistuttgart.overworldbackend.data.Player;
 import de.unistuttgart.overworldbackend.data.enums.AchievementCategory;
 import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
 import de.unistuttgart.overworldbackend.repositories.AchievementRepository;
+import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
 import java.util.Arrays;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +21,13 @@ public class AchievementService {
     @Autowired
     private AchievementRepository achievementRepository;
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
     @PostConstruct
     public void init() {
+        Player dummyPlayer = new Player("dummy", "dummy");
+        playerRepository.save(dummyPlayer);
         Achievement achievement1 = new Achievement(
             AchievementTitle.GO_FOR_A_WALK,
             "Go for a walk",
@@ -36,5 +45,39 @@ public class AchievementService {
 
         achievementRepository.save(achievement1);
         achievementRepository.save(achievement2);
+
+        List<Achievement> achievements = achievementRepository.findAll();
+
+        for (Player player : playerRepository.findAll()) {
+            // add statistic for achievement if not exists
+            for (Achievement achievement : achievements) {
+                if (
+                    player
+                        .getAchievementStatistics()
+                        .stream()
+                        .noneMatch(achievementStatistic ->
+                            achievementStatistic
+                                .getAchievement()
+                                .getAchievementTitle()
+                                .equals(achievement.getAchievementTitle())
+                        )
+                ) {
+                    player.getAchievementStatistics().add(new AchievementStatistic(player, achievement));
+                }
+            }
+            // remove statistic for achievement if not exists
+            player
+                .getAchievementStatistics()
+                .removeIf(achievementStatistic ->
+                    achievements
+                        .stream()
+                        .noneMatch(achievement ->
+                            achievement
+                                .getAchievementTitle()
+                                .equals(achievementStatistic.getAchievement().getAchievementTitle())
+                        )
+                );
+            playerRepository.save(player);
+        }
     }
 }

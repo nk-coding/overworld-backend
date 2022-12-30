@@ -29,4 +29,11 @@ public class AchievementStatistic {
 
     int progress;
     boolean completed;
+
+    public AchievementStatistic(Player player, Achievement achievement) {
+        this.player = player;
+        this.achievement = achievement;
+        this.progress = 0;
+        this.completed = false;
+    }
 }
