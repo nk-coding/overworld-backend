@@ -6,6 +6,7 @@ import de.unistuttgart.overworldbackend.data.AchievementStatisticDTO;
 import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
 import de.unistuttgart.overworldbackend.data.mapper.AchievementStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
+import de.unistuttgart.overworldbackend.service.AchievementStatisticService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -25,10 +26,10 @@ public class AchievementStatisticController {
     JWTValidatorService jwtValidatorService;
 
     @Autowired
-    private PlayerRepository playerRepository;
+    private AchievementStatisticMapper achievementStatisticMapper;
 
     @Autowired
-    private AchievementStatisticMapper achievementStatisticMapper;
+    private AchievementStatisticService achievementStatisticService;
 
     @Operation(summary = "Get all achievements")
     @GetMapping("")
@@ -39,15 +40,7 @@ public class AchievementStatisticController {
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("get achievements");
         return achievementStatisticMapper.achievementStatisticsToAchievementStatisticDTOs(
-            playerRepository
-                .findById(playerId)
-                .orElseThrow(() ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        String.format("There is no player with id %s.", playerId)
-                    )
-                )
-                .getAchievementStatistics()
+            achievementStatisticService.getAchievementStatisticsFromPlayer(playerId)
         );
     }
 
@@ -61,26 +54,7 @@ public class AchievementStatisticController {
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("get achievements {} ", title);
         return achievementStatisticMapper.achievementStatisticToAchievementStatisticDTO(
-            playerRepository
-                .findById(playerId)
-                .orElseThrow(() ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        String.format("There is no player with id %s.", playerId)
-                    )
-                )
-                .getAchievementStatistics()
-                .stream()
-                .filter(achievementStatistic ->
-                    achievementStatistic.getAchievement().getAchievementTitle().equals(title)
-                )
-                .findFirst()
-                .orElseThrow(() ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        String.format("There is no achievement with title %s.", title)
-                    )
-                )
+            achievementStatisticService.getAchievementStatisticFromPlayer(playerId, title)
         );
     }
 }

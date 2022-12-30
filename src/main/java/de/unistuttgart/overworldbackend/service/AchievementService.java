@@ -26,16 +26,16 @@ public class AchievementService {
 
     @PostConstruct
     public void init() {
-        Player dummyPlayer = new Player("dummy", "dummy");
+        final Player dummyPlayer = new Player("dummy", "dummy");
         playerRepository.save(dummyPlayer);
-        Achievement achievement1 = new Achievement(
+        final Achievement achievement1 = new Achievement(
             AchievementTitle.GO_FOR_A_WALK,
             "Go for a walk",
             "imageName",
             1,
             Arrays.asList(AchievementCategory.EXPLORING)
         );
-        Achievement achievement2 = new Achievement(
+        final Achievement achievement2 = new Achievement(
             AchievementTitle.GO_FOR_A_LONGER_WALK,
             "Go for a longer walk",
             "imageName",
@@ -46,11 +46,11 @@ public class AchievementService {
         achievementRepository.save(achievement1);
         achievementRepository.save(achievement2);
 
-        List<Achievement> achievements = achievementRepository.findAll();
+        final List<Achievement> achievements = achievementRepository.findAll();
 
-        for (Player player : playerRepository.findAll()) {
+        for (final Player player : playerRepository.findAll()) {
             // add statistic for achievement if not exists
-            for (Achievement achievement : achievements) {
+            for (final Achievement achievement : achievements) {
                 if (
                     player
                         .getAchievementStatistics()
