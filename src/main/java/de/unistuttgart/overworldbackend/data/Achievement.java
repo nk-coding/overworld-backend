@@ -22,7 +22,15 @@ public class Achievement {
     AchievementTitle achievementTitle;
 
     String description;
+
+    /**
+     * The name of the image which should be shown
+     */
     String imageName;
+
+    /**
+     * The amount of events until the achievement is completed
+     */
     int amountRequired;
 
     @ElementCollection

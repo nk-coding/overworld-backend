@@ -27,11 +27,23 @@ public class PlayerService {
     @Autowired
     private AchievementRepository achievementRepository;
 
+    /**
+     * get all players
+     *
+     * @return a list containing all players
+     */
     public List<PlayerDTO> getPlayers()
     {
         return playerMapper.playersToPlayerDTOs(playerRepository.findAll());
     }
 
+    /**
+     * get a player by id
+     *
+     * @param playerId the playerId of the player searching for
+     * @return the found player
+     * @throws ResponseStatusException (400) when no player with the playerId is found
+     */
     public PlayerDTO getPlayer(final String playerId)
     {
         Optional<Player> player = playerRepository.findById(playerId);
@@ -50,6 +62,13 @@ public class PlayerService {
         }
     }
 
+    /**
+     * create a player with initial data
+     *
+     * @param playerInitialData the player with its userId and username
+     * @return the created player as DTO
+     * @throws ResponseStatusException (400) when a player with the playerId already exists
+     */
     public PlayerDTO createPlayer(final PlayerInitialData playerInitialData)
     {
         final Optional<Player> existingPlayer = playerRepository.findById(
