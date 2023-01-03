@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
-import de.unistuttgart.overworldbackend.data.mapper.BookMapper;
-import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
-import de.unistuttgart.overworldbackend.data.mapper.PlayerMapper;
-import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
+import de.unistuttgart.overworldbackend.data.mapper.*;
 import de.unistuttgart.overworldbackend.repositories.AchievementStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
@@ -73,6 +70,12 @@ class AchievementStatisticTest {
     private AchievementStatisticRepository achievementStatisticRepository;
 
     @Autowired
+    private AchievementMapper achievementMapper;
+
+    @Autowired
+    private AchievementStatisticMapper achievementStatisticMapper;
+
+    @Autowired
     private PlayerService playerService;
 
     private Player initialPlayer;
@@ -85,7 +88,7 @@ class AchievementStatisticTest {
     public void createBasicData() {
         playerRepository.deleteAll();
 
-        final PlayerInitialData playerInitialData = new PlayerInitialData("testUser", "testPassword");
+        final PlayerInitialData playerInitialData = new PlayerInitialData("testUser", "testUserName");
         final PlayerDTO initialPlayerDTO = playerService.createPlayer(playerInitialData);
         initialPlayer = playerRepository.findById(initialPlayerDTO.getUserId()).get();
 
@@ -99,7 +102,7 @@ class AchievementStatisticTest {
     }
 
     @Test
-    void getPlayerStatistics_DoesNotExist_ThrowsNotFound() throws Exception {
+    void getPlayerAchievements_DoesNotExist_ThrowsNotFound() throws Exception {
         mvc
             .perform(
                 get("/players/" + Integer.MAX_VALUE + "/achievements")
@@ -111,7 +114,7 @@ class AchievementStatisticTest {
     }
 
     @Test
-    void getPlayerStatistics() throws Exception {
+    void getPlayerAchievements() throws Exception {
         final MvcResult result = mvc
             .perform(
                 get(fullURL + "/achievements")
@@ -128,7 +131,53 @@ class AchievementStatisticTest {
 
         assertSame(AchievementTitle.values().length, achievementStatistics.size());
         for (AchievementTitle title : AchievementTitle.values()) {
-            assertTrue(achievementStatistics.stream().anyMatch(statistic -> statistic.getAchievement().getAchievementTitle() == title));
+            assertTrue(achievementStatistics.stream().anyMatch(statistic -> statistic.getAchievement().getAchievementTitle().equals(title)));
         }
+    }
+
+    @Test
+    void getPlayerAchievement() throws Exception {
+        AchievementTitle achievementTitle = AchievementTitle.GO_FOR_A_WALK;
+        final MvcResult result = mvc
+                .perform(
+                        get(fullURL + "/achievements/" + achievementTitle)
+                                .cookie(cookie)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final AchievementStatisticDTO achievementStatisticDTO = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                AchievementStatisticDTO.class
+        );
+        assertSame(achievementTitle, achievementStatisticDTO.getAchievement().getAchievementTitle());
+    }
+
+    @Test
+    void updatePlayerAchievement() throws Exception {
+        final AchievementTitle achievementTitle = AchievementTitle.GO_FOR_A_WALK;
+        final AchievementStatistic achievementStatistic = initialPlayer.getAchievementStatistics()
+                .stream().filter(statistic -> statistic.getAchievement().getAchievementTitle() == achievementTitle).findFirst().get();
+
+        final AchievementStatisticDTO achievementStatisticDTO = achievementStatisticMapper.achievementStatisticToAchievementStatisticDTO(achievementStatistic);
+        achievementStatisticDTO.setProgress(achievementStatisticDTO.getProgress() + 1);
+        final String bodyValue = objectMapper.writeValueAsString(achievementStatisticDTO);
+        final MvcResult result = mvc
+                .perform(
+                        put(fullURL + "/achievements/" + achievementTitle)
+                                .cookie(cookie)
+                                .content(bodyValue)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final AchievementStatisticDTO updatedAchievementStatisticDTO = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                AchievementStatisticDTO.class
+        );
+        assertSame(achievementTitle, updatedAchievementStatisticDTO.getAchievement().getAchievementTitle());
+        assertSame(achievementStatisticDTO.getProgress(), updatedAchievementStatisticDTO.getProgress());
     }
 }

@@ -29,11 +29,11 @@ public class AchievementService {
     @Autowired
     private PlayerRepository playerRepository;
 
-    @Autowired
-    private AchievementStatisticRepository achievementStatisticRepository;
-
+    /**
+     * Checks for all players the current achievements adds new created achievements to the player and removes none existing achievements.
+     */
     @EventListener(ApplicationReadyEvent.class)
-    public void init() {
+    public void updatePlayerStatisticAchievements() {
         final Achievement achievement1 = new Achievement(
             AchievementTitle.GO_FOR_A_WALK,
             "Go for a walk",

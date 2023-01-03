@@ -61,7 +61,7 @@ public class AchievementStatisticController {
     }
 
     @Operation(summary = "Update the progress of an achievement")
-    @PostMapping("/{title}")
+    @PutMapping("/{title}")
     public AchievementStatisticDTO updateAchievementStatistic(
             @PathVariable final String playerId,
             @PathVariable final AchievementTitle title,
