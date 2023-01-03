@@ -37,4 +37,5 @@ public class AreaDTO {
     Set<MinigameTaskDTO> minigameTasks;
     Set<NPCDTO> npcs;
     Set<Book> books;
+    Set<TeleporterDTO> teleporters;
 }

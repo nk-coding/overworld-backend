@@ -1,17 +1,14 @@
 package de.unistuttgart.overworldbackend.data.config;
 
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DungeonConfig {
+public class TeleporterConfig {
 
-    String staticName;
-    int numberOfMinigames;
-    int numberOfNPCs;
-    int numberOfBooks;
-    List<TeleporterConfig> teleporters;
+    String name;
+    float x;
+    float y;
 }

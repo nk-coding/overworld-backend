@@ -6,31 +6,66 @@
           "staticName": "dungeon1",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon2",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon3",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon4",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         }
       ],
       "staticName": "Blooming Savanna",
       "numberOfMinigames": 12,
       "numberOfNPCs": 10,
-      "numberOfBooks": 5
+      "numberOfBooks": 5,
+      "teleporters": [
+        {
+          "name": "teleporter1",
+          "x": 59,
+          "y": 91
+        }
+      ]
     },
     {
       "dungeons": [
@@ -38,31 +73,66 @@
           "staticName": "dungeon1",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon2",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon3",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon4",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         }
       ],
       "staticName": "Sunny Beach",
       "numberOfMinigames": 12,
       "numberOfNPCs": 10,
-      "numberOfBooks": 5
+      "numberOfBooks": 5,
+      "teleporters": [
+        {
+          "name": "teleporter1",
+          "x": 59,
+          "y": 91
+        }
+      ]
     },
     {
       "dungeons": [
@@ -70,31 +140,66 @@
           "staticName": "dungeon1",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon2",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon3",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon4",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         }
       ],
       "staticName": "Magic Forest",
       "numberOfMinigames": 12,
       "numberOfNPCs": 10,
-      "numberOfBooks": 5
+      "numberOfBooks": 5,
+      "teleporters": [
+        {
+          "name": "teleporter1",
+          "x": 59,
+          "y": 91
+        }
+      ]
     },
     {
       "dungeons": [
@@ -102,31 +207,66 @@
           "staticName": "dungeon1",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon2",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon3",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         },
         {
           "staticName": "dungeon4",
           "numberOfMinigames": 12,
           "numberOfNPCs": 10,
-          "numberOfBooks": 5
+          "numberOfBooks": 5,
+          "teleporters": [
+            {
+              "name": "teleporter1",
+              "x": 59,
+              "y": 91
+            }
+          ]
         }
       ],
       "staticName": "Winter Wonder Land",
       "numberOfMinigames": 12,
       "numberOfNPCs": 10,
-      "numberOfBooks": 5
+      "numberOfBooks": 5,
+      "teleporters": [
+        {
+          "name": "teleporter1",
+          "x": 59,
+          "y": 91
+        }
+      ]
     }
   ]
 }

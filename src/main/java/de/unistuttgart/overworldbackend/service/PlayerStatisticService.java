@@ -5,6 +5,7 @@ import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.TeleporterRepository;
 import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,6 +32,9 @@ public class PlayerStatisticService {
 
     @Autowired
     private PlayerTaskStatisticRepository playerTaskStatisticRepository;
+
+    @Autowired
+    private TeleporterRepository teleporterRepository;
 
     @Autowired
     private PlayerStatisticMapper playerstatisticMapper;
@@ -94,6 +98,7 @@ public class PlayerStatisticService {
         final PlayerStatistic playerstatistic = new PlayerStatistic();
         playerstatistic.setCourse(course);
         playerstatistic.setCompletedDungeons(new ArrayList<>());
+        playerstatistic.setUnlockedTeleporters(new ArrayList<>());
         final List<Area> unlockedAreas = new ArrayList<>();
         unlockedAreas.add(firstWorld);
 
@@ -105,6 +110,44 @@ public class PlayerStatisticService {
         course.addPlayerStatistic(playerstatistic);
         final PlayerStatistic savedPlayerStatistic = getPlayerStatisticFromCourse(courseId, player.getUserId());
         return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(savedPlayerStatistic);
+    }
+
+    /**
+     * Add a teleporter to unlocked teleporters of a playerstatistic.
+     *
+     *
+     * @param playerTeleportData the data of the teleporter to be added
+     * @throws ResponseStatusException (404) when playerstatistic with courseId and userId could not be found or teleporter with id not found
+     *                                 (400) when teleporter is already unlocked
+     * @return the updated playerstatistic as DTO
+     */
+    public PlayerStatisticDTO addUnlockedTeleporter(final PlayerTeleportData playerTeleportData) {
+        final Teleporter teleporter = teleporterRepository
+            .findById(playerTeleportData.getTeleporterId())
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    String.format("There is no teleporter with id %s", playerTeleportData.getTeleporterId())
+                )
+            );
+        final PlayerStatistic playerStatistic = getPlayerStatisticFromCourse(
+            teleporter.getCourse().getId(),
+            playerTeleportData.getUserId()
+        );
+        if (playerStatistic.getUnlockedTeleporters().contains(teleporter)) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                String.format(
+                    "Player with userId %s has already unlocked teleporter with id %s",
+                    playerTeleportData.getUserId(),
+                    playerTeleportData.getTeleporterId()
+                )
+            );
+        }
+        playerStatistic.addUnlockedTeleporter(teleporter);
+        return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(
+            playerstatisticRepository.save(playerStatistic)
+        );
     }
 
     /**

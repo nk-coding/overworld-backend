@@ -33,6 +33,9 @@ public class PlayerStatistic {
     @ManyToMany(cascade = CascadeType.ALL)
     List<Area> completedDungeons;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    List<Teleporter> unlockedTeleporters;
+
     @ManyToOne(cascade = CascadeType.ALL)
     Area currentArea;
 
@@ -68,6 +71,12 @@ public class PlayerStatistic {
     public void addUnlockedArea(final Area area) {
         if (!this.unlockedAreas.contains(area)) {
             this.unlockedAreas.add(area);
+        }
+    }
+
+    public void addUnlockedTeleporter(final Teleporter teleporter) {
+        if (!this.unlockedTeleporters.contains(teleporter)) {
+            this.unlockedTeleporters.add(teleporter);
         }
     }
 }

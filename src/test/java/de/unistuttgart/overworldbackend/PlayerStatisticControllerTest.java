@@ -107,6 +107,7 @@ class PlayerStatisticControllerTest {
         dungeon.setMinigameTasks(Set.of());
         dungeon.setNpcs(Set.of());
         dungeon.setBooks(Set.of());
+        dungeon.setTeleporters(Set.of());
 
         final List<Dungeon> dungeons = new ArrayList<>();
         dungeons.add(dungeon);
