@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
+
 @Tag(name = "AchievementStatistic", description = "Modify achievement statistic")
 @RestController
 @Slf4j
@@ -55,6 +57,21 @@ public class AchievementStatisticController {
         log.debug("get achievements {} ", title);
         return achievementStatisticMapper.achievementStatisticToAchievementStatisticDTO(
             achievementStatisticService.getAchievementStatisticFromPlayer(playerId, title)
+        );
+    }
+
+    @Operation(summary = "Update the progress of an achievement")
+    @PostMapping("/{title}")
+    public AchievementStatisticDTO updateAchievementStatistic(
+            @PathVariable final String playerId,
+            @PathVariable final AchievementTitle title,
+            @Valid @RequestBody final AchievementStatisticDTO achievementStatisticDTO,
+            @CookieValue("access_token") final String accessToken
+    ) {
+        jwtValidatorService.validateTokenOrThrow(accessToken);
+        log.debug("update achievements {} to {}", title, achievementStatisticDTO.getProgress());
+        return achievementStatisticMapper.achievementStatisticToAchievementStatisticDTO(
+            achievementStatisticService.updateAchievementStatistic(playerId, title, achievementStatisticDTO)
         );
     }
 }

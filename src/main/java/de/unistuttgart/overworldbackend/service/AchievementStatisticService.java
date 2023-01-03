@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.AchievementStatistic;
+import de.unistuttgart.overworldbackend.data.AchievementStatisticDTO;
 import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
 import de.unistuttgart.overworldbackend.repositories.AchievementRepository;
 import de.unistuttgart.overworldbackend.repositories.AchievementStatisticRepository;
@@ -60,5 +61,33 @@ public class AchievementStatisticService {
                     String.format("There is no achievement statistic for achievement %s", achievementTitle)
                 )
             );
+    }
+
+    /**
+     * Updates the progress of the given achievement statistic
+     * @param playerId the if of the player
+     * @param achievementTitle the title of the achievement
+     * @param achievementStatisticDTO the updated parameters
+     * @throws ResponseStatusException (400) if the new progress is smaller than the current one
+     * @throws ResponseStatusException (404) if the player or the achievement does not exist
+     * @return the updated achievement statistic
+     */
+    public AchievementStatistic updateAchievementStatistic(
+            final String playerId,
+            final AchievementTitle achievementTitle,
+            final AchievementStatisticDTO achievementStatisticDTO
+            ) {
+        final AchievementStatistic achievementStatistic = getAchievementStatisticFromPlayer(playerId, achievementTitle);
+        try {
+            achievementStatistic.setProgress(achievementStatisticDTO.getProgress());
+        } catch (IllegalArgumentException e)
+        {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                String.format("The new progress cannot be smaller than the current one")
+            );
+        }
+        final AchievementStatistic updatedAchievementStatistic = achievementStatisticRepository.save(achievementStatistic);
+        return updatedAchievementStatistic;
     }
 }
