@@ -48,7 +48,7 @@ public class PlayerService {
             return playerMapper.playerToPlayerDTO(player.get());
         } else {
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.NOT_FOUND,
                 String.format("There is no player with playerId %s", playerId)
             );
         }
