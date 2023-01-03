@@ -6,7 +6,7 @@ import de.unistuttgart.overworldbackend.repositories.AchievementRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -57,19 +57,19 @@ public class PlayerService {
     /**
      * create a player with initial data
      *
-     * @param playerInitialData the player with its userId and username
+     * @param playerRegistrationDTO the player with its userId and username
      * @return the created player as DTO
      * @throws ResponseStatusException (400) when a player with the playerId already exists
      */
-    public PlayerDTO createPlayer(final PlayerInitialData playerInitialData) {
-        final Optional<Player> existingPlayer = playerRepository.findById(playerInitialData.getUserId());
+    public PlayerDTO createPlayer(final PlayerRegistrationDTO playerRegistrationDTO) {
+        final Optional<Player> existingPlayer = playerRepository.findById(playerRegistrationDTO.getUserId());
         if (existingPlayer.isPresent()) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                String.format("There is already a playerstatistic for userId %s", playerInitialData.getUserId())
+                String.format("There is already a playerstatistic for userId %s", playerRegistrationDTO.getUserId())
             );
         }
-        final Player newPlayer = new Player(playerInitialData.getUserId(), playerInitialData.getUsername());
+        final Player newPlayer = new Player(playerRegistrationDTO.getUserId(), playerRegistrationDTO.getUsername());
         for (final Achievement achievement : achievementRepository.findAll()) {
             newPlayer.getAchievementStatistics().add(new AchievementStatistic(newPlayer, achievement));
         }

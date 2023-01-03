@@ -1,10 +1,8 @@
 package de.unistuttgart.overworldbackend.controller;
 
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
-import de.unistuttgart.overworldbackend.data.Player;
 import de.unistuttgart.overworldbackend.data.PlayerDTO;
-import de.unistuttgart.overworldbackend.data.PlayerInitialData;
-import de.unistuttgart.overworldbackend.data.mapper.PlayerMapper;
+import de.unistuttgart.overworldbackend.data.PlayerRegistrationDTO;
 import de.unistuttgart.overworldbackend.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,11 +48,11 @@ public class PlayerController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public PlayerDTO createPlayer(
-        @Valid @RequestBody final PlayerInitialData playerInitialData,
+        @Valid @RequestBody final PlayerRegistrationDTO playerRegistrationDTO,
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        log.debug("create player for userId {}", playerInitialData.getUserId());
-        return playerService.createPlayer(playerInitialData);
+        log.debug("create player for userId {}", playerRegistrationDTO.getUserId());
+        return playerService.createPlayer(playerRegistrationDTO);
     }
 }

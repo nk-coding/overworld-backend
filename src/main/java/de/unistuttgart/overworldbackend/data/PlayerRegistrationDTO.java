@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PlayerInitialData {
+public class PlayerRegistrationDTO {
 
     @NotNull
     String userId;

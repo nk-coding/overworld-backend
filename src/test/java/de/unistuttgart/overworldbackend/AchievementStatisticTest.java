@@ -6,7 +6,6 @@ import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
 import de.unistuttgart.overworldbackend.data.mapper.*;
 import de.unistuttgart.overworldbackend.repositories.AchievementStatisticRepository;
-import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
 import de.unistuttgart.overworldbackend.service.PlayerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,9 +25,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.servlet.http.Cookie;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
@@ -88,8 +85,8 @@ class AchievementStatisticTest {
     public void createBasicData() {
         playerRepository.deleteAll();
 
-        final PlayerInitialData playerInitialData = new PlayerInitialData("testUser", "testUserName");
-        final PlayerDTO initialPlayerDTO = playerService.createPlayer(playerInitialData);
+        final PlayerRegistrationDTO playerRegistrationDTO = new PlayerRegistrationDTO("testUser", "testUserName");
+        final PlayerDTO initialPlayerDTO = playerService.createPlayer(playerRegistrationDTO);
         initialPlayer = playerRepository.findById(initialPlayerDTO.getUserId()).get();
 
 

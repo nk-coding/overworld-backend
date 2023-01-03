@@ -258,12 +258,12 @@ class CourseControllerTest {
     @Test
     void deleteCourseWithPlayerStatistics() throws Exception {
         // create playerstatstic
-        final PlayerInitialData newPlayerInitialData = new PlayerInitialData("n423l34213", "newPlayer");
+        final PlayerRegistrationDTO newPlayerRegistrationDTO = new PlayerRegistrationDTO("n423l34213", "newPlayer");
         mvc
             .perform(
                 post(fullURL + "/" + initialCourseDTO.getId() + "/playerstatistics")
                     .cookie(cookie)
-                    .content(objectMapper.writeValueAsString(newPlayerInitialData))
+                    .content(objectMapper.writeValueAsString(newPlayerRegistrationDTO))
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andExpect(status().isCreated())
@@ -271,7 +271,7 @@ class CourseControllerTest {
 
         // submit a playertaskstatstic
         final PlayerTaskStatisticData playerTaskStatisticData = new PlayerTaskStatisticData();
-        playerTaskStatisticData.setUserId(newPlayerInitialData.getUserId());
+        playerTaskStatisticData.setUserId(newPlayerRegistrationDTO.getUserId());
         playerTaskStatisticData.setGame(initialMinigameTask.getGame());
         playerTaskStatisticData.setConfigurationId(initialMinigameTask.getConfigurationId());
         playerTaskStatisticData.setScore(80);
@@ -287,13 +287,13 @@ class CourseControllerTest {
 
         // submit a npc statistic
         final PlayerNPCStatisticData playerNPCStatisticData = new PlayerNPCStatisticData();
-        playerNPCStatisticData.setUserId(newPlayerInitialData.getUserId());
+        playerNPCStatisticData.setUserId(newPlayerRegistrationDTO.getUserId());
         playerNPCStatisticData.setNpcId(initialNPC.getId());
         playerNPCStatisticData.setCompleted(true);
 
         final Optional<PlayerStatistic> playerStatistic = playerStatisticRepository.findByCourseIdAndUserId(
             initialCourse.getId(),
-            newPlayerInitialData.getUserId()
+            newPlayerRegistrationDTO.getUserId()
         );
 
         mvc
@@ -326,7 +326,7 @@ class CourseControllerTest {
         assertEquals(initialCourseDTO.getId(), courseDTOResult.getId());
         assertTrue(
             playerStatisticRepository
-                .findByCourseIdAndUserId(initialCourse.getId(), newPlayerInitialData.getUserId())
+                .findByCourseIdAndUserId(initialCourse.getId(), newPlayerRegistrationDTO.getUserId())
                 .isEmpty()
         );
         assertTrue(courseRepository.findAll().isEmpty());

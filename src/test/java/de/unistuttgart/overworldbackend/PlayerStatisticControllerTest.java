@@ -219,8 +219,8 @@ class PlayerStatisticControllerTest {
 
     @Test
     void createPlayerStatistic() throws Exception {
-        final PlayerInitialData newPlayerInitialData = new PlayerInitialData("n423l34213", "newPlayer");
-        final String bodyValue = objectMapper.writeValueAsString(newPlayerInitialData);
+        final PlayerRegistrationDTO newPlayerRegistrationDTO = new PlayerRegistrationDTO("n423l34213", "newPlayer");
+        final String bodyValue = objectMapper.writeValueAsString(newPlayerRegistrationDTO);
 
         final MvcResult result = mvc
             .perform(post(fullURL).content(bodyValue).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
@@ -233,8 +233,8 @@ class PlayerStatisticControllerTest {
         );
 
         assertEquals(0, createdPlayerStatisticDTOResult.getKnowledge());
-        assertEquals(newPlayerInitialData.getUserId(), createdPlayerStatisticDTOResult.getUserId());
-        assertEquals(newPlayerInitialData.getUsername(), createdPlayerStatisticDTOResult.getUsername());
+        assertEquals(newPlayerRegistrationDTO.getUserId(), createdPlayerStatisticDTOResult.getUserId());
+        assertEquals(newPlayerRegistrationDTO.getUsername(), createdPlayerStatisticDTOResult.getUsername());
         assertEquals(new AreaLocationDTO(1, null), createdPlayerStatisticDTOResult.getCurrentArea());
         assertEquals(Arrays.asList(new AreaLocationDTO(1, null)), createdPlayerStatisticDTOResult.getUnlockedAreas());
     }
