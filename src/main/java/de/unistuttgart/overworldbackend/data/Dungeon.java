@@ -33,10 +33,9 @@ public class Dungeon extends Area {
         final Set<MinigameTask> minigameTasks,
         final Set<NPC> npcs,
         final Set<Book> books,
-        final Set<Teleporter> teleporters,
         final int index
     ) {
-        super(staticName, topicName, active, minigameTasks, npcs, books, teleporters, index);
+        super(staticName, topicName, active, minigameTasks, npcs, books, index);
     }
 
     public Dungeon(
@@ -47,10 +46,9 @@ public class Dungeon extends Area {
         final Set<MinigameTask> minigameTasks,
         final Set<NPC> npcs,
         final Set<Book> books,
-        final Set<Teleporter> teleporters,
         final int index
     ) {
-        super(staticName, topicName, active, configured, minigameTasks, npcs, books, teleporters, index);
+        super(staticName, topicName, active, configured, minigameTasks, npcs, books, index);
     }
 
     @Override

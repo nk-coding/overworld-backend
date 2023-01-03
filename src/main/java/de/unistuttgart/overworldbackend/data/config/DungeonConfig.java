@@ -13,5 +13,4 @@ public class DungeonConfig {
     int numberOfMinigames;
     int numberOfNPCs;
     int numberOfBooks;
-    List<TeleporterConfig> teleporters;
 }

@@ -13,10 +13,8 @@ import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.data.mapper.TeleporterMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerNPCActionLogRepository;
-import de.unistuttgart.overworldbackend.repositories.PlayerNPCStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
-import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
+
 import java.util.*;
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
@@ -69,12 +67,6 @@ class TeleporterInputControllerTest {
     private PlayerStatisticRepository playerstatisticRepository;
 
     @Autowired
-    private PlayerNPCActionLogRepository playerNPCActionLogRepository;
-
-    @Autowired
-    private PlayerNPCStatisticService playerNPCStatisticService;
-
-    @Autowired
     private CourseMapper courseMapper;
 
     @Autowired
@@ -82,9 +74,6 @@ class TeleporterInputControllerTest {
 
     @Autowired
     private TeleporterMapper teleporterMapper;
-
-    @Autowired
-    private PlayerNPCStatisticRepository playerNPCStatisticRepository;
 
     private String fullURL;
     private String npcURL;
@@ -96,8 +85,7 @@ class TeleporterInputControllerTest {
     private PlayerStatistic initialPlayerStatistic;
     private PlayerStatisticDTO initialPlayerStatisticDTO;
 
-    private Teleporter initialTeleporter;
-    private TeleporterDTO initialTeleporterDTO;
+    private AreaLocationDTO initialAreaLocationDTO;
 
     @BeforeEach
     public void createBasicData() {
@@ -113,9 +101,6 @@ class TeleporterInputControllerTest {
         final List<Dungeon> dungeons = new ArrayList<>();
         dungeons.add(dungeon);
 
-        final Set<Teleporter> teleporters = new HashSet<>();
-        teleporters.add(new Teleporter("example", new Position(1, 1), 1));
-
         final World world = new World();
         world.setStaticName("Winter Wonderland");
         world.setTopicName("UML Winter");
@@ -123,7 +108,6 @@ class TeleporterInputControllerTest {
         world.setMinigameTasks(Set.of());
         world.setNpcs(Set.of());
         world.setBooks(Set.of());
-        world.setTeleporters(teleporters);
         world.setDungeons(dungeons);
         final List<World> worlds = new ArrayList<>();
         worlds.add(world);
@@ -133,9 +117,7 @@ class TeleporterInputControllerTest {
         initialCourse = courseRepository.save(course);
         initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
 
-        final World initialWorld = initialCourse.getWorlds().stream().findFirst().get();
-        initialTeleporter = initialWorld.getTeleporters().stream().findFirst().get();
-        initialTeleporterDTO = teleporterMapper.teleporterToTeleporterDTO(initialTeleporter);
+        initialAreaLocationDTO = new AreaLocationDTO(world.getIndex(), null);
 
         final PlayerStatistic playerstatistic = new PlayerStatistic();
         playerstatistic.setUserId("45h23o2j432");
@@ -151,9 +133,7 @@ class TeleporterInputControllerTest {
 
         assertNotNull(initialCourse.getCourseName());
 
-        assertEquals(initialCourse.getId(), initialTeleporter.getCourse().getId());
-        assertEquals(initialCourse.getId(), initialPlayerStatistic.getCourse().getId());
-        fullURL = "/internal";
+        fullURL = "/courses/" + initialCourse.getId() + "/teleporters";
         objectMapper = new ObjectMapper();
 
         doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
@@ -162,16 +142,16 @@ class TeleporterInputControllerTest {
 
     @Test
     void submitTeleporterData() throws Exception {
-        final PlayerTeleportData playerTeleportData = new PlayerTeleportData();
-        playerTeleportData.setUserId(initialPlayerStatistic.getUserId());
-        playerTeleportData.setTeleporterId(initialTeleporter.getId());
-        playerTeleportData.setCompleted(true);
+        final PlayerTeleporterData playerTeleporterData = new PlayerTeleporterData();
+        playerTeleporterData.setUserId(initialPlayerStatistic.getUserId());
+        playerTeleporterData.setIndex(1);
+        playerTeleporterData.setAreaLocationDTO(initialAreaLocationDTO);
 
-        final String bodyValue = objectMapper.writeValueAsString(playerTeleportData);
+        final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 
         final MvcResult result = mvc
             .perform(
-                post(fullURL + "/submit-teleporter-pass")
+                post(fullURL)
                     .cookie(cookie)
                     .content(bodyValue)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -183,21 +163,24 @@ class TeleporterInputControllerTest {
             result.getResponse().getContentAsString(),
             PlayerStatisticDTO.class
         );
-        assertTrue(playerStatisticDTO.getUnlockedTeleporters().contains(initialTeleporterDTO));
+        assertSame(1, playerStatisticDTO.getUnlockedTeleporters().size());
+        TeleporterDTO teleporter = playerStatisticDTO.getUnlockedTeleporters().stream().findFirst().get();
+        assertEquals(playerTeleporterData.getAreaLocationDTO(), teleporter.getArea());
+        assertSame(playerTeleporterData.getIndex(), teleporter.getIndex());
     }
 
     @Test
     void submitTeleporterDataTwice() throws Exception {
-        final PlayerTeleportData playerTeleportData = new PlayerTeleportData();
-        playerTeleportData.setUserId(initialPlayerStatistic.getUserId());
-        playerTeleportData.setTeleporterId(initialTeleporter.getId());
-        playerTeleportData.setCompleted(false);
+        final PlayerTeleporterData playerTeleporterData = new PlayerTeleporterData();
+        playerTeleporterData.setUserId(initialPlayerStatistic.getUserId());
+        playerTeleporterData.setIndex(1);
+        playerTeleporterData.setAreaLocationDTO(initialAreaLocationDTO);
 
-        final String bodyValue = objectMapper.writeValueAsString(playerTeleportData);
+        final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 
         final MvcResult result = mvc
             .perform(
-                post(fullURL + "/submit-teleporter-pass")
+                post(fullURL)
                     .cookie(cookie)
                     .content(bodyValue)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -209,18 +192,21 @@ class TeleporterInputControllerTest {
             result.getResponse().getContentAsString(),
             PlayerStatisticDTO.class
         );
-        assertTrue(playerStatisticDTO.getUnlockedTeleporters().contains(initialTeleporterDTO));
+        assertSame(1, playerStatisticDTO.getUnlockedTeleporters().size());
+        TeleporterDTO teleporter = playerStatisticDTO.getUnlockedTeleporters().stream().findFirst().get();
+        assertEquals(playerTeleporterData.getAreaLocationDTO(), teleporter.getArea());
+        assertSame(playerTeleporterData.getIndex(), teleporter.getIndex());
 
-        final PlayerTeleportData playerTeleportData2 = new PlayerTeleportData();
-        playerTeleportData2.setUserId(initialPlayerStatistic.getUserId());
-        playerTeleportData2.setTeleporterId(initialTeleporter.getId());
-        playerTeleportData2.setCompleted(true);
+        final PlayerTeleporterData playerTeleporterData2 = new PlayerTeleporterData();
+        playerTeleporterData.setUserId(initialPlayerStatistic.getUserId());
+        playerTeleporterData.setIndex(1);
+        playerTeleporterData.setAreaLocationDTO(initialAreaLocationDTO);
 
-        final String bodyValue2 = objectMapper.writeValueAsString(playerTeleportData2);
+        final String bodyValue2 = objectMapper.writeValueAsString(playerTeleporterData2);
 
         mvc
             .perform(
-                post(fullURL + "/submit-teleporter-pass")
+                post(fullURL)
                     .cookie(cookie)
                     .content(bodyValue2)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -230,35 +216,16 @@ class TeleporterInputControllerTest {
 
     @Test
     void submitTeleporterData_PlayerDoesNotExist_ThrowNotFound() throws Exception {
-        final PlayerTeleportData playerTeleportData = new PlayerTeleportData();
-        playerTeleportData.setUserId(UUID.randomUUID().toString());
-        playerTeleportData.setTeleporterId(initialTeleporter.getId());
-        playerTeleportData.setCompleted(true);
+        final PlayerTeleporterData playerTeleporterData = new PlayerTeleporterData();
+        playerTeleporterData.setUserId(UUID.randomUUID().toString());
+        playerTeleporterData.setIndex(1);
+        playerTeleporterData.setAreaLocationDTO(initialAreaLocationDTO);
 
-        final String bodyValue = objectMapper.writeValueAsString(playerTeleportData);
-
-        mvc
-            .perform(
-                post(fullURL + "/submit-teleporter-pass")
-                    .cookie(cookie)
-                    .content(bodyValue)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void submitTeleporterData_NPCDoesNotExist_ThrowNotFound() throws Exception {
-        final PlayerTeleportData playerTeleportData = new PlayerTeleportData();
-        playerTeleportData.setUserId(initialPlayerStatistic.getUserId());
-        playerTeleportData.setTeleporterId(UUID.randomUUID());
-        playerTeleportData.setCompleted(true);
-
-        final String bodyValue = objectMapper.writeValueAsString(playerTeleportData);
+        final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 
         mvc
             .perform(
-                post(fullURL + "/submit-teleporter-pass")
+                post(fullURL)
                     .cookie(cookie)
                     .content(bodyValue)
                     .contentType(MediaType.APPLICATION_JSON)

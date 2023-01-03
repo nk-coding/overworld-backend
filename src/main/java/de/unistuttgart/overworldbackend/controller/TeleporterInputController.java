@@ -2,11 +2,8 @@ package de.unistuttgart.overworldbackend.controller;
 
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.PlayerStatisticDTO;
-import de.unistuttgart.overworldbackend.data.PlayerTaskStatisticDTO;
-import de.unistuttgart.overworldbackend.data.PlayerTaskStatisticData;
-import de.unistuttgart.overworldbackend.data.PlayerTeleportData;
+import de.unistuttgart.overworldbackend.data.PlayerTeleporterData;
 import de.unistuttgart.overworldbackend.service.PlayerStatisticService;
-import de.unistuttgart.overworldbackend.service.PlayerTaskStatisticService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
@@ -17,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Submit statistic", description = "Submit statistics")
 @RestController
 @Slf4j
-@RequestMapping("/internal")
+@RequestMapping("/courses/{courseId}/teleporters")
 public class TeleporterInputController {
 
     @Autowired
@@ -26,14 +23,15 @@ public class TeleporterInputController {
     @Autowired
     private PlayerStatisticService playerStatisticService;
 
-    @Operation(summary = "Submit change of teleporter status")
-    @PostMapping("/submit-teleporter-pass")
+    @Operation(summary = "Add a teleporter to a players unlocked teleporter list")
+    @PostMapping("")
     public PlayerStatisticDTO inputData(
-        @Valid @RequestBody final PlayerTeleportData data,
+        @PathVariable final int courseId,
+        @Valid @RequestBody final PlayerTeleporterData data,
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("submitted data from teleporter unlock {}", data);
-        return playerStatisticService.addUnlockedTeleporter(data);
+        return playerStatisticService.addUnlockedTeleporter(courseId, data);
     }
 }

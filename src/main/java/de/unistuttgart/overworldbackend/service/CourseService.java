@@ -9,7 +9,6 @@ import de.unistuttgart.overworldbackend.client.FinitequizClient;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
-import de.unistuttgart.overworldbackend.data.config.TeleporterConfig;
 import de.unistuttgart.overworldbackend.data.config.WorldConfig;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
@@ -149,7 +148,6 @@ public class CourseService {
         final Set<MinigameTask> minigames = new HashSet<>();
         final Set<NPC> npcs = new HashSet<>();
         final Set<Book> books = new HashSet<>();
-        final Set<Teleporter> teleporters = new HashSet<>();
         final List<Dungeon> dungeons = new ArrayList<>();
         final AtomicInteger dungeonId = new AtomicInteger(1);
         worldConfig
@@ -167,16 +165,6 @@ public class CourseService {
             final Book book = new Book("", bookIndex);
             books.add(book);
         }
-        int teleporterIndex = 1;
-        for (TeleporterConfig teleporterConfig : worldConfig.getTeleporters()) {
-            final Teleporter teleporter = new Teleporter(
-                teleporterConfig.getName(),
-                new Position(teleporterConfig.getX(), teleporterConfig.getY()),
-                teleporterIndex
-            );
-            teleporters.add(teleporter);
-            teleporterIndex++;
-        }
         final World world = new World(
             worldConfig.getStaticName(),
             "",
@@ -184,7 +172,6 @@ public class CourseService {
             minigames,
             npcs,
             books,
-            teleporters,
             dungeons,
             worldId
         );
@@ -195,7 +182,6 @@ public class CourseService {
         final Set<MinigameTask> minigames = new HashSet<>();
         final Set<NPC> npcs = new HashSet<>();
         final Set<Book> books = new HashSet<>();
-        final Set<Teleporter> teleporters = new HashSet<>();
         for (int minigameIndex = 1; minigameIndex <= dungeonConfig.getNumberOfMinigames(); minigameIndex++) {
             final MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
             minigames.add(minigame);
@@ -208,17 +194,7 @@ public class CourseService {
             final Book book = new Book("", bookIndex);
             books.add(book);
         }
-        int teleporterIndex = 1;
-        for (TeleporterConfig teleporterConfig : dungeonConfig.getTeleporters()) {
-            final Teleporter teleporter = new Teleporter(
-                teleporterConfig.getName(),
-                new Position(teleporterConfig.getX(), teleporterConfig.getY()),
-                teleporterIndex
-            );
-            teleporters.add(teleporter);
-            teleporterIndex++;
-        }
-        return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, books, teleporters, dungeonId);
+        return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, books, dungeonId);
     }
 
     public CourseCloneDTO cloneCourse(
@@ -275,11 +251,6 @@ public class CourseService {
             oldWorld.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
             oldWorld.getBooks().parallelStream().map(this::cloneBook).collect(Collectors.toCollection(HashSet::new)),
             oldWorld
-                .getTeleporters()
-                .parallelStream()
-                .map(this::cloneTeleporter)
-                .collect(Collectors.toCollection(HashSet::new)),
-            oldWorld
                 .getDungeons()
                 .parallelStream()
                 .map(dungeon -> cloneDungeon(dungeon, accessToken))
@@ -313,11 +284,6 @@ public class CourseService {
                 .collect(Collectors.toCollection(HashSet::new)),
             oldDungeon.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
             oldDungeon.getBooks().parallelStream().map(this::cloneBook).collect(Collectors.toCollection(HashSet::new)),
-            oldDungeon
-                .getTeleporters()
-                .parallelStream()
-                .map(this::cloneTeleporter)
-                .collect(Collectors.toCollection(HashSet::new)),
             oldDungeon.getIndex()
         );
         dungeon.setConfigured(
@@ -335,14 +301,6 @@ public class CourseService {
 
     private Book cloneBook(final Book book) {
         return new Book(book.getText(), book.getDescription(), book.getIndex());
-    }
-
-    private Teleporter cloneTeleporter(final Teleporter teleporter) {
-        return new Teleporter(
-            teleporter.getName(),
-            new Position(teleporter.getPosition().getX(), teleporter.getPosition().getY()),
-            teleporter.getIndex()
-        );
     }
 
     private MinigameTask cloneMinigameTask(final MinigameTask minigameTask, final String accessToken) {

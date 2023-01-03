@@ -14,5 +14,4 @@ public class WorldConfig {
     int numberOfMinigames;
     int numberOfNPCs;
     int numberOfBooks;
-    List<TeleporterConfig> teleporters;
 }

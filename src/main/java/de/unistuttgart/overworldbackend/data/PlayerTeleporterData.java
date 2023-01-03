@@ -1,9 +1,5 @@
 package de.unistuttgart.overworldbackend.data;
 
-import de.unistuttgart.overworldbackend.data.enums.Minigame;
-import java.util.UUID;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,12 +14,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PlayerTeleportData {
+public class PlayerTeleporterData {
 
     @NotNull
-    UUID teleporterId;
+    int index;
 
-    boolean completed;
+    @NotNull
+    AreaLocationDTO areaLocationDTO;
 
     @NotNull
     String userId;

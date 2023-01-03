@@ -33,11 +33,10 @@ public class World extends Area {
         final Set<MinigameTask> minigameTasks,
         final Set<NPC> npcs,
         final Set<Book> books,
-        final Set<Teleporter> teleporters,
         final List<Dungeon> dungeons,
         final int index
     ) {
-        super(staticName, topicName, active, minigameTasks, npcs, books, teleporters, index);
+        super(staticName, topicName, active, minigameTasks, npcs, books, index);
         this.dungeons = dungeons;
     }
 
@@ -49,11 +48,10 @@ public class World extends Area {
         final Set<MinigameTask> minigameTasks,
         final Set<NPC> npcs,
         final Set<Book> books,
-        final Set<Teleporter> teleporters,
         final List<Dungeon> dungeons,
         final int index
     ) {
-        super(staticName, topicName, active, configured, minigameTasks, npcs, books, teleporters, index);
+        super(staticName, topicName, active, configured, minigameTasks, npcs, books, index);
         this.dungeons = dungeons;
     }
 

@@ -20,7 +20,5 @@ public class TeleporterDTO {
     UUID id;
 
     int index;
-    String name;
     AreaLocationDTO area;
-    Position position;
 }

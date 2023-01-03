@@ -68,10 +68,6 @@ public class Area {
     @OneToMany(cascade = CascadeType.ALL)
     Set<Book> books = new HashSet<>();
 
-    @JsonManagedReference(value = "area-teleporters")
-    @OneToMany(cascade = CascadeType.ALL)
-    Set<Teleporter> teleporters = new HashSet<>();
-
     @ManyToOne
     Course course;
 
@@ -82,7 +78,6 @@ public class Area {
         final Set<MinigameTask> minigameTasks,
         final Set<NPC> npcs,
         final Set<Book> books,
-        final Set<Teleporter> teleporters,
         final int index
     ) {
         this.staticName = staticName;
@@ -91,7 +86,6 @@ public class Area {
         this.minigameTasks = minigameTasks;
         this.npcs = npcs;
         this.books = books;
-        this.teleporters = teleporters;
         this.index = index;
     }
 
@@ -103,7 +97,6 @@ public class Area {
         final Set<MinigameTask> minigameTasks,
         final Set<NPC> npcs,
         final Set<Book> books,
-        final Set<Teleporter> teleporters,
         final int index
     ) {
         this.staticName = staticName;
@@ -113,7 +106,6 @@ public class Area {
         this.minigameTasks = minigameTasks;
         this.npcs = npcs;
         this.books = books;
-        this.teleporters = teleporters;
         this.index = index;
     }
 

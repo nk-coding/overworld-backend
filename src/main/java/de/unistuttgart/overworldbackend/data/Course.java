@@ -103,11 +103,5 @@ public class Course {
                 book.setCourse(this);
                 book.setArea(area);
             });
-        area
-            .getTeleporters()
-            .forEach(teleporter -> {
-                teleporter.setCourse(this);
-                teleporter.setArea(area);
-            });
     }
 }
