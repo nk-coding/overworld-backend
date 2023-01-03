@@ -10,8 +10,13 @@
           "teleporters": [
             {
               "name": "teleporter1",
-              "x": 59,
-              "y": 91
+              "x": 14,
+              "y": 7
+            },
+            {
+              "name": "teleporter2",
+              "x": 24,
+              "y": 10
             }
           ]
         },
