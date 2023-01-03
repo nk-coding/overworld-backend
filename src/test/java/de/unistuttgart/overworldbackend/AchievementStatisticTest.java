@@ -130,14 +130,14 @@ class AchievementStatisticTest {
         ));
 
         assertSame(AchievementTitle.values().length, achievementStatistics.size());
-        for (AchievementTitle title : AchievementTitle.values()) {
+        for (final AchievementTitle title : AchievementTitle.values()) {
             assertTrue(achievementStatistics.stream().anyMatch(statistic -> statistic.getAchievement().getAchievementTitle().equals(title)));
         }
     }
 
     @Test
     void getPlayerAchievement() throws Exception {
-        AchievementTitle achievementTitle = AchievementTitle.GO_FOR_A_WALK;
+        final AchievementTitle achievementTitle = AchievementTitle.GO_FOR_A_WALK;
         final MvcResult result = mvc
                 .perform(
                         get(fullURL + "/achievements/" + achievementTitle)
@@ -179,5 +179,94 @@ class AchievementStatisticTest {
         );
         assertSame(achievementTitle, updatedAchievementStatisticDTO.getAchievement().getAchievementTitle());
         assertSame(achievementStatisticDTO.getProgress(), updatedAchievementStatisticDTO.getProgress());
+    }
+
+    @Test
+    void updatePlayerAchievement_WrongTitle_ThrowsBadRequest() throws Exception {
+        final AchievementStatisticDTO achievementStatisticDTO = new AchievementStatisticDTO();
+        final String bodyValue = objectMapper.writeValueAsString(achievementStatisticDTO);
+        final MvcResult result = mvc
+                .perform(
+                        put(fullURL + "/achievements/notExistingTitle")
+                                .cookie(cookie)
+                                .content(bodyValue)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    void updatePlayerAchievement_InvalidProgress_ThrowsBadRequest() throws Exception {
+        final AchievementTitle achievementTitle = AchievementTitle.GO_FOR_A_WALK;
+        final AchievementStatistic achievementStatistic = initialPlayer.getAchievementStatistics()
+                .stream().filter(statistic -> statistic.getAchievement().getAchievementTitle() == achievementTitle).findFirst().get();
+
+        final AchievementStatisticDTO achievementStatisticDTO = achievementStatisticMapper.achievementStatisticToAchievementStatisticDTO(achievementStatistic);
+        achievementStatisticDTO.setProgress(achievementStatisticDTO.getProgress() - 1);
+        final String bodyValue = objectMapper.writeValueAsString(achievementStatisticDTO);
+        final MvcResult result = mvc
+                .perform(
+                        put(fullURL + "/achievements/" + achievementTitle)
+                                .cookie(cookie)
+                                .content(bodyValue)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    void updatePlayerAchievement_UpdateCompletedFlag() throws Exception {
+        final AchievementTitle achievementTitle = AchievementTitle.GO_FOR_A_WALK;
+        final AchievementStatistic achievementStatistic = initialPlayer.getAchievementStatistics()
+                .stream().filter(statistic -> statistic.getAchievement().getAchievementTitle() == achievementTitle).findFirst().get();
+
+        final AchievementStatisticDTO achievementStatisticDTO = achievementStatisticMapper.achievementStatisticToAchievementStatisticDTO(achievementStatistic);
+        achievementStatisticDTO.setProgress(achievementStatistic.getAchievement().getAmountRequired());
+        final String bodyValue = objectMapper.writeValueAsString(achievementStatisticDTO);
+        final MvcResult result = mvc
+                .perform(
+                        put(fullURL + "/achievements/" + achievementTitle)
+                                .cookie(cookie)
+                                .content(bodyValue)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final AchievementStatisticDTO updatedAchievementStatisticDTO = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                AchievementStatisticDTO.class
+        );
+        assertSame(achievementTitle, updatedAchievementStatisticDTO.getAchievement().getAchievementTitle());
+        assertTrue(updatedAchievementStatisticDTO.isCompleted());
+    }
+
+    @Test
+    void updatePlayerAchievement_NotUpdateCompletedFlag() throws Exception {
+        final AchievementTitle achievementTitle = AchievementTitle.GO_FOR_A_WALK;
+        final AchievementStatistic achievementStatistic = initialPlayer.getAchievementStatistics()
+                .stream().filter(statistic -> statistic.getAchievement().getAchievementTitle() == achievementTitle).findFirst().get();
+
+        final AchievementStatisticDTO achievementStatisticDTO = achievementStatisticMapper.achievementStatisticToAchievementStatisticDTO(achievementStatistic);
+        achievementStatisticDTO.setProgress(achievementStatistic.getAchievement().getAmountRequired() - 1);
+        final String bodyValue = objectMapper.writeValueAsString(achievementStatisticDTO);
+        final MvcResult result = mvc
+                .perform(
+                        put(fullURL + "/achievements/" + achievementTitle)
+                                .cookie(cookie)
+                                .content(bodyValue)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final AchievementStatisticDTO updatedAchievementStatisticDTO = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                AchievementStatisticDTO.class
+        );
+        assertSame(achievementTitle, updatedAchievementStatisticDTO.getAchievement().getAchievementTitle());
+        assertFalse(updatedAchievementStatisticDTO.isCompleted());
     }
 }
