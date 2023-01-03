@@ -10,14 +10,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
-import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
-import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
+import de.unistuttgart.overworldbackend.data.mapper.NPCMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
-import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
-import de.unistuttgart.overworldbackend.service.PlayerTaskStatisticService;
+import de.unistuttgart.overworldbackend.service.PlayerNPCStatisticService;
 import java.util.*;
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
@@ -40,7 +38,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Transactional
 @SpringBootTest
 @Testcontainers
-class PlayerInitialDataTaskStatisticControllerTest {
+class PlayerNPCStatisticControllerTest {
 
     @Container
     public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
@@ -67,10 +65,10 @@ class PlayerInitialDataTaskStatisticControllerTest {
     private CourseRepository courseRepository;
 
     @Autowired
-    private PlayerStatisticRepository playerStatisticRepository;
+    private PlayerStatisticRepository playerstatisticRepository;
 
     @Autowired
-    private PlayerTaskStatisticService playerTaskStatisticService;
+    private PlayerNPCStatisticService playerNPCStatisticService;
 
     @Autowired
     private CourseMapper courseMapper;
@@ -79,7 +77,7 @@ class PlayerInitialDataTaskStatisticControllerTest {
     private PlayerStatisticMapper playerstatisticMapper;
 
     @Autowired
-    private MinigameTaskMapper minigameTaskMapper;
+    private NPCMapper npcMapper;
 
     private String fullURL;
     private String fullURLWithoutPlayerId;
@@ -91,54 +89,39 @@ class PlayerInitialDataTaskStatisticControllerTest {
     private PlayerStatistic initialPlayerStatistic;
     private PlayerStatisticDTO initialPlayerStatisticDTO;
 
-    private MinigameTask initialMinigameTask;
+    private NPC initialNPC;
 
-    private MinigameTaskDTO initialMinigameTaskDTO;
-
-    @Autowired
-    private MinigameTaskRepository minigameTaskRepository;
+    private NPCDTO initialNpcDTO;
 
     @BeforeEach
     public void createBasicData() {
         courseRepository.deleteAll();
 
-        final MinigameTask minigameTask1 = new MinigameTask();
-        minigameTask1.setConfigurationId(UUID.randomUUID());
-        minigameTask1.setGame(Minigame.BUGFINDER);
-        minigameTask1.setIndex(1);
-
-        final MinigameTask minigameTask2 = new MinigameTask();
-        minigameTask2.setConfigurationId(UUID.randomUUID());
-        minigameTask2.setGame(Minigame.CHICKENSHOCK);
-        minigameTask2.setIndex(2);
-
-        final MinigameTask minigameTask3 = new MinigameTask();
-        minigameTask2.setConfigurationId(UUID.randomUUID());
-        minigameTask2.setGame(Minigame.CROSSWORDPUZZLE);
-        minigameTask2.setIndex(3);
-
-        final Set<MinigameTask> worldMinigameTasks = new HashSet<>();
-        worldMinigameTasks.add(minigameTask1);
-        worldMinigameTasks.add(minigameTask2);
-
-        final Set<MinigameTask> dungeonMinigameTasks = new HashSet<>();
-        dungeonMinigameTasks.add(minigameTask3);
-
         final Dungeon dungeon = new Dungeon();
         dungeon.setStaticName("Dark Dungeon");
         dungeon.setTopicName("Dark UML");
         dungeon.setActive(true);
-        dungeon.setMinigameTasks(dungeonMinigameTasks);
+        dungeon.setMinigameTasks(Set.of());
         dungeon.setNpcs(Set.of());
         dungeon.setBooks(Set.of());
         final List<Dungeon> dungeons = new ArrayList<>();
+
+        final List<String> npcText = new ArrayList<>();
+        npcText.add("NPCText");
+
+        final NPC npc = new NPC();
+        npc.setText(npcText);
+        npc.setIndex(1);
+
+        final Set<NPC> npcs = new HashSet<>();
+        npcs.add(npc);
 
         final World world = new World();
         world.setStaticName("Winter Wonderland");
         world.setTopicName("UML Winter");
         world.setActive(true);
-        world.setMinigameTasks(worldMinigameTasks);
-        world.setNpcs(Set.of());
+        world.setMinigameTasks(Set.of());
+        world.setNpcs(npcs);
         world.setDungeons(dungeons);
         world.setBooks(Set.of());
         final List<World> worlds = new ArrayList<>();
@@ -146,36 +129,41 @@ class PlayerInitialDataTaskStatisticControllerTest {
 
         final Course course = new Course("PSE", "SS-22", "Basic lecture of computer science students", true, worlds);
 
-        initialCourse = courseRepository.save(course);
-        initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
-
-        initialMinigameTask =
-            initialCourse.getWorlds().stream().findFirst().get().getMinigameTasks().stream().findFirst().get();
-        initialMinigameTaskDTO = minigameTaskMapper.minigameTaskToMinigameTaskDTO(initialMinigameTask);
-
         final PlayerStatistic playerstatistic = new PlayerStatistic();
         playerstatistic.setUserId("45h23o2j432");
         playerstatistic.setUsername("testUser");
-        playerstatistic.setCourse(initialCourse);
-        playerstatistic.setCurrentArea(initialCourse.getWorlds().stream().findFirst().get());
+        playerstatistic.setCourse(course);
+        playerstatistic.setCurrentArea(world);
         playerstatistic.setKnowledge(new Random(10).nextLong());
         playerstatistic.setUnlockedAreas(new ArrayList<>());
         playerstatistic.setCompletedDungeons(new ArrayList<>());
-        initialPlayerStatistic = playerStatisticRepository.save(playerstatistic);
+        course.addPlayerStatistic(playerstatistic);
+
+        initialCourse = courseRepository.save(course);
+        initialCourseDTO = courseMapper.courseToCourseDTO(initialCourse);
+
+        initialPlayerStatistic = course.getPlayerStatistics().stream().findAny().get();
         initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
+
+        initialNPC = initialCourse.getWorlds().stream().findFirst().get().getNpcs().stream().findFirst().get();
+        initialNpcDTO = npcMapper.npcToNPCDTO(initialNPC);
 
         assertNotNull(initialCourse.getCourseName());
 
-        assertEquals(initialCourse.getId(), initialMinigameTask.getCourse().getId());
+        assertEquals(initialCourse.getId(), initialNPC.getCourse().getId());
         assertEquals(initialCourse.getId(), initialPlayerStatistic.getCourse().getId());
+
+        assertEquals(initialCourse, initialNPC.getCourse());
+        assertEquals(initialCourse.getWorlds().stream().findFirst().get(), initialNPC.getArea());
+
         fullURL =
             String.format(
-                "/courses/%d/playerstatistics/%s/player-task-statistics",
+                "/courses/%d/playerstatistics/%s/player-npc-statistics",
                 initialCourse.getId(),
                 initialPlayerStatistic.getUserId()
             );
         fullURLWithoutPlayerId =
-            String.format("/courses/%d/playerstatistics/player-task-statistics", initialCourse.getId());
+            String.format("/courses/%d/playerstatistics/player-npc-statistics", initialCourse.getId());
 
         objectMapper = new ObjectMapper();
 
@@ -184,58 +172,43 @@ class PlayerInitialDataTaskStatisticControllerTest {
     }
 
     @Test
-    void getTaskStatistics() throws Exception {
-        final PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
-            new PlayerTaskStatisticData(
-                initialMinigameTask.getGame(),
-                initialMinigameTask.getConfigurationId(),
-                80,
-                initialPlayerStatisticDTO.getUserId()
-            )
+    void getNPCStatistics() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
         );
 
         final MvcResult result = mvc
-            .perform(get(fullURL).contentType(MediaType.APPLICATION_JSON).cookie(cookie))
+            .perform(get(fullURL).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn();
 
-        final List<PlayerTaskStatisticDTO> playerTaskStatisticDTOs = Arrays.asList(
-            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerTaskStatisticDTO[].class)
+        final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
+            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
         );
-        assertEquals(playerTaskStatisticDTOs.get(0), statistic);
+        assertEquals(statistic, playerNPCStatisticDTOs.get(0));
     }
 
     @Test
-    void getOwnTaskStatistics() throws Exception {
-        final PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
-            new PlayerTaskStatisticData(
-                initialMinigameTask.getGame(),
-                initialMinigameTask.getConfigurationId(),
-                80,
-                initialPlayerStatisticDTO.getUserId()
-            )
+    void getOwnNPCStatistics() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
         );
 
         final MvcResult result = mvc
-            .perform(get(fullURLWithoutPlayerId).contentType(MediaType.APPLICATION_JSON).cookie(cookie))
+            .perform(get(fullURLWithoutPlayerId).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn();
 
-        final List<PlayerTaskStatisticDTO> playerTaskStatisticDTOs = Arrays.asList(
-            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerTaskStatisticDTO[].class)
+        final List<PlayerNPCStatisticDTO> playerNPCStatisticDTOs = Arrays.asList(
+            objectMapper.readValue(result.getResponse().getContentAsString(), PlayerNPCStatisticDTO[].class)
         );
-        assertEquals(playerTaskStatisticDTOs.get(0), statistic);
+        assertEquals(statistic, playerNPCStatisticDTOs.get(0));
     }
 
     @Test
-    void getTaskStatistic() throws Exception {
-        final PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
-            new PlayerTaskStatisticData(
-                initialMinigameTask.getGame(),
-                initialMinigameTask.getConfigurationId(),
-                80,
-                initialPlayerStatisticDTO.getUserId()
-            )
+    void getNPCStatistic() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
         );
 
         final MvcResult result = mvc
@@ -243,25 +216,20 @@ class PlayerInitialDataTaskStatisticControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        final PlayerTaskStatisticDTO playerTaskStatisticDTO = objectMapper.readValue(
+        final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            PlayerTaskStatisticDTO.class
+            PlayerNPCStatisticDTO.class
         );
-        assertEquals(statistic, playerTaskStatisticDTO);
-        assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());
-        assertNotNull(playerTaskStatisticDTO.getMinigameTask().getArea());
-        assertEquals(initialMinigameTaskDTO.getArea(), playerTaskStatisticDTO.getMinigameTask().getArea());
+        assertEquals(statistic, playerNPCStatisticDTO);
+        assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
+        assertNotNull(playerNPCStatisticDTO.getNpc().getArea());
+        assertEquals(initialNpcDTO.getArea(), playerNPCStatisticDTO.getNpc().getArea());
     }
 
     @Test
-    void getOwnTaskStatistic() throws Exception {
-        final PlayerTaskStatisticDTO statistic = playerTaskStatisticService.submitData(
-            new PlayerTaskStatisticData(
-                initialMinigameTask.getGame(),
-                initialMinigameTask.getConfigurationId(),
-                80,
-                initialPlayerStatisticDTO.getUserId()
-            )
+    void getOwnNPCStatistic() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
         );
 
         final MvcResult result = mvc
@@ -273,20 +241,25 @@ class PlayerInitialDataTaskStatisticControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        final PlayerTaskStatisticDTO playerTaskStatisticDTO = objectMapper.readValue(
+        final PlayerNPCStatisticDTO playerNPCStatisticDTO = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            PlayerTaskStatisticDTO.class
+            PlayerNPCStatisticDTO.class
         );
-        assertEquals(statistic, playerTaskStatisticDTO);
-        assertEquals(initialMinigameTaskDTO, playerTaskStatisticDTO.getMinigameTask());
-        assertNotNull(playerTaskStatisticDTO.getMinigameTask().getArea());
-        assertEquals(initialMinigameTaskDTO.getArea(), playerTaskStatisticDTO.getMinigameTask().getArea());
+        assertEquals(statistic, playerNPCStatisticDTO);
+        assertEquals(initialNpcDTO, playerNPCStatisticDTO.getNpc());
+        assertNotNull(playerNPCStatisticDTO.getNpc().getArea());
+        assertEquals(initialNpcDTO.getArea(), playerNPCStatisticDTO.getNpc().getArea());
     }
 
     @Test
-    void getTaskStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
-        mvc
+    void getNPCStatistic_DoesNotExist_ThrowsNotFound() throws Exception {
+        final PlayerNPCStatisticDTO statistic = playerNPCStatisticService.submitData(
+            new PlayerNPCStatisticData(initialNPC.getId(), true, initialPlayerStatistic.getUserId())
+        );
+
+        final MvcResult result = mvc
             .perform(get(fullURL + "/" + UUID.randomUUID()).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound())
+            .andReturn();
     }
 }
