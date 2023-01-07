@@ -126,7 +126,7 @@ class TeleporterInputControllerTest {
         playerstatistic.setKnowledge(new Random(10).nextLong());
         playerstatistic.setUnlockedAreas(new ArrayList<>());
         playerstatistic.setCompletedDungeons(new ArrayList<>());
-        playerstatistic.setUnlockedTeleporters(new ArrayList<>());
+        playerstatistic.setUnlockedTeleporters(new HashSet<>());
         initialPlayerStatistic = playerstatisticRepository.save(playerstatistic);
         initialPlayerStatisticDTO = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(initialPlayerStatistic);
 
