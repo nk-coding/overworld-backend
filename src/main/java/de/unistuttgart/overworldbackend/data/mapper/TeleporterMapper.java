@@ -7,7 +7,7 @@ import de.unistuttgart.overworldbackend.data.TeleporterDTO;
 import java.util.Set;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = { AreaLocationMapper.class })
+@Mapper(componentModel = "spring", uses = AreaLocationMapper.class)
 public interface TeleporterMapper {
     TeleporterDTO teleporterToTeleporterDTO(final Teleporter teleporter);
 

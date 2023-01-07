@@ -34,7 +34,7 @@ public class PlayerStatistic {
     List<Area> completedDungeons;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    List<Teleporter> unlockedTeleporters;
+    Set<Teleporter> unlockedTeleporters;
 
     @ManyToOne(cascade = CascadeType.ALL)
     Area currentArea;

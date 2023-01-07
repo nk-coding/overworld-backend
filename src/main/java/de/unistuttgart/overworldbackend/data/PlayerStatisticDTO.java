@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class PlayerStatisticDTO {
     List<AreaLocationDTO> unlockedAreas;
 
     List<AreaLocationDTO> completedDungeons;
-    List<TeleporterDTO> unlockedTeleporters;
+    Set<TeleporterDTO> unlockedTeleporters;
 
     AreaLocationDTO currentArea;
 

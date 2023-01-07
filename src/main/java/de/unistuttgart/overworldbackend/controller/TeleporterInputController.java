@@ -31,7 +31,7 @@ public class TeleporterInputController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        log.debug("submitted data from teleporter unlock {}", data);
+        log.debug("request to update unlocked teleporters for course {} with {}", courseId, data);
         return playerStatisticService.addUnlockedTeleporter(courseId, data);
     }
 }

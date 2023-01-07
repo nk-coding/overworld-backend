@@ -14,7 +14,6 @@ import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.data.mapper.TeleporterMapper;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
-
 import java.util.*;
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
@@ -142,6 +141,7 @@ class TeleporterInputControllerTest {
 
     @Test
     void submitTeleporterData() throws Exception {
+        assertSame(0, initialPlayerStatistic.getUnlockedTeleporters().size());
         final PlayerTeleporterData playerTeleporterData = new PlayerTeleporterData();
         playerTeleporterData.setUserId(initialPlayerStatistic.getUserId());
         playerTeleporterData.setIndex(1);
@@ -150,12 +150,7 @@ class TeleporterInputControllerTest {
         final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 
         final MvcResult result = mvc
-            .perform(
-                post(fullURL)
-                    .cookie(cookie)
-                    .content(bodyValue)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
+            .perform(post(fullURL).cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -179,12 +174,7 @@ class TeleporterInputControllerTest {
         final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 
         final MvcResult result = mvc
-            .perform(
-                post(fullURL)
-                    .cookie(cookie)
-                    .content(bodyValue)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
+            .perform(post(fullURL).cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -205,12 +195,7 @@ class TeleporterInputControllerTest {
         final String bodyValue2 = objectMapper.writeValueAsString(playerTeleporterData2);
 
         mvc
-            .perform(
-                post(fullURL)
-                    .cookie(cookie)
-                    .content(bodyValue2)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
+            .perform(post(fullURL).cookie(cookie).content(bodyValue2).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 
@@ -224,12 +209,7 @@ class TeleporterInputControllerTest {
         final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 
         mvc
-            .perform(
-                post(fullURL)
-                    .cookie(cookie)
-                    .content(bodyValue)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
+            .perform(post(fullURL).cookie(cookie).content(bodyValue).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }
 }
