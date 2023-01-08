@@ -133,7 +133,7 @@ public class PlayerStatisticService {
                 teleporter.getIndex() == playerTeleporterData.getIndex() &&
                 areaLocationMapper
                     .areaToAreaLocationDTO(teleporter.getArea())
-                    .equals(playerTeleporterData.getAreaLocationDTO())
+                    .equals(playerTeleporterData.getArea())
             )
             .findAny()
             .ifPresent(teleporter -> {
@@ -142,14 +142,14 @@ public class PlayerStatisticService {
                     String.format(
                         "Teleporter with name %s in area with id %s is already unlocked.",
                         playerTeleporterData.getIndex(),
-                        playerTeleporterData.getAreaLocationDTO()
+                        playerTeleporterData.getArea()
                     )
                 );
             });
         playerStatistic.addUnlockedTeleporter(
             new Teleporter(
                 playerTeleporterData.getIndex(),
-                areaService.getAreaFromAreaLocationDTO(courseId, playerTeleporterData.getAreaLocationDTO())
+                areaService.getAreaFromAreaLocationDTO(courseId, playerTeleporterData.getArea())
             )
         );
         return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(

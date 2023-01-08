@@ -145,7 +145,7 @@ class TeleporterInputControllerTest {
         final PlayerTeleporterData playerTeleporterData = new PlayerTeleporterData();
         playerTeleporterData.setUserId(initialPlayerStatistic.getUserId());
         playerTeleporterData.setIndex(1);
-        playerTeleporterData.setAreaLocationDTO(initialAreaLocationDTO);
+        playerTeleporterData.setArea(initialAreaLocationDTO);
 
         final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 
@@ -160,7 +160,7 @@ class TeleporterInputControllerTest {
         );
         assertSame(1, playerStatisticDTO.getUnlockedTeleporters().size());
         TeleporterDTO teleporter = playerStatisticDTO.getUnlockedTeleporters().stream().findFirst().get();
-        assertEquals(playerTeleporterData.getAreaLocationDTO(), teleporter.getArea());
+        assertEquals(playerTeleporterData.getArea(), teleporter.getArea());
         assertSame(playerTeleporterData.getIndex(), teleporter.getIndex());
     }
 
@@ -169,7 +169,7 @@ class TeleporterInputControllerTest {
         final PlayerTeleporterData playerTeleporterData = new PlayerTeleporterData();
         playerTeleporterData.setUserId(initialPlayerStatistic.getUserId());
         playerTeleporterData.setIndex(1);
-        playerTeleporterData.setAreaLocationDTO(initialAreaLocationDTO);
+        playerTeleporterData.setArea(initialAreaLocationDTO);
 
         final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 
@@ -184,13 +184,13 @@ class TeleporterInputControllerTest {
         );
         assertSame(1, playerStatisticDTO.getUnlockedTeleporters().size());
         TeleporterDTO teleporter = playerStatisticDTO.getUnlockedTeleporters().stream().findFirst().get();
-        assertEquals(playerTeleporterData.getAreaLocationDTO(), teleporter.getArea());
+        assertEquals(playerTeleporterData.getArea(), teleporter.getArea());
         assertSame(playerTeleporterData.getIndex(), teleporter.getIndex());
 
         final PlayerTeleporterData playerTeleporterData2 = new PlayerTeleporterData();
         playerTeleporterData.setUserId(initialPlayerStatistic.getUserId());
         playerTeleporterData.setIndex(1);
-        playerTeleporterData.setAreaLocationDTO(initialAreaLocationDTO);
+        playerTeleporterData.setArea(initialAreaLocationDTO);
 
         final String bodyValue2 = objectMapper.writeValueAsString(playerTeleporterData2);
 
@@ -204,7 +204,7 @@ class TeleporterInputControllerTest {
         final PlayerTeleporterData playerTeleporterData = new PlayerTeleporterData();
         playerTeleporterData.setUserId(UUID.randomUUID().toString());
         playerTeleporterData.setIndex(1);
-        playerTeleporterData.setAreaLocationDTO(initialAreaLocationDTO);
+        playerTeleporterData.setArea(initialAreaLocationDTO);
 
         final String bodyValue = objectMapper.writeValueAsString(playerTeleporterData);
 

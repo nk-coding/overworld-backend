@@ -20,7 +20,7 @@ public class PlayerTeleporterData {
     int index;
 
     @NotNull
-    AreaLocationDTO areaLocationDTO;
+    AreaLocationDTO area;
 
     @NotNull
     String userId;
