@@ -25,8 +25,12 @@ public class Teleporter {
     @ManyToOne
     Area area;
 
-    public Teleporter(final int index, final Area area) {
+    @ManyToOne
+    Course course;
+
+    public Teleporter(final int index, final Area area, final Course course) {
         this.index = index;
         this.area = area;
+        this.course = course;
     }
 }

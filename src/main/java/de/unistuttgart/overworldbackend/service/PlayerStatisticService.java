@@ -131,9 +131,7 @@ public class PlayerStatisticService {
             .stream()
             .filter(teleporter ->
                 teleporter.getIndex() == playerTeleporterData.getIndex() &&
-                areaLocationMapper
-                    .areaToAreaLocationDTO(teleporter.getArea())
-                    .equals(playerTeleporterData.getArea())
+                areaLocationMapper.areaToAreaLocationDTO(teleporter.getArea()).equals(playerTeleporterData.getArea())
             )
             .findAny()
             .ifPresent(teleporter -> {
@@ -149,7 +147,8 @@ public class PlayerStatisticService {
         playerStatistic.addUnlockedTeleporter(
             new Teleporter(
                 playerTeleporterData.getIndex(),
-                areaService.getAreaFromAreaLocationDTO(courseId, playerTeleporterData.getArea())
+                areaService.getAreaFromAreaLocationDTO(courseId, playerTeleporterData.getArea()),
+                courseService.getCourse(courseId)
             )
         );
         return playerstatisticMapper.playerStatisticToPlayerstatisticDTO(
