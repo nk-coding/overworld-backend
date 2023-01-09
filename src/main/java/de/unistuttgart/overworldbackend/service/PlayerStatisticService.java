@@ -140,7 +140,7 @@ public class PlayerStatisticService {
                 throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     String.format(
-                        "Teleporter with name %s in area with id %s is already unlocked.",
+                        "Teleporter with index %s in area with id %s is already unlocked.",
                         playerTeleporterData.getIndex(),
                         playerTeleporterData.getArea()
                     )

@@ -75,8 +75,6 @@ public class PlayerStatistic {
     }
 
     public void addUnlockedTeleporter(final Teleporter teleporter) {
-        if (!this.unlockedTeleporters.contains(teleporter)) {
-            this.unlockedTeleporters.add(teleporter);
-        }
+        this.unlockedTeleporters.add(teleporter);
     }
 }
