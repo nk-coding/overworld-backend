@@ -96,6 +96,13 @@ services:
     expose:
       - "80"
 
+  lecturer-interface:
+    container_name: lecturer-interface
+    image: ghcr.io/gamify-it/lecturer-interface:main
+    restart: always
+    expose:
+      - "80"
+
   # --- reverse proxy ---
   # The reverse proxy is used to route the requests to the different services.
   # None of the services are exposed to the outside world, but instead this reverse proxy is.
