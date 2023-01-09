@@ -1,24 +1,32 @@
 package de.unistuttgart.overworldbackend.data;
 
-import javax.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-/**
- * Data Transfer Object to receive player details.
- */
-@Data
+@Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Player {
 
-    @NotNull
+    @Id
     String userId;
 
-    @NotNull
     String username;
+
+    @JsonManagedReference(value = "player-achievements")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = AchievementStatistic.class)
+    List<AchievementStatistic> achievementStatistics = new ArrayList<>();
+
+    public Player(String userId, String username) {
+        this.userId = userId;
+        this.username = username;
+    }
 }
