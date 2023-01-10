@@ -20,7 +20,7 @@ public class AreaService {
     private WorldService worldService;
 
     public Area getAreaFromAreaLocationDTO(final int courseId, final AreaLocationDTO areaLocationDTO) {
-        return areaLocationDTO.getDungeonIndex() != null
+        return areaLocationDTO.getDungeonIndex() != null && areaLocationDTO.getDungeonIndex() != 0
             ? dungeonService.getDungeonByIndexFromCourse(
                 courseId,
                 areaLocationDTO.getWorldIndex(),

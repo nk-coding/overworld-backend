@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -57,15 +58,15 @@ public class Area {
 
     @JsonManagedReference(value = "area-minigames")
     @OneToMany(cascade = CascadeType.ALL)
-    Set<MinigameTask> minigameTasks;
+    Set<MinigameTask> minigameTasks = new HashSet<>();
 
     @JsonManagedReference(value = "area-npcs")
     @OneToMany(cascade = CascadeType.ALL)
-    Set<NPC> npcs;
+    Set<NPC> npcs = new HashSet<>();
 
     @JsonManagedReference(value = "area-books")
     @OneToMany(cascade = CascadeType.ALL)
-    Set<Book> books;
+    Set<Book> books = new HashSet<>();
 
     @ManyToOne
     Course course;
