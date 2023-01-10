@@ -81,7 +81,7 @@ services:
   # Note that this container is NOT pulled as a pre-built image, but instead contains your local code.
   # When you change the code, you need to rebuild and restart the container.
   overworld-backend:
-    container_name:   overworld-backend
+    container_name: overworld-backend
     build: .
     restart: always
     expose:
@@ -103,6 +103,13 @@ services:
     image: ghcr.io/gamify-it/landing-page:main
     restart: always
     pull_policy: always
+    expose:
+      - "80"
+
+  lecturer-interface:
+    container_name: lecturer-interface
+    image: ghcr.io/gamify-it/lecturer-interface:main
+    restart: always
     expose:
       - "80"
 
