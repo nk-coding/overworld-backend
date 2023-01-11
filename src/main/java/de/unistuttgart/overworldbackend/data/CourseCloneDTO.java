@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import java.util.List;
+import java.util.Set;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -28,5 +29,5 @@ public class CourseCloneDTO {
     String description;
     boolean active;
     List<WorldDTO> worlds;
-    List<String> errorMessages;
+    Set<String> errorMessages;
 }

@@ -7,7 +7,6 @@ import de.unistuttgart.overworldbackend.data.CourseCloneDTO;
 import de.unistuttgart.overworldbackend.data.CourseDTO;
 import de.unistuttgart.overworldbackend.data.CourseInitialData;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
-import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,9 +27,6 @@ public class CourseController {
     JWTValidatorService jwtValidatorService;
 
     @Autowired
-    private CourseRepository courseRepository;
-
-    @Autowired
     private CourseService courseService;
 
     @Autowired
@@ -41,7 +37,7 @@ public class CourseController {
     public List<CourseDTO> getCourses(@CookieValue("access_token") final String accessToken) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("get courses");
-        return courseMapper.coursesToCourseDTOs(courseRepository.findAll());
+        return courseMapper.coursesToCourseDTOs(courseService.getAllCourses());
     }
 
     @Operation(summary = "Get a course by its id")
