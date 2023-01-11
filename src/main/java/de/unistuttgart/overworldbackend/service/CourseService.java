@@ -376,7 +376,7 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                log.debug((CLONE_ERROR_MESSAGE, e);
+                log.debug(CLONE_ERROR_MESSAGE, e);
                 errorMessages.add("bugfinder-backend not present");
                 return new MinigameTask(Minigame.BUGFINDER, "", null, minigameTask.getIndex());
             }
@@ -441,7 +441,7 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                log.debug((CLONE_ERROR_MESSAGE, e);
+                log.debug(CLONE_ERROR_MESSAGE, e);
                 errorMessages.add("finitequiz-backend not present");
                 return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
             }
@@ -476,7 +476,7 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                log.debug((CLONE_ERROR_MESSAGE, e);
+                log.debug(CLONE_ERROR_MESSAGE, e);
                 errorMessages.add("chickenshock-backend not present");
                 return new MinigameTask(Minigame.CHICKENSHOCK, "", null, minigameTask.getIndex());
             }
