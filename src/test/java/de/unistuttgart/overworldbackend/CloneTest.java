@@ -14,6 +14,7 @@ import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
 import de.unistuttgart.overworldbackend.client.FinitequizClient;
+import de.unistuttgart.overworldbackend.client.TowercrushClient;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
 import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockConfiguration;
@@ -22,6 +23,8 @@ import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.Crossword
 import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleQuestion;
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizQuestion;
+import de.unistuttgart.overworldbackend.data.minigames.towercrush.TowercrushConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.towercrush.TowercrushQuestion;
 import java.io.File;
 import java.net.URI;
 import java.time.Duration;
@@ -86,6 +89,10 @@ public class CloneTest {
         )
         .waitingFor(
             "reverse-proxy",
+            Wait.forHttp("/minigames/towercrush/api/v1/configurations").forPort(80).forStatusCode(400)
+        )
+        .waitingFor(
+            "reverse-proxy",
             Wait.forHttp("/minigames/bugfinder/api/v1/configurations").forPort(80).forStatusCode(200)
         )
         .waitingFor(
@@ -120,6 +127,10 @@ public class CloneTest {
             () -> String.format("http://%s/minigames/finitequiz/api/v1", compose.getServiceHost("reverse-proxy", 80))
         );
         registry.add(
+            "towercrush.url",
+            () -> String.format("http://%s/minigames/towercrush/api/v1", compose.getServiceHost("reverse-proxy", 80))
+        );
+        registry.add(
             "crosswordpuzzle.url",
             () ->
                 String.format("http://%s/minigames/crosswordpuzzle/api/v1", compose.getServiceHost("reverse-proxy", 80))
@@ -146,6 +157,8 @@ public class CloneTest {
 
     @Autowired
     FinitequizClient finitequizClient;
+    @Autowired
+    TowercrushClient towercrushClient;
 
     @Autowired
     private CourseMapper courseMapper;
@@ -378,6 +391,28 @@ public class CloneTest {
                             .stream()
                             .filter(finitequizQuestion1 ->
                                 finitequizQuestion1.getText().equals(finitequizQuestion.getText())
+                            )
+                            .findAny();
+                        assertFalse(question.isEmpty());
+                    });
+            }
+            case TOWERCRUSH -> {
+                final TowercrushConfiguration config1 = towercrushClient.getConfiguration(
+                    access_token,
+                    minigameTask1.getConfigurationId()
+                );
+                final TowercrushConfiguration config2 = towercrushClient.getConfiguration(
+                    access_token,
+                    minigameTask2.getConfigurationId()
+                );
+                config1
+                    .getQuestions()
+                    .forEach(towercrushQuestion -> {
+                        final Optional<TowercrushQuestion> question = config2
+                            .getQuestions()
+                            .stream()
+                            .filter(towercrushQuestion1 ->
+                                towercrushQuestion1.getText().equals(towercrushQuestion.getText())
                             )
                             .findAny();
                         assertFalse(question.isEmpty());

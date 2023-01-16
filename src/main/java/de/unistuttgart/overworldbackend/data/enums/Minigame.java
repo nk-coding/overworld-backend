@@ -5,7 +5,8 @@ public enum Minigame {
     CHICKENSHOCK,
     BUGFINDER,
     CROSSWORDPUZZLE,
-    FINITEQUIZ;
+    FINITEQUIZ,
+    TOWERCRUSH;
 
     /**
      * Checks if a minigame is configured

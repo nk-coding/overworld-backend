@@ -12,6 +12,7 @@ import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
 import de.unistuttgart.overworldbackend.client.FinitequizClient;
+import de.unistuttgart.overworldbackend.client.TowercrushClient;
 import de.unistuttgart.overworldbackend.data.CourseCloneDTO;
 import de.unistuttgart.overworldbackend.data.CourseInitialData;
 import java.io.File;
@@ -88,6 +89,7 @@ public class CloneWithoutBackendsTest {
         );
         registry.add("chickenshock.url", () -> "http://s/minigame/chickenshock/api/v1");
         registry.add("finitequiz.url", () -> "http://s/minigame/chickenshock/api/v1");
+        registry.add("towercrush.url", () -> "http://s/minigame/chickenshock/api/v1");
         registry.add("crosswordpuzzle.url", () -> "http://s/minigame/chickenshock/api/v1");
         registry.add("bugfinder.url", () -> "http://s/minigame/chickenshock/api/v1");
     }
@@ -106,6 +108,9 @@ public class CloneWithoutBackendsTest {
 
     @Autowired
     FinitequizClient finitequizClient;
+
+    @Autowired
+    TowercrushClient towercrushClient;
 
     private String fullURL;
     private ObjectMapper objectMapper;
@@ -171,6 +176,7 @@ public class CloneWithoutBackendsTest {
         final List<String> errorMessages = courseCloneDTO.getErrorMessages();
         assertTrue(errorMessages.contains("chickenshock-backend not present"));
         assertTrue(errorMessages.contains("finitequiz-backend not present"));
+        assertTrue(errorMessages.contains("towercrush-backend not present"));
         assertTrue(errorMessages.contains("crosswordpuzzle-backend not present"));
         assertTrue(errorMessages.contains("bugfinder-backend not present"));
     }

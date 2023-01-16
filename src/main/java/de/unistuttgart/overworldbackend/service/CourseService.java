@@ -6,6 +6,7 @@ import de.unistuttgart.overworldbackend.client.BugfinderClient;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
 import de.unistuttgart.overworldbackend.client.FinitequizClient;
+import de.unistuttgart.overworldbackend.client.TowercrushClient;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
@@ -16,6 +17,7 @@ import de.unistuttgart.overworldbackend.data.minigames.bugfinder.BugfinderConfig
 import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleConfiguration;
 import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
+import de.unistuttgart.overworldbackend.data.minigames.towercrush.TowercrushConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import feign.FeignException;
 import java.io.IOException;
@@ -46,6 +48,8 @@ public class CourseService {
 
     @Autowired
     FinitequizClient finitequizClient;
+    @Autowired
+    TowercrushClient towercrushClient;
 
     @Autowired
     CrosswordpuzzleClient crosswordpuzzleClient;
@@ -313,7 +317,9 @@ public class CourseService {
             case CHICKENSHOCK:
                 return cloneChickenshock(minigameTask, accessToken);
             case FINITEQUIZ:
-                return cloneFinitequiz(minigameTask, accessToken);
+                return cloneFinitequiz(minigameTask, accessToken); 
+            case TOWERCRUSH:
+                return cloneTowercrush(minigameTask, accessToken);
             case CROSSWORDPUZZLE:
                 return cloneCrosswordpuzzle(minigameTask, accessToken);
             case BUGFINDER:
@@ -415,6 +421,34 @@ public class CourseService {
                     log.debug(CLONE_ERROR_MESSAGE, e);
                     errorMessages.add("finitequiz-backend not present");
                     return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
+                }
+            }
+        }
+        return null;
+    }
+    private MinigameTask cloneTowercrush(final MinigameTask minigameTask, final String accessToken) {
+        if (minigameTask.getConfigurationId() == null) {
+            return new MinigameTask(Minigame.TOWERCRUSH, minigameTask.getDescription(), null, minigameTask.getIndex());
+        } else {
+            try {
+                TowercrushConfiguration config = towercrushClient.getConfiguration(
+                    accessToken,
+                    minigameTask.getConfigurationId()
+                );
+                config.setId(null);
+                config.getQuestions().forEach(towercrushQuestion -> towercrushQuestion.setId(null));
+                config = towercrushClient.postConfiguration(accessToken, config);
+                return new MinigameTask(
+                    Minigame.TOWERCRUSH,
+                    minigameTask.getDescription(),
+                    config.getId(),
+                    minigameTask.getIndex()
+                );
+            } catch (final FeignException e) {
+                if (!errorMessages.contains("towercrush-backend not present")) {
+                    log.debug(CLONE_ERROR_MESSAGE, e);
+                    errorMessages.add("towercrush-backend not present");
+                    return new MinigameTask(Minigame.TOWERCRUSH, "", null, minigameTask.getIndex());
                 }
             }
         }

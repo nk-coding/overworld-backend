@@ -13,6 +13,7 @@ services:
         overworld/cloneTestData.sql
         chickenshock/cloneTestData.sql
         finitequiz/cloneTestData.sql
+        towercrush/cloneTestData.sql
         crosswordpuzzle/cloneTestData.sql
         bugfinder/cloneTestData.sql
 
@@ -56,6 +57,16 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   finitequiz-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  towercrush-db:
     image: postgres:14-alpine
     pull_policy: always
     restart: always
@@ -140,6 +151,22 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
+      - OVERWORLD_URL=http://overworld-backend/api/v1
+      - KEYCLOAK_ISSUER=http://${LOCAL_URL}/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
+
+  towercrush-backend:
+    image: ghcr.io/gamify-it/towercrush-backend:main
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - towercrush-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://towercrush-db:5432/postgres
       - OVERWORLD_URL=http://overworld-backend/api/v1
       - KEYCLOAK_ISSUER=http://${LOCAL_URL}/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
