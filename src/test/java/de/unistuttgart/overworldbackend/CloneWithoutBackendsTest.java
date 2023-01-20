@@ -201,7 +201,7 @@ public class CloneWithoutBackendsTest {
             assertTrue(errorMessages.contains("bugfinder-backend not present"));
         }
         if (minigames.contains(Minigame.TOWERCRUSH)) {
-            assertTrue(errorMessages.contains("towercrush-backend not present"))
+            assertTrue(errorMessages.contains("towercrush-backend not present"));
         }
     }
 }
