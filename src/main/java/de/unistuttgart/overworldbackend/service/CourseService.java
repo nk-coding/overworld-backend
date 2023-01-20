@@ -2,11 +2,7 @@ package de.unistuttgart.overworldbackend.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.unistuttgart.overworldbackend.client.BugfinderClient;
-import de.unistuttgart.overworldbackend.client.ChickenshockClient;
-import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
-import de.unistuttgart.overworldbackend.client.FinitequizClient;
-import de.unistuttgart.overworldbackend.client.TowercrushClient;
+import de.unistuttgart.overworldbackend.client.*;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
@@ -453,7 +449,7 @@ public class CourseService {
             }
         }
     }
-    private MinigameTask cloneTowercrush(final MinigameTask minigameTask, final String accessToken) {
+    private MinigameTask cloneTowercrush(final MinigameTask minigameTask, final String accessToken, Set<String> errorMessages) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(Minigame.TOWERCRUSH, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
@@ -472,11 +468,9 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                if (!errorMessages.contains("towercrush-backend not present")) {
-                    log.debug(CLONE_ERROR_MESSAGE, e);
-                    errorMessages.add("towercrush-backend not present");
-                    return new MinigameTask(Minigame.TOWERCRUSH, "", null, minigameTask.getIndex());
-                }
+                log.debug(CLONE_ERROR_MESSAGE, e);
+                errorMessages.add("towercrush-backend not present");
+                return new MinigameTask(Minigame.TOWERCRUSH, "", null, minigameTask.getIndex());
             }
         }
         return null;
