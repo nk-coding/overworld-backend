@@ -473,7 +473,6 @@ public class CourseService {
                 return new MinigameTask(Minigame.TOWERCRUSH, "", null, minigameTask.getIndex());
             }
         }
-        return null;
     }
 
     private MinigameTask cloneChickenshock(
