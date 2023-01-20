@@ -6,6 +6,7 @@ import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.client.ChickenshockClient;
 import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
 import de.unistuttgart.overworldbackend.client.FinitequizClient;
+import de.unistuttgart.overworldbackend.client.TowercrushClient;
 import de.unistuttgart.overworldbackend.data.CourseCloneDTO;
 import de.unistuttgart.overworldbackend.data.CourseInitialData;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
@@ -93,6 +94,7 @@ public class CloneWithoutBackendsTest {
         registry.add("finitequiz.url", () -> "http://1234");
         registry.add("crosswordpuzzle.url", () -> "http://1234");
         registry.add("bugfinder.url", () -> "http://1234");
+        registry.add("towercrush.url", () -> "http://1234");
     }
 
     @Autowired
@@ -109,6 +111,9 @@ public class CloneWithoutBackendsTest {
 
     @Autowired
     FinitequizClient finitequizClient;
+
+    @Autowired
+    TowercrushClient towercrushClient;
 
     private String fullURL;
     private ObjectMapper objectMapper;
@@ -194,6 +199,9 @@ public class CloneWithoutBackendsTest {
         }
         if (minigames.contains(Minigame.BUGFINDER)) {
             assertTrue(errorMessages.contains("bugfinder-backend not present"));
+        }
+        if (minigames.contains(Minigame.TOWERCRUSH)) {
+            assertTrue(errorMessages.contains("towercrush-backend not present"))
         }
     }
 }
