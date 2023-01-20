@@ -25,6 +25,10 @@ public class Player {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = AchievementStatistic.class)
     List<AchievementStatistic> achievementStatistics = new ArrayList<>();
 
+    @JsonManagedReference(value = "player-keybindings")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = KeybindingStatistic.class)
+    List<KeybindingStatistic> keybindingStatistics = new ArrayList<>();
+
     public Player(String userId, String username) {
         this.userId = userId;
         this.username = username;

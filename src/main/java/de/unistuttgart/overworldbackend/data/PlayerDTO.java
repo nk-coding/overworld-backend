@@ -30,4 +30,6 @@ public class PlayerDTO {
     String username;
 
     List<AchievementStatistic> achievementStatistics;
+
+    List<KeybindingStatistic> keybindingStatistics;
 }
