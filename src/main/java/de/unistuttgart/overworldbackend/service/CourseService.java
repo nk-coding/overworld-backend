@@ -222,7 +222,7 @@ public class CourseService {
         final CourseInitialData courseInitialData,
         final String accessToken
     ) {
-        final Set<String> errorMessages = new HashSet<>();
+        final Set<String> errorMessages = Collections.synchronizedSet(new HashSet<>());
         final Course course = getCourse(id);
         final Course cloneCourse = new Course(
             courseInitialData.getCourseName(),
