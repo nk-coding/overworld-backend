@@ -7,15 +7,13 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface KeybindingStatisticMapper {
-        KeybindingStatisticDTO keybindingStatisticToKeybindingDTO(
-            final KeybindingStatistic keybindingStatistic
-        );
+    KeybindingStatisticDTO keybindingStatisticToKeybindingDTO(final KeybindingStatistic keybindingStatistic);
 
-        KeybindingStatistic keybindingStatisticDTOToKeybindingStatistic(
-                final KeybindingStatisticDTO keybindingStatisticDTO
-        );
+    KeybindingStatistic keybindingStatisticDTOToKeybindingStatistic(
+        final KeybindingStatisticDTO keybindingStatisticDTO
+    );
 
-        List<KeybindingStatisticDTO> keybindingStatisticsToKeybindingDTOs(
-                final List<KeybindingStatistic> keybindingStatistics
-        );
+    List<KeybindingStatisticDTO> keybindingStatisticsToKeybindingDTOs(
+        final List<KeybindingStatistic> keybindingStatistics
+    );
 }

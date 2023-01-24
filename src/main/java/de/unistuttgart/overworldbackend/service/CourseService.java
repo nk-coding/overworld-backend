@@ -48,6 +48,7 @@ public class CourseService {
 
     @Autowired
     FinitequizClient finitequizClient;
+
     @Autowired
     TowercrushClient towercrushClient;
 
@@ -317,7 +318,7 @@ public class CourseService {
             case CHICKENSHOCK:
                 return cloneChickenshock(minigameTask, accessToken);
             case FINITEQUIZ:
-                return cloneFinitequiz(minigameTask, accessToken); 
+                return cloneFinitequiz(minigameTask, accessToken);
             case TOWERCRUSH:
                 return cloneTowercrush(minigameTask, accessToken);
             case CROSSWORDPUZZLE:
@@ -426,6 +427,7 @@ public class CourseService {
         }
         return null;
     }
+
     private MinigameTask cloneTowercrush(final MinigameTask minigameTask, final String accessToken) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(Minigame.TOWERCRUSH, minigameTask.getDescription(), null, minigameTask.getIndex());

@@ -1,13 +1,13 @@
 package de.unistuttgart.overworldbackend.data;
 
 import de.unistuttgart.overworldbackend.data.enums.Keybinding;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import reactor.util.annotation.Nullable;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor

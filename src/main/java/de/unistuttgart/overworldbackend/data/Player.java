@@ -22,11 +22,11 @@ public class Player {
     String username;
 
     @JsonManagedReference(value = "player-achievements")
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = AchievementStatistic.class)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = AchievementStatistic.class)
     List<AchievementStatistic> achievementStatistics = new ArrayList<>();
 
     @JsonManagedReference(value = "player-keybindings")
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = KeybindingStatistic.class)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = KeybindingStatistic.class)
     List<KeybindingStatistic> keybindingStatistics = new ArrayList<>();
 
     public Player(String userId, String username) {

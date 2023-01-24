@@ -41,15 +41,12 @@ public class AchievementStatistic {
      * @param newProgress the new progress
      * @throws IllegalArgumentException if the new progress is smaller than the current one
      */
-    public void setProgress(int newProgress)
-    {
-        if(newProgress < progress)
-        {
+    public void setProgress(int newProgress) {
+        if (newProgress < progress) {
             throw new IllegalArgumentException("The new progress cannot be smaller than the current one");
         }
         progress = newProgress;
-        if(progress >= achievement.getAmountRequired())
-        {
+        if (progress >= achievement.getAmountRequired()) {
             completed = true;
         }
     }

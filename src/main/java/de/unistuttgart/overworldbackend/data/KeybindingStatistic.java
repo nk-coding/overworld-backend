@@ -1,9 +1,9 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import de.unistuttgart.overworldbackend.data.enums.Keybinding;
 import java.util.UUID;
 import javax.persistence.*;
-import de.unistuttgart.overworldbackend.data.enums.Keybinding;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -24,9 +24,8 @@ public class KeybindingStatistic {
     @ManyToOne
     Player player;
 
-    @OneToOne
+    @Enumerated
     Keybinding keybinding;
 
     String key;
-
 }
