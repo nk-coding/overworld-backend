@@ -72,7 +72,7 @@ public class CloneTest {
         new File("src/test/resources/docker-compose-test.yaml")
     )
         .withPull(true)
-        .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
+        .withRemoveImages(DockerComposeContainer.RemoveImages.ALL)
         .withEnv("LOCAL_URL", postgresDB.getHost())
         .withExposedService("overworld-db", 5432, Wait.forListeningPort())
         .withExposedService("reverse-proxy", 80)
