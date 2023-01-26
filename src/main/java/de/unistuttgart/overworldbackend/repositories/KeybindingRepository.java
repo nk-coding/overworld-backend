@@ -12,5 +12,5 @@ import org.springframework.stereotype.Repository;
 public interface KeybindingRepository extends JpaRepository<Keybinding, UUID> {
     List<Keybinding> findAllByPlayerUserId(String playerId);
 
-    Optional<Keybinding> findByPlayerUserIdAndKeybinding(final String playerId, final Binding binding);
+    Optional<Keybinding> findByPlayerUserIdAndBinding(final String playerId, final Binding binding);
 }

@@ -37,7 +37,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Transactional
 @SpringBootTest
 @Testcontainers
-public class KeybindingStatisticTest {
+public class KeybindingTest {
 
     @Container
     public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
