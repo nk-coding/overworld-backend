@@ -8,7 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "player_user_id", "keybinding" }) })
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "player_user_id", "binding" }) })
 @Getter
 @Setter
 @NoArgsConstructor
