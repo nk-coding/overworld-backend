@@ -1,6 +1,6 @@
 package de.unistuttgart.overworldbackend.data.enums;
 
-public enum Keybinding {
+public enum Binding {
     MOVE_UP,
     MOVE_RIGHT,
     MOVE_DOWN,

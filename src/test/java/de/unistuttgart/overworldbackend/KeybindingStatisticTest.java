@@ -9,10 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
-import de.unistuttgart.overworldbackend.data.enums.Keybinding;
-import de.unistuttgart.overworldbackend.data.mapper.KeybindingStatisticMapper;
+import de.unistuttgart.overworldbackend.data.enums.Binding;
+import de.unistuttgart.overworldbackend.data.mapper.KeybindingMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerMapper;
-import de.unistuttgart.overworldbackend.repositories.KeybindingStatisticRepository;
+import de.unistuttgart.overworldbackend.repositories.KeybindingRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
 import de.unistuttgart.overworldbackend.service.PlayerService;
 import java.util.List;
@@ -64,10 +64,10 @@ public class KeybindingStatisticTest {
     private PlayerRepository playerRepository;
 
     @Autowired
-    private KeybindingStatisticRepository keybindingStatisticRepository;
+    private KeybindingRepository keybindingRepository;
 
     @Autowired
-    private KeybindingStatisticMapper keybindingStatisticMapper;
+    private KeybindingMapper keybindingMapper;
 
     @Autowired
     private PlayerService playerService;
@@ -113,31 +113,31 @@ public class KeybindingStatisticTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        final List<KeybindingStatisticDTO> keybindingStatistics = List.of(
-            objectMapper.readValue(result.getResponse().getContentAsString(), KeybindingStatisticDTO[].class)
+        final List<KeybindingDTO> keybindingStatistics = List.of(
+            objectMapper.readValue(result.getResponse().getContentAsString(), KeybindingDTO[].class)
         );
 
-        assertSame(Keybinding.values().length, keybindingStatistics.size());
-        for (final Keybinding keybinding : Keybinding.values()) {
+        assertSame(Binding.values().length, keybindingStatistics.size());
+        for (final Binding binding : Binding.values()) {
             assertTrue(
-                keybindingStatistics.stream().anyMatch(statistic -> statistic.getKeybinding().equals(keybinding))
+                keybindingStatistics.stream().anyMatch(statistic -> statistic.getBinding().equals(binding))
             );
         }
     }
 
     @Test
     void getPlayerKeybinding() throws Exception {
-        final Keybinding binding = Keybinding.MOVE_UP;
+        final Binding binding = Binding.MOVE_UP;
         final MvcResult result = mvc
             .perform(get(fullURL + "/keybindings/" + binding).cookie(cookie).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn();
 
-        final KeybindingStatisticDTO keybindingStatisticDTO = objectMapper.readValue(
+        final KeybindingDTO keybindingDTO = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            KeybindingStatisticDTO.class
+            KeybindingDTO.class
         );
-        assertSame(binding, keybindingStatisticDTO.getKeybinding());
+        assertSame(binding, keybindingDTO.getBinding());
     }
 
     @Test
@@ -152,18 +152,18 @@ public class KeybindingStatisticTest {
 
     @Test
     void updatePlayerKeybinding() throws Exception {
-        final Keybinding binding = Keybinding.MOVE_UP;
-        final KeybindingStatistic keybindingStatistic = initialPlayer
-            .getKeybindingStatistics()
+        final Binding binding = Binding.MOVE_UP;
+        final Keybinding keybinding = initialPlayer
+            .getKeybindings()
             .stream()
-            .filter(statistic -> statistic.getKeybinding().equals(binding))
+            .filter(statistic -> statistic.getBinding().equals(binding))
             .findFirst()
             .get();
-        final KeybindingStatisticDTO keybindingStatisticDTO = keybindingStatisticMapper.keybindingStatisticToKeybindingDTO(
-            keybindingStatistic
+        final KeybindingDTO keybindingDTO = keybindingMapper.keybindingStatisticToKeybindingDTO(
+                keybinding
         );
-        keybindingStatisticDTO.setKey("H");
-        final String bodyValue = objectMapper.writeValueAsString(keybindingStatisticDTO);
+        keybindingDTO.setKey("H");
+        final String bodyValue = objectMapper.writeValueAsString(keybindingDTO);
         final MvcResult result = mvc
             .perform(
                 put(fullURL + "/keybindings/" + binding)
@@ -174,18 +174,18 @@ public class KeybindingStatisticTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        final KeybindingStatisticDTO updatedkeybindingStatisticDTO = objectMapper.readValue(
+        final KeybindingDTO updatedkeybindingDTO = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            KeybindingStatisticDTO.class
+            KeybindingDTO.class
         );
-        assertSame(binding, updatedkeybindingStatisticDTO.getKeybinding());
-        assertSame(keybindingStatisticDTO.getKey(), updatedkeybindingStatisticDTO.getKey());
+        assertSame(binding, updatedkeybindingDTO.getBinding());
+        assertSame(keybindingDTO.getKey(), updatedkeybindingDTO.getKey());
     }
 
     @Test
     void updatePlayerKeybinding_WrongBinding_ThrowsBadRequest() throws Exception {
-        final KeybindingStatisticDTO keybindingStatisticDTO = new KeybindingStatisticDTO();
-        final String bodyValue = objectMapper.writeValueAsString(keybindingStatisticDTO);
+        final KeybindingDTO keybindingDTO = new KeybindingDTO();
+        final String bodyValue = objectMapper.writeValueAsString(keybindingDTO);
         mvc
             .perform(
                 put(fullURL + "/keybindings/notExistingBinding")
@@ -199,19 +199,19 @@ public class KeybindingStatisticTest {
 
     @Test
     void updatePlayerKeybinding_InvalidBinding_ThrowsBadRequest() throws Exception {
-        final Keybinding binding = Keybinding.MOVE_UP;
-        final Keybinding differentBinding = Keybinding.MOVE_DOWN;
-        final KeybindingStatistic keybindingStatistic = initialPlayer
-            .getKeybindingStatistics()
+        final Binding binding = Binding.MOVE_UP;
+        final Binding differentBinding = Binding.MOVE_DOWN;
+        final Keybinding keybinding = initialPlayer
+            .getKeybindings()
             .stream()
-            .filter(statistic -> statistic.getKeybinding().equals(binding))
+            .filter(statistic -> statistic.getBinding().equals(binding))
             .findFirst()
             .get();
-        final KeybindingStatisticDTO keybindingStatisticDTO = keybindingStatisticMapper.keybindingStatisticToKeybindingDTO(
-            keybindingStatistic
+        final KeybindingDTO keybindingDTO = keybindingMapper.keybindingStatisticToKeybindingDTO(
+                keybinding
         );
-        keybindingStatisticDTO.setKey("H");
-        final String bodyValue = objectMapper.writeValueAsString(keybindingStatisticDTO);
+        keybindingDTO.setKey("H");
+        final String bodyValue = objectMapper.writeValueAsString(keybindingDTO);
         final MvcResult result = mvc
             .perform(
                 put(fullURL + "/keybindings/" + differentBinding)

@@ -1,6 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
-import de.unistuttgart.overworldbackend.data.enums.Keybinding;
+import de.unistuttgart.overworldbackend.data.enums.Binding;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,12 +13,12 @@ import reactor.util.annotation.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class KeybindingStatisticDTO {
+public class KeybindingDTO {
 
     @Nullable
     UUID id;
 
-    Keybinding keybinding;
+    Binding binding;
 
     String key;
 }

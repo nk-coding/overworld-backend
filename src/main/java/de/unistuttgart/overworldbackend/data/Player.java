@@ -1,7 +1,7 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -26,8 +26,8 @@ public class Player {
     List<AchievementStatistic> achievementStatistics = new ArrayList<>();
 
     @JsonManagedReference(value = "player-keybindings")
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = KeybindingStatistic.class)
-    List<KeybindingStatistic> keybindingStatistics = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Keybinding.class)
+    List<Keybinding> keybindings = new ArrayList<>();
 
     public Player(String userId, String username) {
         this.userId = userId;
