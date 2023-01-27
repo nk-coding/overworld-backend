@@ -157,6 +157,7 @@ public class CloneTest {
 
     @Autowired
     FinitequizClient finitequizClient;
+
     @Autowired
     TowercrushClient towercrushClient;
 

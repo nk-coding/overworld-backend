@@ -133,13 +133,15 @@ services:
     restart: always
     expose:
       - "80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - crosswordpuzzle-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://crosswordpuzzle-db:5432/postgres
-      - OVERWORLD_URL=http://overworld-backend/api/v1
+      - OVERWORLD_URL=http://host.docker.internal:8080/api/v1
       - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
@@ -150,13 +152,15 @@ services:
     restart: always
     expose:
       - "80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - chickenshock-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://chickenshock-db:5432/postgres
-      - OVERWORLD_URL=http://overworld-backend/api/v1
+      - OVERWORLD_URL=http://host.docker.internal:8080/api/v1
       - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
@@ -167,13 +171,15 @@ services:
     restart: always
     expose:
       - "80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - finitequiz-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://finitequiz-db:5432/postgres
-      - OVERWORLD_URL=http://overworld-backend/api/v1
+      - OVERWORLD_URL=http://host.docker.internal:8080/api/v1
       - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
@@ -183,13 +189,15 @@ services:
     restart: always
     expose:
       - "80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - bugfinder-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_URL=postgresql://bugfinder-db:5432/postgres
-      - OVERWORLD_URL=http://overworld-backend/api/v1
+      - OVERWORLD_URL=http://host.docker.internal:8080/api/v1
       - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 

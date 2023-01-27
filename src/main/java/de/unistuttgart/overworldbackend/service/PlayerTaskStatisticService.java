@@ -18,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class PlayerTaskStatisticService {
 
-    private static final long COMPLETED_SCORE = 50;
+    public static final long COMPLETED_SCORE = 50;
     private static final long MAX_KNOWLEDGE = 100;
     private static final double RETRY_KNOWLEDGE = 0.02;
 
