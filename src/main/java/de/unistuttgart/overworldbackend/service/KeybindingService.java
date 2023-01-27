@@ -99,7 +99,7 @@ public class KeybindingService {
         final KeybindingDTO keybindingDTO
     ) {
         final Keybinding keybinding = getKeybindingStatisticFromPlayer(playerId, binding);
-        if (!keybinding.getBinding().equals(binding)) {
+        if (!keybindingDTO.getBinding().equals(binding)) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 String.format("The path binding doesn't match the given binding")
