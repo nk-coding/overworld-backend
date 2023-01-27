@@ -141,12 +141,12 @@ public class KeybindingTest {
     }
 
     @Test
-    void getPlayerKeybinding_WrongBinding_ThrowsNotFound() throws Exception {
+    void getPlayerKeybinding_WrongBinding_ThrowsBadRequest() throws Exception {
         mvc
             .perform(
                 get(fullURL + "/keybindings/NotExistingBinding").cookie(cookie).contentType(MediaType.APPLICATION_JSON)
             )
-            .andExpect(status().isNotFound())
+            .andExpect(status().isBadRequest())
             .andReturn();
     }
 
@@ -183,7 +183,7 @@ public class KeybindingTest {
     }
 
     @Test
-    void updatePlayerKeybinding_WrongBinding_ThrowsNotFound() throws Exception {
+    void updatePlayerKeybinding_WrongBinding_ThrowsBadRequest() throws Exception {
         final KeybindingDTO keybindingDTO = new KeybindingDTO();
         final String bodyValue = objectMapper.writeValueAsString(keybindingDTO);
         mvc
@@ -193,7 +193,7 @@ public class KeybindingTest {
                     .content(bodyValue)
                     .contentType(MediaType.APPLICATION_JSON)
             )
-            .andExpect(status().isNotFound())
+            .andExpect(status().isBadRequest())
             .andReturn();
     }
 
