@@ -106,25 +106,14 @@ public class MinigameTaskStatisticService {
         }
 
         // calculate score time borders to time spent distribution percentage
-        // TODO: FIX THIS
         int currentStatisticIndex = 0;
         for (MinigameHighscoreDistribution highscoreDistribution : highscoreDistributions) {
-            int endIndex = (int) ((highscoreDistribution.getToPercentage() / 100.0) * playerTaskStatistics.size());
-            log.info(
-                "highscireDistribution {}, currentIndex {}, endIndex: {}, endIndex (double): {}",
-                highscoreDistribution,
-                currentStatisticIndex,
-                endIndex,
-                (highscoreDistribution.getToPercentage() / 100.0) * playerTaskStatistics.size()
+            int endIndex = (int) (
+                (highscoreDistribution.getToPercentage() / 100.0) * (playerTaskStatistics.size() - 1)
             );
-            if (currentStatisticIndex > endIndex) {
-                highscoreDistribution.setFromScore(0);
-                highscoreDistribution.setToScore(0);
-                continue;
-            }
             PlayerTaskStatistic currentStatistic = playerTaskStatistics.get(currentStatisticIndex);
             highscoreDistribution.setFromScore(currentStatistic.getHighscore());
-            while (currentStatisticIndex < endIndex) {
+            while (currentStatisticIndex <= endIndex) {
                 highscoreDistribution.addCount();
                 currentStatisticIndex++;
             }
