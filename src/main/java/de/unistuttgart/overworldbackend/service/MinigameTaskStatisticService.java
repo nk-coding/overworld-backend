@@ -1,6 +1,5 @@
 package de.unistuttgart.overworldbackend.service;
 
-import de.unistuttgart.overworldbackend.data.PlayerStatistic;
 import de.unistuttgart.overworldbackend.data.PlayerTaskActionLog;
 import de.unistuttgart.overworldbackend.data.PlayerTaskStatistic;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameHighscoreDistribution;
@@ -11,7 +10,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,34 +18,31 @@ import org.springframework.stereotype.Service;
 public class MinigameTaskStatisticService {
 
     @Autowired
-    private MinigameTaskRepository minigameTaskRepository;
-
-    @Autowired
     private PlayerTaskStatisticRepository playerTaskStatisticRepository;
 
-    static final List TIME_SPENT_DISTRIBUTION_PERCENTAGES = Arrays.asList(0, 25, 50, 75, 100);
+    static final List DEFAULT_DISTRIBUTION_PERCENTAGES = Arrays.asList(0, 25, 50, 75, 100);
 
     /**
      * Returns the success rate and amount of tries of a player for a minigame task till success
      * @param minigameTaskId id of the minigame task to get the statistic for
      * @returns a the minigame success rate statistic for the given minigame task
      */
-    public MinigameSuccessRateStatistic getSuccessRateOfMinigame(UUID minigameTaskId) {
+    public MinigameSuccessRateStatistic getSuccessRateOfMinigame(final UUID minigameTaskId) {
         // get success rate of all PlayerTaskStatistics by minigameTaskId
-        List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByMinigameTaskId(
+        final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByMinigameTaskId(
             minigameTaskId
         );
-        List<PlayerTaskStatistic> successfulPlayerTaskStatistics = playerTaskStatistics
+        final List<PlayerTaskStatistic> successfulPlayerTaskStatistics = playerTaskStatistics
             .stream()
             .filter(playerTaskStatistic -> playerTaskStatistic.isCompleted())
             .toList();
-        List<PlayerTaskStatistic> failedPlayerTaskStatistics = playerTaskStatistics
+        final List<PlayerTaskStatistic> failedPlayerTaskStatistics = playerTaskStatistics
             .stream()
             .filter(playerTaskStatistic -> !playerTaskStatistic.isCompleted())
             .toList();
 
         // collect tries of playerstatistic till success by counting up action logs till success
-        Map<PlayerTaskStatistic, Integer> successfulTries = successfulPlayerTaskStatistics
+        final Map<PlayerTaskStatistic, Integer> successfulTries = successfulPlayerTaskStatistics
             .stream()
             .collect(
                 Collectors.toMap(
@@ -60,60 +55,69 @@ public class MinigameTaskStatisticService {
                         1
                 )
             );
-        Map<PlayerTaskStatistic, Integer> failedTries = failedPlayerTaskStatistics
+        final Map<PlayerTaskStatistic, Integer> failedTries = failedPlayerTaskStatistics
             .stream()
             .collect(Collectors.toMap(Function.identity(), statistic -> statistic.getPlayerTaskActionLogs().size()));
-        double successRate = (double) successfulPlayerTaskStatistics.size() / playerTaskStatistics.size();
-        Map<Integer, Integer> successRateDistribution = new HashMap<>();
+        final double successRate = (double) successfulPlayerTaskStatistics.size() / playerTaskStatistics.size();
+        final Map<Integer, Integer> successRateDistribution = new HashMap<>();
         successfulTries.forEach((playerTaskStatistic, tries) ->
             successRateDistribution.put(tries, successRateDistribution.getOrDefault(tries, 0) + 1)
         );
-        Map<Integer, Integer> failRateDistribution = new HashMap<>();
+        final Map<Integer, Integer> failRateDistribution = new HashMap<>();
         failedTries.forEach((playerTaskStatistic, tries) ->
             failRateDistribution.put(tries, failRateDistribution.getOrDefault(tries, 0) + 1)
         );
         return new MinigameSuccessRateStatistic(successRateDistribution, failRateDistribution, successRate);
     }
 
+    /**
+     * Returns the highscore distribution of a minigame task
+     *
+     * @param minigameTaskId id of the minigame task to get the statistic for
+     * @param highscorePercentages list of percentages to get the highscore distribution for, e.g. [0, 25, 50, 75, 100]
+     * @throws IllegalArgumentException if highscorePercentages is not sorted, has not as first value 0, at last value 100 or contains values < 0 or > 100
+     * @return a minigame highscore distribution for the given minigame task
+     */
     public List<MinigameHighscoreDistribution> getPlayerHighscoreDistributions(
         final UUID minigameTaskId,
-        Optional<List<Integer>> timeSpentDistributionPercentages
+        final Optional<List<Integer>> highscorePercentages
     ) {
-        final List<Integer> timeSpentDistributionPercentagesToUse;
-        if (timeSpentDistributionPercentages.isEmpty()) {
-            timeSpentDistributionPercentagesToUse = TIME_SPENT_DISTRIBUTION_PERCENTAGES;
+        final List<Integer> highscorePercentagesToUse;
+        if (highscorePercentages.isEmpty()) {
+            highscorePercentagesToUse = DEFAULT_DISTRIBUTION_PERCENTAGES;
         } else {
-            timeSpentDistributionPercentagesToUse = timeSpentDistributionPercentages.get();
+            highscorePercentagesToUse = highscorePercentages.get();
         }
-        if (timeSpentDistributionPercentagesToUse.size() < 2) {
-            throw new IllegalArgumentException("TIME_SPENT_DISTRIBUTION_PERCENTAGES must have at least 2 elements");
+        if (highscorePercentagesToUse.size() < 2) {
+            throw new IllegalArgumentException("high score percentages must have at least 2 elements");
         }
-        if (timeSpentDistributionPercentagesToUse.get(0) != 0) {
-            throw new IllegalArgumentException("TIME_SPENT_DISTRIBUTION_PERCENTAGES must start with 0");
+        if (highscorePercentagesToUse.get(0) != 0) {
+            throw new IllegalArgumentException("high score percentages must start with 0");
         }
-        if (timeSpentDistributionPercentagesToUse.get(timeSpentDistributionPercentagesToUse.size() - 1) != 100) {
-            throw new IllegalArgumentException("TIME_SPENT_DISTRIBUTION_PERCENTAGES must end with 100");
+        if (highscorePercentagesToUse.get(highscorePercentagesToUse.size() - 1) != 100) {
+            throw new IllegalArgumentException("high score percentages must end with 100");
         }
         final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByMinigameTaskIdOrderByHighscore(
             minigameTaskId
         );
         final List<MinigameHighscoreDistribution> highscoreDistributions = new ArrayList<>();
-        for (int i = 0; i < timeSpentDistributionPercentagesToUse.size() - 1; i++) {
+        for (int i = 0; i < highscorePercentagesToUse.size() - 1; i++) {
             MinigameHighscoreDistribution highscoreDistribution = new MinigameHighscoreDistribution();
-            highscoreDistribution.setFromPercentage(timeSpentDistributionPercentagesToUse.get(i));
-            highscoreDistribution.setToPercentage(timeSpentDistributionPercentagesToUse.get(i + 1));
+            highscoreDistribution.setFromPercentage(highscorePercentagesToUse.get(i));
+            highscoreDistribution.setToPercentage(highscorePercentagesToUse.get(i + 1));
             highscoreDistributions.add(highscoreDistribution);
         }
 
         // calculate score time borders to time spent distribution percentage
         int currentStatisticIndex = 0;
-        for (MinigameHighscoreDistribution highscoreDistribution : highscoreDistributions) {
-            int endIndex = (int) (
+        for (final MinigameHighscoreDistribution highscoreDistribution : highscoreDistributions) {
+            final int endIndex = (int) (
                 (highscoreDistribution.getToPercentage() / 100.0) * (playerTaskStatistics.size() - 1)
             );
             PlayerTaskStatistic currentStatistic = playerTaskStatistics.get(currentStatisticIndex);
             highscoreDistribution.setFromScore(currentStatistic.getHighscore());
             while (currentStatisticIndex <= endIndex) {
+                currentStatistic = playerTaskStatistics.get(currentStatisticIndex);
                 highscoreDistribution.addCount();
                 currentStatisticIndex++;
             }
@@ -141,7 +145,7 @@ public class MinigameTaskStatisticService {
      * @param log the action log of the game run
      * @return wether the game run of the action run was successful or not
      */
-    private boolean wasTaskActionLogSuccessful(PlayerTaskActionLog log) {
+    private boolean wasTaskActionLogSuccessful(final PlayerTaskActionLog log) {
         return log.getScore() >= PlayerTaskStatisticService.COMPLETED_SCORE;
     }
 }
