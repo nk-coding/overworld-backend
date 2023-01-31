@@ -20,7 +20,7 @@
 		<org.springdoc.version>1.6.9</org.springdoc.version>
 		<plugin.prettier.goal>write</plugin.prettier.goal>
 		<spring-cloud.version>2021.0.3</spring-cloud.version>
-		<testcontainer.version>1.17.3</testcontainer.version>
+		<testcontainer.version>1.17.6</testcontainer.version>
 		<de.uni-stuttgart.gamify-it.authentification-validator.version>v1.0.0</de.uni-stuttgart.gamify-it.authentification-validator.version>
 	</properties>
 	<repositories>

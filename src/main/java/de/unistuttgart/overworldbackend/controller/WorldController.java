@@ -5,7 +5,6 @@ import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
-import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import de.unistuttgart.overworldbackend.service.WorldService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,9 +26,6 @@ public class WorldController {
     private WorldMapper worldMapper;
 
     @Autowired
-    private WorldRepository worldRepository;
-
-    @Autowired
     private WorldService worldService;
 
     @Operation(summary = "Get all worlds from a course by its id")
@@ -40,7 +36,7 @@ public class WorldController {
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
         log.debug("get worlds of course {}", courseId);
-        return worldMapper.worldsToWorldDTOs(worldRepository.findAllByCourseId(courseId));
+        return worldMapper.worldsToWorldDTOs(worldService.getAllWorldsFromCourse(courseId));
     }
 
     @Operation(summary = "Get a world by its index from a course")
