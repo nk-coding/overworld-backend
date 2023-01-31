@@ -1,10 +1,11 @@
 package de.unistuttgart.overworldbackend.data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.unistuttgart.overworldbackend.data.enums.AchievementCategory;
 import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

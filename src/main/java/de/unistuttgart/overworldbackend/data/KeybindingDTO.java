@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import de.unistuttgart.overworldbackend.data.enums.Binding;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,13 +13,12 @@ import reactor.util.annotation.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AchievementStatisticDTO {
+public class KeybindingDTO {
 
     @Nullable
     UUID id;
 
-    AchievementDTO achievement;
+    Binding binding;
 
-    int progress;
-    boolean completed;
+    String key;
 }

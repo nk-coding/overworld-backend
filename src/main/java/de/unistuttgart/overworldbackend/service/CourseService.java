@@ -16,18 +16,17 @@ import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConf
 import de.unistuttgart.overworldbackend.data.minigames.towercrush.TowercrushConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import feign.FeignException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -45,6 +44,7 @@ public class CourseService {
 
     @Autowired
     FinitequizClient finitequizClient;
+
     @Autowired
     TowercrushClient towercrushClient;
 
@@ -449,7 +449,12 @@ public class CourseService {
             }
         }
     }
-    private MinigameTask cloneTowercrush(final MinigameTask minigameTask, final String accessToken, Set<String> errorMessages) {
+
+    private MinigameTask cloneTowercrush(
+        final MinigameTask minigameTask,
+        final String accessToken,
+        Set<String> errorMessages
+    ) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(Minigame.TOWERCRUSH, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
