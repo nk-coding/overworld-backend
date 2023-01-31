@@ -73,8 +73,8 @@ public class PlayerService {
         for (final Achievement achievement : achievementRepository.findAll()) {
             newPlayer.getAchievementStatistics().add(new AchievementStatistic(newPlayer, achievement));
         }
-        Binding[] bindings = Binding.values();
-        for (Binding binding : bindings) {
+        final Binding[] bindings = Binding.values();
+        for (final Binding binding : bindings) {
             newPlayer.getKeybindings().add(new Keybinding(newPlayer, binding, ""));
         }
         final Player savedPlayer = playerRepository.save(newPlayer);

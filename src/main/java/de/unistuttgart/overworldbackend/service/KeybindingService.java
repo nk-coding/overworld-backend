@@ -26,13 +26,13 @@ public class KeybindingService {
     private KeybindingRepository keybindingRepository;
 
     /**
-     * Checks for all players the current keybindings, adds new created keynindings to the player and removes none existing keybindings.
+     * Checks for all players the current keybindings, adds newly created keybindings to the player, and removes none existing keybindings.
      */
     @EventListener(ApplicationReadyEvent.class)
     public void updatePlayerKeybindings() {
-        Binding[] bindings = Binding.values();
+        final Binding[] bindings = Binding.values();
         for (final Player player : playerRepository.findAll()) {
-            for (Binding binding : bindings){
+            for (final Binding binding : bindings){
                 if (
                         player
                             .getKeybindings()

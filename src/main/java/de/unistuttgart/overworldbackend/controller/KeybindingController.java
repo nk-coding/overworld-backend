@@ -35,7 +35,7 @@ public class KeybindingController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        log.debug("get keybindings");
+        log.debug("get keybindings of player with id {}", playerId);
         return keybindingMapper.keybindingStatisticsToKeybindingDTOs(
             keybindingService.getKeybindingStatisticsFromPlayer(playerId)
         );
@@ -49,7 +49,7 @@ public class KeybindingController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        log.debug("get keybindings {} ", binding);
+        log.debug("get keybinding {} of player with id {}", binding, playerId);
         return keybindingMapper.keybindingStatisticToKeybindingDTO(
             keybindingService.getKeybindingStatisticFromPlayer(playerId, binding)
         );
@@ -64,7 +64,7 @@ public class KeybindingController {
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
-        log.debug("update keybinding {} to {}", binding, keybindingDTO.getKey());
+        log.debug("update keybinding {} to {} of player with id {}", binding, keybindingDTO.getKey(), playerId);
         return keybindingMapper.keybindingStatisticToKeybindingDTO(
             keybindingService.updateKeybindingStatistic(playerId, binding, keybindingDTO)
         );
