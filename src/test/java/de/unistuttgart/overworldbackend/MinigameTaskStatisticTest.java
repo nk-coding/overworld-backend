@@ -210,14 +210,14 @@ public class MinigameTaskStatisticTest {
     @Test
     public void testGetHighscoreDistributionWithOwnPercentages_IllegalList_ThrowsBadRequest() throws Exception {
         mvc
-                .perform(
-                        get(fullURL + "/highscore-distribution")
-                                .param("timeDistributionPercentages", "100,10,20,30,40,50,60,70,80,90,0")
-                                .cookie(cookie)
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isBadRequest())
-                .andReturn();
+            .perform(
+                get(fullURL + "/highscore-distribution")
+                    .param("timeDistributionPercentages", "100,10,20,30,40,50,60,70,80,90,0")
+                    .cookie(cookie)
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isBadRequest())
+            .andReturn();
     }
 
     @Test

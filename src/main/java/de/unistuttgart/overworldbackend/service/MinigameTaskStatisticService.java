@@ -4,7 +4,6 @@ import de.unistuttgart.overworldbackend.data.PlayerTaskActionLog;
 import de.unistuttgart.overworldbackend.data.PlayerTaskStatistic;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameHighscoreDistribution;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameSuccessRateStatistic;
-import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
 import java.util.*;
 import java.util.function.Function;

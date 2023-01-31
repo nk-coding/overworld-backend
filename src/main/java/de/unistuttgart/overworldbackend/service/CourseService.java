@@ -2,11 +2,7 @@ package de.unistuttgart.overworldbackend.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.unistuttgart.overworldbackend.client.BugfinderClient;
-import de.unistuttgart.overworldbackend.client.ChickenshockClient;
-import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
-import de.unistuttgart.overworldbackend.client.FinitequizClient;
-import de.unistuttgart.overworldbackend.client.TowercrushClient;
+import de.unistuttgart.overworldbackend.client.*;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;

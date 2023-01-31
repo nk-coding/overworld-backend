@@ -1,11 +1,10 @@
 package de.unistuttgart.overworldbackend.service;
 
-import de.unistuttgart.overworldbackend.data.*;
+import de.unistuttgart.overworldbackend.data.Area;
+import de.unistuttgart.overworldbackend.data.MinigameTask;
+import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
-import de.unistuttgart.overworldbackend.data.mapper.DungeonMapper;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
-import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
-import de.unistuttgart.overworldbackend.repositories.AreaBaseRepository;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
 import java.util.Optional;
 import java.util.Set;

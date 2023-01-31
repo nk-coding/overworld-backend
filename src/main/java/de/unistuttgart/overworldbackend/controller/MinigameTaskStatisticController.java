@@ -1,10 +1,7 @@
 package de.unistuttgart.overworldbackend.controller;
 
-import static de.unistuttgart.overworldbackend.data.Roles.LECTURER_ROLE;
-
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
-import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameHighscoreDistribution;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameSuccessRateStatistic;
 import de.unistuttgart.overworldbackend.service.MinigameTaskService;
@@ -13,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -104,8 +100,8 @@ public class MinigameTaskStatisticController {
         );
         try {
             return minigameTaskStatisticService.getPlayerHighscoreDistributions(
-                    minigame.getId(),
-                    timeDistributionPercentages
+                minigame.getId(),
+                timeDistributionPercentages
             );
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
@@ -138,8 +134,8 @@ public class MinigameTaskStatisticController {
         );
         try {
             return minigameTaskStatisticService.getPlayerHighscoreDistributions(
-                    minigame.getId(),
-                    timeDistributionPercentages
+                minigame.getId(),
+                timeDistributionPercentages
             );
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());

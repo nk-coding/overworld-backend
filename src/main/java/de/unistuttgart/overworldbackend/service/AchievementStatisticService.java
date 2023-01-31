@@ -3,7 +3,6 @@ package de.unistuttgart.overworldbackend.service;
 import de.unistuttgart.overworldbackend.data.AchievementStatistic;
 import de.unistuttgart.overworldbackend.data.AchievementStatisticDTO;
 import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
-import de.unistuttgart.overworldbackend.repositories.AchievementRepository;
 import de.unistuttgart.overworldbackend.repositories.AchievementStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
 import java.util.List;
