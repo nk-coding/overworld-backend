@@ -1,29 +1,24 @@
 package de.unistuttgart.overworldbackend.data;
 
-import java.util.List;
+import de.unistuttgart.overworldbackend.data.enums.Binding;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-/**
- * Data Transfer Object for Player.
- *
- * @see Player
- */
+import reactor.util.annotation.Nullable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PlayerDTO {
+public class KeybindingDTO {
 
-    String userId;
+    @Nullable
+    UUID id;
 
-    String username;
+    Binding binding;
 
-    List<AchievementStatistic> achievementStatistics;
-
-    List<Keybinding> keybindings;
+    String key;
 }

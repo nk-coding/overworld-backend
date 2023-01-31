@@ -13,7 +13,6 @@ services:
         overworld/cloneTestData.sql
         chickenshock/cloneTestData.sql
         finitequiz/cloneTestData.sql
-        towercrush/cloneTestData.sql
         crosswordpuzzle/cloneTestData.sql
         bugfinder/cloneTestData.sql
 

@@ -82,12 +82,9 @@ public class AchievementStatisticService {
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                String.format("The new progress cannot be smaller than the current one")
+                "The new progress cannot be smaller than the current one"
             );
         }
-        final AchievementStatistic updatedAchievementStatistic = achievementStatisticRepository.save(
-            achievementStatistic
-        );
-        return updatedAchievementStatistic;
+        return achievementStatisticRepository.save(achievementStatistic);
     }
 }
