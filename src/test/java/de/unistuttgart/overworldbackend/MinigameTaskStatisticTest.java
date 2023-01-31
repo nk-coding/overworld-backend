@@ -138,20 +138,20 @@ public class MinigameTaskStatisticTest {
         // create 100 player statistics with random tries of minigame runs
         for (int i = 0; i < 100; i++) {
             final PlayerStatisticDTO playerStatisticDTO = playerStatisticService.createPlayerStatisticInCourse(
-                    course.getId(),
-                    new PlayerRegistrationDTO(String.valueOf(i), "testUser" + i)
+                course.getId(),
+                new PlayerRegistrationDTO(String.valueOf(i), "testUser" + i)
             );
 
             final int tries = new Random().nextInt(1, 5);
             for (int j = 0; j < tries; j++) {
                 final int score = new Random().nextInt(0, 100);
                 playerTaskStatisticService.submitData(
-                        new PlayerTaskStatisticData(
-                                minigameTask1.getGame(),
-                                minigameTask1.getConfigurationId(),
-                                score,
-                                playerStatisticDTO.getUserId()
-                        )
+                    new PlayerTaskStatisticData(
+                        minigameTask1.getGame(),
+                        minigameTask1.getConfigurationId(),
+                        score,
+                        playerStatisticDTO.getUserId()
+                    )
                 );
             }
         }
