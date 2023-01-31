@@ -16,7 +16,9 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "Minigame Task", description = "Get and update minigame tasks from areas (world or dungeons)")
 @RestController
@@ -100,10 +102,14 @@ public class MinigameTaskStatisticController {
             Optional.empty(),
             taskIndex
         );
-        return minigameTaskStatisticService.getPlayerHighscoreDistributions(
-            minigame.getId(),
-            timeDistributionPercentages
-        );
+        try {
+            return minigameTaskStatisticService.getPlayerHighscoreDistributions(
+                    minigame.getId(),
+                    timeDistributionPercentages
+            );
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
     }
 
     @Operation(summary = "Get the success rate statistic of task by its index from a dungeon")
@@ -130,9 +136,13 @@ public class MinigameTaskStatisticController {
             Optional.of(dungoenIndex),
             taskIndex
         );
-        return minigameTaskStatisticService.getPlayerHighscoreDistributions(
-            minigame.getId(),
-            timeDistributionPercentages
-        );
+        try {
+            return minigameTaskStatisticService.getPlayerHighscoreDistributions(
+                    minigame.getId(),
+                    timeDistributionPercentages
+            );
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
     }
 }
