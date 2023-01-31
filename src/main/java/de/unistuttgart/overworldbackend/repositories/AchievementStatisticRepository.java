@@ -2,7 +2,6 @@ package de.unistuttgart.overworldbackend.repositories;
 
 import de.unistuttgart.overworldbackend.data.Achievement;
 import de.unistuttgart.overworldbackend.data.AchievementStatistic;
-import de.unistuttgart.overworldbackend.data.enums.AchievementTitle;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

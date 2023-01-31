@@ -29,8 +29,7 @@ public class Keybinding {
 
     String key;
 
-    public Keybinding(Player player, Binding binding, String key)
-    {
+    public Keybinding(Player player, Binding binding, String key) {
         this.player = player;
         this.binding = binding;
         this.key = key;

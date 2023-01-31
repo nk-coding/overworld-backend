@@ -9,11 +9,7 @@ import org.mapstruct.Mapper;
 public interface KeybindingMapper {
     KeybindingDTO keybindingStatisticToKeybindingDTO(final Keybinding keybinding);
 
-    Keybinding keybindingStatisticDTOToKeybindingStatistic(
-        final KeybindingDTO keybindingDTO
-    );
+    Keybinding keybindingStatisticDTOToKeybindingStatistic(final KeybindingDTO keybindingDTO);
 
-    List<KeybindingDTO> keybindingStatisticsToKeybindingDTOs(
-        final List<Keybinding> keybindings
-    );
+    List<KeybindingDTO> keybindingStatisticsToKeybindingDTOs(final List<Keybinding> keybindings);
 }

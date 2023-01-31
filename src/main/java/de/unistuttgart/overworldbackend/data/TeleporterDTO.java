@@ -1,8 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.UUID;
-import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

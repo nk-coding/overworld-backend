@@ -119,9 +119,7 @@ public class KeybindingTest {
 
         assertSame(Binding.values().length, keybindingStatistics.size());
         for (final Binding binding : Binding.values()) {
-            assertTrue(
-                keybindingStatistics.stream().anyMatch(statistic -> statistic.getBinding().equals(binding))
-            );
+            assertTrue(keybindingStatistics.stream().anyMatch(statistic -> statistic.getBinding().equals(binding)));
         }
     }
 
@@ -159,9 +157,7 @@ public class KeybindingTest {
             .filter(statistic -> statistic.getBinding().equals(binding))
             .findFirst()
             .get();
-        final KeybindingDTO keybindingDTO = keybindingMapper.keybindingStatisticToKeybindingDTO(
-                keybinding
-        );
+        final KeybindingDTO keybindingDTO = keybindingMapper.keybindingStatisticToKeybindingDTO(keybinding);
         keybindingDTO.setKey("H");
         final String bodyValue = objectMapper.writeValueAsString(keybindingDTO);
         final MvcResult result = mvc
@@ -207,9 +203,7 @@ public class KeybindingTest {
             .filter(statistic -> statistic.getBinding().equals(binding))
             .findFirst()
             .get();
-        final KeybindingDTO keybindingDTO = keybindingMapper.keybindingStatisticToKeybindingDTO(
-                keybinding
-        );
+        final KeybindingDTO keybindingDTO = keybindingMapper.keybindingStatisticToKeybindingDTO(keybinding);
         keybindingDTO.setKey("H");
         final String bodyValue = objectMapper.writeValueAsString(keybindingDTO);
         final MvcResult result = mvc

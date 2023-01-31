@@ -1,7 +1,5 @@
 package de.unistuttgart.overworldbackend.data.mapper;
 
-import de.unistuttgart.overworldbackend.data.MinigameTask;
-import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
 import de.unistuttgart.overworldbackend.data.Teleporter;
 import de.unistuttgart.overworldbackend.data.TeleporterDTO;
 import java.util.Set;
