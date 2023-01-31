@@ -6,7 +6,6 @@ import de.unistuttgart.overworldbackend.data.mapper.AreaLocationMapper;
 import de.unistuttgart.overworldbackend.data.mapper.PlayerStatisticMapper;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
-import de.unistuttgart.overworldbackend.repositories.WorldRepository;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,9 +22,6 @@ public class PlayerStatisticService {
 
     @Autowired
     private PlayerStatisticRepository playerstatisticRepository;
-
-    @Autowired
-    private WorldRepository worldRepository;
 
     @Autowired
     private PlayerTaskStatisticRepository playerTaskStatisticRepository;
@@ -222,8 +218,8 @@ public class PlayerStatisticService {
                     .ifPresentOrElse(
                         playerStatistic::addUnlockedArea,
                         () ->
-                            worldRepository
-                                .findByIndexAndCourseId(currentWorld.getIndex() + 1, courseId)
+                            worldService
+                                .getOptionalWorldByIndexFromCourse(currentWorld.getIndex() + 1, courseId)
                                 .filter(Area::isConfigured)
                                 .ifPresent(playerStatistic::addUnlockedArea)
                     );
@@ -239,8 +235,8 @@ public class PlayerStatisticService {
                     .ifPresentOrElse(
                         playerStatistic::addUnlockedArea,
                         () ->
-                            worldRepository
-                                .findByIndexAndCourseId(currentDungeon.getWorld().getIndex() + 1, courseId)
+                            worldService
+                                .getOptionalWorldByIndexFromCourse(currentDungeon.getWorld().getIndex() + 1, courseId)
                                 .filter(Area::isConfigured)
                                 .ifPresent(playerStatistic::addUnlockedArea)
                     );

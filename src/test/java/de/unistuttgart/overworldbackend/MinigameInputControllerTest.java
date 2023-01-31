@@ -287,7 +287,7 @@ class MinigameInputControllerTest {
             playerTaskStatisticData.setUserId(initialPlayerStatisticDTO.getUserId());
             playerTaskStatisticData.setGame(minigameTask.getGame());
             playerTaskStatisticData.setConfigurationId(minigameTask.getConfigurationId());
-            playerTaskStatisticData.setScore(80);
+            playerTaskStatisticData.setScore(100);
 
             final String bodyValue = objectMapper.writeValueAsString(playerTaskStatisticData);
 

@@ -1,11 +1,5 @@
 package de.unistuttgart.overworldbackend;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.net.URIBuilder;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
@@ -15,12 +9,7 @@ import de.unistuttgart.overworldbackend.client.FinitequizClient;
 import de.unistuttgart.overworldbackend.client.TowercrushClient;
 import de.unistuttgart.overworldbackend.data.CourseCloneDTO;
 import de.unistuttgart.overworldbackend.data.CourseInitialData;
-import java.io.File;
-import java.net.URI;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import javax.servlet.http.Cookie;
+import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +33,20 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import javax.servlet.http.Cookie;
+import java.io.File;
+import java.net.URI;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @AutoConfigureMockMvc
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -60,7 +63,7 @@ public class CloneWithoutBackendsTest {
         new File("src/test/resources/docker-compose-test-without-backends.yaml")
     )
         .withPull(true)
-        .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL)
+        .withRemoveImages(DockerComposeContainer.RemoveImages.ALL)
         .withEnv("LOCAL_URL", postgresDB.getHost())
         .withExposedService("overworld-db", 5432, Wait.forListeningPort())
         .withExposedService("reverse-proxy", 80)
@@ -87,11 +90,11 @@ public class CloneWithoutBackendsTest {
                     compose.getServicePort("overworld-db", 5432)
                 )
         );
-        registry.add("chickenshock.url", () -> "http://s/minigame/chickenshock/api/v1");
-        registry.add("finitequiz.url", () -> "http://s/minigame/chickenshock/api/v1");
-        registry.add("towercrush.url", () -> "http://s/minigame/chickenshock/api/v1");
-        registry.add("crosswordpuzzle.url", () -> "http://s/minigame/chickenshock/api/v1");
-        registry.add("bugfinder.url", () -> "http://s/minigame/chickenshock/api/v1");
+        registry.add("chickenshock.url", () -> "http://1234");
+        registry.add("finitequiz.url", () -> "http://1234");
+        registry.add("crosswordpuzzle.url", () -> "http://1234");
+        registry.add("bugfinder.url", () -> "http://1234");
+        registry.add("towercrush.url", () -> "http://1234");
     }
 
     @Autowired
@@ -173,11 +176,32 @@ public class CloneWithoutBackendsTest {
             resultClone.getResponse().getContentAsString(),
             CourseCloneDTO.class
         );
-        final List<String> errorMessages = courseCloneDTO.getErrorMessages();
-        assertTrue(errorMessages.contains("chickenshock-backend not present"));
-        assertTrue(errorMessages.contains("finitequiz-backend not present"));
-        assertTrue(errorMessages.contains("towercrush-backend not present"));
-        assertTrue(errorMessages.contains("crosswordpuzzle-backend not present"));
-        assertTrue(errorMessages.contains("bugfinder-backend not present"));
+        final Set<String> errorMessages = courseCloneDTO.getErrorMessages();
+        System.out.println(errorMessages);
+        final Set<Minigame> minigames = new HashSet<>();
+        courseCloneDTO
+            .getWorlds()
+            .stream()
+            .filter(worldDTO -> worldDTO.getIndex() == 1)
+            .findFirst()
+            .get()
+            .getMinigameTasks()
+            .parallelStream()
+            .forEach(minigameTaskDTO -> minigames.add(minigameTaskDTO.getGame()));
+        if (minigames.contains(Minigame.CHICKENSHOCK)) {
+            assertTrue(errorMessages.contains("chickenshock-backend not present"));
+        }
+        if (minigames.contains(Minigame.FINITEQUIZ)) {
+            assertTrue(errorMessages.contains("finitequiz-backend not present"));
+        }
+        if (minigames.contains(Minigame.CROSSWORDPUZZLE)) {
+            assertTrue(errorMessages.contains("crosswordpuzzle-backend not present"));
+        }
+        if (minigames.contains(Minigame.BUGFINDER)) {
+            assertTrue(errorMessages.contains("bugfinder-backend not present"));
+        }
+        if (minigames.contains(Minigame.TOWERCRUSH)) {
+            assertTrue(errorMessages.contains("towercrush-backend not present"));
+        }
     }
 }

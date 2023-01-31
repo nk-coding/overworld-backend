@@ -4,6 +4,8 @@ import de.unistuttgart.overworldbackend.data.World;
 import de.unistuttgart.overworldbackend.data.WorldDTO;
 import de.unistuttgart.overworldbackend.data.mapper.WorldMapper;
 import de.unistuttgart.overworldbackend.repositories.WorldRepository;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -60,5 +62,24 @@ public class WorldService {
         world.setActive(worldDTO.isActive());
         final World updatedWorld = worldRepository.save(world);
         return worldMapper.worldToWorldDTO(updatedWorld);
+    }
+
+    /**
+     * Returns the World with the given index of the given course
+     * @param worldIndex index of the world
+     * @param courseId id of the course
+     * @return Optional World if the world exists
+     */
+    public Optional<World> getOptionalWorldByIndexFromCourse(final int worldIndex, final int courseId) {
+        return worldRepository.findByIndexAndCourseId(worldIndex, courseId);
+    }
+
+    /**
+     * Returns all worlds of a course
+     * @param courseId id of the course
+     * @return Set of Worlds of the course
+     */
+    public Set<World> getAllWorldsFromCourse(final int courseId) {
+        return worldRepository.findAllByCourseId(courseId);
     }
 }

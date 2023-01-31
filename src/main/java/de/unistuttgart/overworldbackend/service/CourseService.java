@@ -2,11 +2,7 @@ package de.unistuttgart.overworldbackend.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.unistuttgart.overworldbackend.client.BugfinderClient;
-import de.unistuttgart.overworldbackend.client.ChickenshockClient;
-import de.unistuttgart.overworldbackend.client.CrosswordpuzzleClient;
-import de.unistuttgart.overworldbackend.client.FinitequizClient;
-import de.unistuttgart.overworldbackend.client.TowercrushClient;
+import de.unistuttgart.overworldbackend.client.*;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.config.CourseConfig;
 import de.unistuttgart.overworldbackend.data.config.DungeonConfig;
@@ -20,17 +16,18 @@ import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConf
 import de.unistuttgart.overworldbackend.data.minigames.towercrush.TowercrushConfiguration;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import feign.FeignException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -64,10 +61,7 @@ public class CourseService {
     @Autowired
     private CourseMapper courseMapper;
 
-    private final List<String> errorMessages;
-
     public CourseService() {
-        errorMessages = new ArrayList<>();
         configCourse = new CourseConfig();
         final ObjectMapper mapper = new ObjectMapper();
 
@@ -137,6 +131,14 @@ public class CourseService {
     }
 
     /**
+     * Returns all courses
+     * @return all courses
+     */
+    public List<Course> getAllCourses() {
+        return courseRepository.findAll();
+    }
+
+    /**
      * Delete a course by its id
      *
      * @throws ResponseStatusException (404) when course with its id does not exist
@@ -158,18 +160,14 @@ public class CourseService {
         worldConfig
             .getDungeons()
             .forEach(dungeonConfig -> dungeons.add(configureDungeon(dungeonId.getAndIncrement(), dungeonConfig)));
-        for (int minigameIndex = 1; minigameIndex <= worldConfig.getNumberOfMinigames(); minigameIndex++) {
-            final MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
-            minigames.add(minigame);
-        }
-        for (int npcIndex = 1; npcIndex <= worldConfig.getNumberOfNPCs(); npcIndex++) {
-            final NPC npc = new NPC(new ArrayList<>(), npcIndex);
-            npcs.add(npc);
-        }
-        for (int bookIndex = 1; bookIndex <= worldConfig.getNumberOfBooks(); bookIndex++) {
-            final Book book = new Book("", bookIndex);
-            books.add(book);
-        }
+        configureArea(
+            minigames,
+            npcs,
+            books,
+            worldConfig.getNumberOfMinigames(),
+            worldConfig.getNumberOfNPCs(),
+            worldConfig.getNumberOfBooks()
+        );
         final World world = new World(
             worldConfig.getStaticName(),
             "",
@@ -183,22 +181,40 @@ public class CourseService {
         worlds.add(world);
     }
 
+    private void configureArea(
+        final Set<MinigameTask> minigames,
+        final Set<NPC> npcs,
+        final Set<Book> books,
+        final int numberOfMinigames,
+        final int numberOfNPCs,
+        final int numberOfBooks
+    ) {
+        for (int minigameIndex = 1; minigameIndex <= numberOfMinigames; minigameIndex++) {
+            final MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
+            minigames.add(minigame);
+        }
+        for (int npcIndex = 1; npcIndex <= numberOfNPCs; npcIndex++) {
+            final NPC npc = new NPC(new ArrayList<>(), npcIndex);
+            npcs.add(npc);
+        }
+        for (int bookIndex = 1; bookIndex <= numberOfBooks; bookIndex++) {
+            final Book book = new Book("", bookIndex);
+            books.add(book);
+        }
+    }
+
     private Dungeon configureDungeon(final int dungeonId, final DungeonConfig dungeonConfig) {
         final Set<MinigameTask> minigames = new HashSet<>();
         final Set<NPC> npcs = new HashSet<>();
         final Set<Book> books = new HashSet<>();
-        for (int minigameIndex = 1; minigameIndex <= dungeonConfig.getNumberOfMinigames(); minigameIndex++) {
-            final MinigameTask minigame = new MinigameTask(null, null, minigameIndex);
-            minigames.add(minigame);
-        }
-        for (int npcIndex = 1; npcIndex <= dungeonConfig.getNumberOfNPCs(); npcIndex++) {
-            final NPC npc = new NPC(new ArrayList<>(), npcIndex);
-            npcs.add(npc);
-        }
-        for (int bookIndex = 1; bookIndex <= dungeonConfig.getNumberOfBooks(); bookIndex++) {
-            final Book book = new Book("", bookIndex);
-            books.add(book);
-        }
+        configureArea(
+            minigames,
+            npcs,
+            books,
+            dungeonConfig.getNumberOfMinigames(),
+            dungeonConfig.getNumberOfNPCs(),
+            dungeonConfig.getNumberOfBooks()
+        );
         return new Dungeon(dungeonConfig.getStaticName(), "", false, minigames, npcs, books, dungeonId);
     }
 
@@ -207,7 +223,7 @@ public class CourseService {
         final CourseInitialData courseInitialData,
         final String accessToken
     ) {
-        errorMessages.clear();
+        final Set<String> errorMessages = Collections.synchronizedSet(new HashSet<>());
         final Course course = getCourse(id);
         final Course cloneCourse = new Course(
             courseInitialData.getCourseName(),
@@ -217,7 +233,7 @@ public class CourseService {
             course
                 .getWorlds()
                 .parallelStream()
-                .map(world -> cloneWorld(world, accessToken))
+                .map(world -> cloneWorld(world, accessToken, errorMessages))
                 .collect(Collectors.toCollection(ArrayList::new))
         );
 
@@ -242,7 +258,7 @@ public class CourseService {
      * @param accessToken access Token in the cookie
      * @return cloned world
      */
-    private World cloneWorld(final World oldWorld, final String accessToken) {
+    private World cloneWorld(final World oldWorld, final String accessToken, final Set<String> errorMessages) {
         final World world = new World(
             oldWorld.getStaticName(),
             oldWorld.getTopicName(),
@@ -251,14 +267,14 @@ public class CourseService {
             oldWorld
                 .getMinigameTasks()
                 .parallelStream()
-                .map(minigameTask -> cloneMinigameTask(minigameTask, accessToken))
+                .map(minigameTask -> cloneMinigameTask(minigameTask, accessToken, errorMessages))
                 .collect(Collectors.toCollection(HashSet::new)),
             oldWorld.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
             oldWorld.getBooks().parallelStream().map(this::cloneBook).collect(Collectors.toCollection(HashSet::new)),
             oldWorld
                 .getDungeons()
                 .parallelStream()
-                .map(dungeon -> cloneDungeon(dungeon, accessToken))
+                .map(dungeon -> cloneDungeon(dungeon, accessToken, errorMessages))
                 .sorted(Comparator.comparingInt(Area::getIndex))
                 .collect(Collectors.toCollection(ArrayList::new)),
             oldWorld.getIndex()
@@ -277,7 +293,7 @@ public class CourseService {
      * @param accessToken access Token in the cookie
      * @return cloned dungeon
      */
-    private Dungeon cloneDungeon(final Dungeon oldDungeon, final String accessToken) {
+    private Dungeon cloneDungeon(final Dungeon oldDungeon, final String accessToken, final Set<String> errorMessages) {
         final Dungeon dungeon = new Dungeon(
             oldDungeon.getStaticName(),
             oldDungeon.getTopicName(),
@@ -285,7 +301,7 @@ public class CourseService {
             oldDungeon
                 .getMinigameTasks()
                 .parallelStream()
-                .map(minigameTask -> cloneMinigameTask(minigameTask, accessToken))
+                .map(minigameTask -> cloneMinigameTask(minigameTask, accessToken, errorMessages))
                 .collect(Collectors.toCollection(HashSet::new)),
             oldDungeon.getNpcs().parallelStream().map(this::cloneNPC).collect(Collectors.toCollection(HashSet::new)),
             oldDungeon.getBooks().parallelStream().map(this::cloneBook).collect(Collectors.toCollection(HashSet::new)),
@@ -308,7 +324,11 @@ public class CourseService {
         return new Book(book.getText(), book.getDescription(), book.getIndex());
     }
 
-    private MinigameTask cloneMinigameTask(final MinigameTask minigameTask, final String accessToken) {
+    private MinigameTask cloneMinigameTask(
+        final MinigameTask minigameTask,
+        final String accessToken,
+        final Set<String> errorMessages
+    ) {
         if (minigameTask.getGame() == null) {
             return new MinigameTask(null, minigameTask.getDescription(), null, minigameTask.getIndex());
         }
@@ -316,22 +336,26 @@ public class CourseService {
             case NONE:
                 return new MinigameTask(Minigame.NONE, null, minigameTask.getIndex());
             case CHICKENSHOCK:
-                return cloneChickenshock(minigameTask, accessToken);
+                return cloneChickenshock(minigameTask, accessToken, errorMessages);
             case FINITEQUIZ:
-                return cloneFinitequiz(minigameTask, accessToken);
+                return cloneFinitequiz(minigameTask, accessToken, errorMessages);
             case TOWERCRUSH:
-                return cloneTowercrush(minigameTask, accessToken);
+                return cloneTowercrush(minigameTask, accessToken, errorMessages);
             case CROSSWORDPUZZLE:
-                return cloneCrosswordpuzzle(minigameTask, accessToken);
+                return cloneCrosswordpuzzle(minigameTask, accessToken, errorMessages);
             case BUGFINDER:
-                return cloneBugfinder(minigameTask, accessToken);
+                return cloneBugfinder(minigameTask, accessToken, errorMessages);
             default:
                 errorMessages.add(String.format("minigame %s doesn't exist", minigameTask.getGame()));
                 return new MinigameTask(Minigame.NONE, "", null, minigameTask.getIndex());
         }
     }
 
-    private MinigameTask cloneBugfinder(final MinigameTask minigameTask, final String accessToken) {
+    private MinigameTask cloneBugfinder(
+        final MinigameTask minigameTask,
+        final String accessToken,
+        final Set<String> errorMessages
+    ) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(Minigame.BUGFINDER, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
@@ -355,17 +379,18 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                if (!errorMessages.contains("bugfinder-backend not present")) {
-                    log.debug(CLONE_ERROR_MESSAGE, e);
-                    errorMessages.add("bugfinder-backend not present");
-                    return new MinigameTask(Minigame.BUGFINDER, "", null, minigameTask.getIndex());
-                }
+                log.debug(CLONE_ERROR_MESSAGE, e);
+                errorMessages.add("bugfinder-backend not present");
+                return new MinigameTask(Minigame.BUGFINDER, "", null, minigameTask.getIndex());
             }
         }
-        return null;
     }
 
-    private MinigameTask cloneCrosswordpuzzle(final MinigameTask minigameTask, final String accessToken) {
+    private MinigameTask cloneCrosswordpuzzle(
+        final MinigameTask minigameTask,
+        final String accessToken,
+        final Set<String> errorMessages
+    ) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(
                 Minigame.CROSSWORDPUZZLE,
@@ -389,17 +414,18 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                if (!errorMessages.contains("crosswordpuzzle-backend not present")) {
-                    log.debug(CLONE_ERROR_MESSAGE, e);
-                    errorMessages.add("crosswordpuzzle-backend not present");
-                    return new MinigameTask(Minigame.CROSSWORDPUZZLE, "", null, minigameTask.getIndex());
-                }
+                log.debug(CLONE_ERROR_MESSAGE, e);
+                errorMessages.add("crosswordpuzzle-backend not present");
+                return new MinigameTask(Minigame.CROSSWORDPUZZLE, "", null, minigameTask.getIndex());
             }
         }
-        return null;
     }
 
-    private MinigameTask cloneFinitequiz(final MinigameTask minigameTask, final String accessToken) {
+    private MinigameTask cloneFinitequiz(
+        final MinigameTask minigameTask,
+        final String accessToken,
+        final Set<String> errorMessages
+    ) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(Minigame.FINITEQUIZ, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
@@ -418,17 +444,14 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                if (!errorMessages.contains("finitequiz-backend not present")) {
-                    log.debug(CLONE_ERROR_MESSAGE, e);
-                    errorMessages.add("finitequiz-backend not present");
-                    return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
-                }
+                log.debug(CLONE_ERROR_MESSAGE, e);
+                errorMessages.add("finitequiz-backend not present");
+                return new MinigameTask(Minigame.FINITEQUIZ, "", null, minigameTask.getIndex());
             }
         }
-        return null;
     }
-
-    private MinigameTask cloneTowercrush(final MinigameTask minigameTask, final String accessToken) {
+    
+    private MinigameTask cloneTowercrush(final MinigameTask minigameTask, final String accessToken, Set<String> errorMessages) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(Minigame.TOWERCRUSH, minigameTask.getDescription(), null, minigameTask.getIndex());
         } else {
@@ -447,17 +470,18 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                if (!errorMessages.contains("towercrush-backend not present")) {
-                    log.debug(CLONE_ERROR_MESSAGE, e);
-                    errorMessages.add("towercrush-backend not present");
-                    return new MinigameTask(Minigame.TOWERCRUSH, "", null, minigameTask.getIndex());
-                }
+                log.debug(CLONE_ERROR_MESSAGE, e);
+                errorMessages.add("towercrush-backend not present");
+                return new MinigameTask(Minigame.TOWERCRUSH, "", null, minigameTask.getIndex());
             }
         }
-        return null;
     }
 
-    private MinigameTask cloneChickenshock(final MinigameTask minigameTask, final String accessToken) {
+    private MinigameTask cloneChickenshock(
+        final MinigameTask minigameTask,
+        final String accessToken,
+        final Set<String> errorMessages
+    ) {
         if (minigameTask.getConfigurationId() == null) {
             return new MinigameTask(
                 Minigame.CHICKENSHOCK,
@@ -481,13 +505,10 @@ public class CourseService {
                     minigameTask.getIndex()
                 );
             } catch (final FeignException e) {
-                if (!errorMessages.contains("chickenshock-backend not present")) {
-                    log.debug(CLONE_ERROR_MESSAGE, e);
-                    errorMessages.add("chickenshock-backend not present");
-                    return new MinigameTask(Minigame.CHICKENSHOCK, "", null, minigameTask.getIndex());
-                }
+                log.debug(CLONE_ERROR_MESSAGE, e);
+                errorMessages.add("chickenshock-backend not present");
+                return new MinigameTask(Minigame.CHICKENSHOCK, "", null, minigameTask.getIndex());
             }
         }
-        return null;
     }
 }
