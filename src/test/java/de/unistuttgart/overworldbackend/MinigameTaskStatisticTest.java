@@ -84,6 +84,7 @@ public class MinigameTaskStatisticTest {
     @BeforeEach
     public void createBasicData() {
         courseRepository.deleteAll();
+        playerStatisticRepository.deleteAll();
 
         final MinigameTask minigameTask1 = new MinigameTask();
         minigameTask1.setConfigurationId(UUID.randomUUID());
@@ -134,31 +135,31 @@ public class MinigameTaskStatisticTest {
                 minigameTask1.getIndex()
             );
 
+        // create 100 player statistics with random tries of minigame runs
+        for (int i = 0; i < 100; i++) {
+            final PlayerStatisticDTO playerStatisticDTO = playerStatisticService.createPlayerStatisticInCourse(
+                    course.getId(),
+                    new PlayerRegistrationDTO(String.valueOf(i), "testUser" + i)
+            );
+
+            final int tries = new Random().nextInt(1, 5);
+            for (int j = 0; j < tries; j++) {
+                final int score = new Random().nextInt(0, 100);
+                playerTaskStatisticService.submitData(
+                        new PlayerTaskStatisticData(
+                                minigameTask1.getGame(),
+                                minigameTask1.getConfigurationId(),
+                                score,
+                                playerStatisticDTO.getUserId()
+                        )
+                );
+            }
+        }
+
         objectMapper = new ObjectMapper();
 
         doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
         when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");
-
-        // create 100 player statistics with random tries of minigame runs
-        for (int i = 0; i < 100; i++) {
-            final PlayerStatisticDTO playerStatisticDTO = playerStatisticService.createPlayerStatisticInCourse(
-                course.getId(),
-                new PlayerRegistrationDTO(String.valueOf(i), "testUser" + i)
-            );
-
-            int tries = new Random().nextInt(1, 5);
-            for (int j = 0; j < tries; j++) {
-                int score = new Random().nextInt(0, 100);
-                playerTaskStatisticService.submitData(
-                    new PlayerTaskStatisticData(
-                        minigameTask1.getGame(),
-                        minigameTask1.getConfigurationId(),
-                        score,
-                        playerStatisticDTO.getUserId()
-                    )
-                );
-            }
-        }
     }
 
     @Test
@@ -232,7 +233,7 @@ public class MinigameTaskStatisticTest {
             MinigameSuccessRateStatistic.class
         );
 
-        int actualAmountOfTotalPlayerStatistics = playerStatisticRepository.findAll().size();
+        final int actualAmountOfTotalPlayerStatistics = initialCourse.getPlayerStatistics().size();
         int amountOfPlayerStatisticsInStatistic = 0;
         double successPlayers = 0;
         for (int players : minigameSuccessRateStatistic.getSuccessRateDistribution().values()) {
