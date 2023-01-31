@@ -20,7 +20,7 @@ public class MinigameTaskStatisticService {
     @Autowired
     private PlayerTaskStatisticRepository playerTaskStatisticRepository;
 
-    static final List DEFAULT_DISTRIBUTION_PERCENTAGES = Arrays.asList(0, 25, 50, 75, 100);
+    public static final List DEFAULT_DISTRIBUTION_PERCENTAGES = Arrays.asList(0, 25, 50, 75, 100);
 
     /**
      * Returns the success rate and amount of tries of a player for a minigame task till success
