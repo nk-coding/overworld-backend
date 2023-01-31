@@ -19,12 +19,12 @@ public class MinigameTaskStatisticService {
     @Autowired
     private PlayerTaskStatisticRepository playerTaskStatisticRepository;
 
-    public static final List DEFAULT_DISTRIBUTION_PERCENTAGES = Arrays.asList(0, 25, 50, 75, 100);
+    public static final List<Integer> DEFAULT_DISTRIBUTION_PERCENTAGES = Arrays.asList(0, 25, 50, 75, 100);
 
     /**
      * Returns the success rate and amount of tries of a player for a minigame task till success
      * @param minigameTaskId id of the minigame task to get the statistic for
-     * @returns a the minigame success rate statistic for the given minigame task
+     * @return the minigame success rate statistic for the given minigame task
      */
     public MinigameSuccessRateStatistic getSuccessRateOfMinigame(final UUID minigameTaskId) {
         // get success rate of all PlayerTaskStatistics by minigameTaskId
@@ -33,7 +33,7 @@ public class MinigameTaskStatisticService {
         );
         final List<PlayerTaskStatistic> successfulPlayerTaskStatistics = playerTaskStatistics
             .stream()
-            .filter(playerTaskStatistic -> playerTaskStatistic.isCompleted())
+            .filter(PlayerTaskStatistic::isCompleted)
             .toList();
         final List<PlayerTaskStatistic> failedPlayerTaskStatistics = playerTaskStatistics
             .stream()

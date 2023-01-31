@@ -103,7 +103,7 @@ public class MinigameTaskStatisticController {
                 minigame.getId(),
                 timeDistributionPercentages
             );
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
@@ -137,7 +137,7 @@ public class MinigameTaskStatisticController {
                 minigame.getId(),
                 timeDistributionPercentages
             );
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
