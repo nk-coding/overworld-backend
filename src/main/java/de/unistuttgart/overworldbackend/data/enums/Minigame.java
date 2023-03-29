@@ -6,6 +6,7 @@ public enum Minigame {
     BUGFINDER,
     CROSSWORDPUZZLE,
     FINITEQUIZ,
+    MEMORY,
     TOWERCRUSH;
 
     /**
