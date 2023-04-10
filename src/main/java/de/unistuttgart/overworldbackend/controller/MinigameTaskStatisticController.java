@@ -2,7 +2,7 @@ package de.unistuttgart.overworldbackend.controller;
 
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
-import de.unistuttgart.overworldbackend.data.statistics.MinigameHighscoreDistribution;
+import de.unistuttgart.overworldbackend.data.statistics.MinigameScoreHit;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameSuccessRateStatistic;
 import de.unistuttgart.overworldbackend.service.MinigameTaskService;
 import de.unistuttgart.overworldbackend.service.MinigameTaskStatisticService;
@@ -78,11 +78,10 @@ public class MinigameTaskStatisticController {
 
     @Operation(summary = "Get the highscore distribution statistic of task by its index from a world")
     @GetMapping("/minigame-tasks/{taskIndex}/statistics/highscore-distribution")
-    public List<MinigameHighscoreDistribution> getMinigameTaskHighscoreDistributionFromWorld(
+    public List<MinigameScoreHit> getMinigameTaskHighscoreDistributionFromWorld(
         @PathVariable final int courseId,
         @PathVariable final int worldIndex,
         @PathVariable final int taskIndex,
-        @RequestParam(required = false) final Optional<List<Integer>> timeDistributionPercentages,
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -98,24 +97,16 @@ public class MinigameTaskStatisticController {
             Optional.empty(),
             taskIndex
         );
-        try {
-            return minigameTaskStatisticService.getPlayerHighscoreDistributions(
-                minigame.getId(),
-                timeDistributionPercentages
-            );
-        } catch (final IllegalArgumentException ex) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-        }
+        return minigameTaskStatisticService.getPlayerHighscoreDistributions(minigame.getId());
     }
 
-    @Operation(summary = "Get the success rate statistic of task by its index from a dungeon")
+    @Operation(summary = "Get the highscore distribution statistic of task by its index from a dungeon")
     @GetMapping("/dungeons/{dungoenIndex}/minigame-tasks/{taskIndex}/statistics/highscore-distribution")
-    public List<MinigameHighscoreDistribution> getMinigameTaskHighscoreDistributionFromDungeon(
+    public List<MinigameScoreHit> getMinigameTaskHighscoreDistributionFromDungeon(
         @PathVariable final int courseId,
         @PathVariable final int worldIndex,
         @PathVariable final int dungoenIndex,
         @PathVariable final int taskIndex,
-        @RequestParam(required = false) final Optional<List<Integer>> timeDistributionPercentages,
         @CookieValue("access_token") final String accessToken
     ) {
         jwtValidatorService.validateTokenOrThrow(accessToken);
@@ -132,13 +123,6 @@ public class MinigameTaskStatisticController {
             Optional.of(dungoenIndex),
             taskIndex
         );
-        try {
-            return minigameTaskStatisticService.getPlayerHighscoreDistributions(
-                minigame.getId(),
-                timeDistributionPercentages
-            );
-        } catch (final IllegalArgumentException ex) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-        }
+        return minigameTaskStatisticService.getPlayerHighscoreDistributions(minigame.getId());
     }
 }
