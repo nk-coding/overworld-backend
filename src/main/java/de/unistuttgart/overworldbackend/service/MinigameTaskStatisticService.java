@@ -87,7 +87,7 @@ public class MinigameTaskStatisticService {
         highscoreDistributions.add(new MinigameScoreHit(100, 0));
 
         playerTaskStatistics
-            .parallelStream()
+            .stream()
             .forEach(playerTaskStatistic -> {
                 highscoreDistributions
                     .stream()
