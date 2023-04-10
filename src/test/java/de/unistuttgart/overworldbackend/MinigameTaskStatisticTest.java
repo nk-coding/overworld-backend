@@ -184,7 +184,11 @@ public class MinigameTaskStatisticTest {
                 )
         );
         // no score over 100 or below 0
-        assertTrue(highscoreDistributions.stream().noneMatch(minigameScoreHit -> minigameScoreHit.getScore() > 100 || minigameScoreHit.getScore() < 0));
+        assertTrue(
+            highscoreDistributions
+                .stream()
+                .noneMatch(minigameScoreHit -> minigameScoreHit.getScore() > 100 || minigameScoreHit.getScore() < 0)
+        );
         // check that highscore distribution is sorted by score
         assertTrue(
             IntStream
