@@ -14,7 +14,6 @@ import de.unistuttgart.overworldbackend.data.statistics.MinigameScoreHit;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameSuccessRateStatistic;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
-import de.unistuttgart.overworldbackend.service.MinigameTaskStatisticService;
 import de.unistuttgart.overworldbackend.service.PlayerStatisticService;
 import de.unistuttgart.overworldbackend.service.PlayerTaskStatisticService;
 import java.util.*;
