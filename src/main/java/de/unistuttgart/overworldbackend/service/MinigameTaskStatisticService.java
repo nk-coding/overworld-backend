@@ -82,24 +82,17 @@ public class MinigameTaskStatisticService {
         final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByMinigameTaskIdOrderByHighscore(
             minigameTaskId
         );
-        final List<MinigameScoreHit> highscoreDistributions = new ArrayList<>();
-        highscoreDistributions.add(new MinigameScoreHit(0, 0));
-        highscoreDistributions.add(new MinigameScoreHit(100, 0));
-
-        playerTaskStatistics
-            .stream()
-            .forEach(playerTaskStatistic -> {
-                highscoreDistributions
-                    .stream()
-                    .filter(minigameScoreHit -> minigameScoreHit.getScore() == playerTaskStatistic.getHighscore())
-                    .findFirst()
-                    .ifPresentOrElse(
-                        minigameScoreHit -> minigameScoreHit.addAmount(),
-                        () -> highscoreDistributions.add(new MinigameScoreHit(playerTaskStatistic.getHighscore(), 1))
-                    );
-            });
-        highscoreDistributions.sort(Comparator.comparing(MinigameScoreHit::getScore));
-        return highscoreDistributions;
+        final Map<Long, List<PlayerTaskStatistic>> results = playerTaskStatistics
+            .parallelStream()
+            .collect(Collectors.groupingByConcurrent(PlayerTaskStatistic::getHighscore));
+        results.putIfAbsent(0l, List.of());
+        results.putIfAbsent(100l, List.of());
+        return results
+            .entrySet()
+            .parallelStream()
+            .map(entry -> new MinigameScoreHit(entry.getKey(), entry.getValue().size()))
+            .sorted(Comparator.comparing(MinigameScoreHit::getScore))
+            .toList();
     }
 
     /**
