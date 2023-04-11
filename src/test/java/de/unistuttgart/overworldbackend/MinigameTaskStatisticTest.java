@@ -10,14 +10,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
-import de.unistuttgart.overworldbackend.data.statistics.MinigameHighscoreDistribution;
+import de.unistuttgart.overworldbackend.data.statistics.MinigameScoreHit;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameSuccessRateStatistic;
 import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
-import de.unistuttgart.overworldbackend.service.MinigameTaskStatisticService;
 import de.unistuttgart.overworldbackend.service.PlayerStatisticService;
 import de.unistuttgart.overworldbackend.service.PlayerTaskStatisticService;
 import java.util.*;
+import java.util.stream.IntStream;
 import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -169,56 +169,31 @@ public class MinigameTaskStatisticTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        final List<MinigameHighscoreDistribution> highscoreDistributions = Arrays.asList(
-            objectMapper.readValue(result.getResponse().getContentAsString(), MinigameHighscoreDistribution[].class)
+        final List<MinigameScoreHit> highscoreDistributions = Arrays.asList(
+            objectMapper.readValue(result.getResponse().getContentAsString(), MinigameScoreHit[].class)
         );
-        assertSame(
-            MinigameTaskStatisticService.DEFAULT_DISTRIBUTION_PERCENTAGES.size() - 1,
-            highscoreDistributions.size()
+        // check that highscore distribution has no zero entries except score 0 and 100
+        assertTrue(
+            highscoreDistributions
+                .stream()
+                .noneMatch(minigameScoreHit ->
+                    minigameScoreHit.getAmount() == 0 &&
+                    minigameScoreHit.getScore() != 0 &&
+                    minigameScoreHit.getScore() != 100
+                )
         );
-        for (int i = 0; i < highscoreDistributions.size() - 2; i++) {
-            assertTrue(
-                highscoreDistributions.get(i).getFromScore() <= highscoreDistributions.get(i + 1).getFromScore()
-            );
-            assertTrue(highscoreDistributions.get(i).getToScore() <= highscoreDistributions.get(i + 1).getToScore());
-        }
-    }
-
-    @Test
-    public void testGetHighscoreDistributionWithOwnPercentages() throws Exception {
-        final MvcResult result = mvc
-            .perform(
-                get(fullURL + "/highscore-distribution")
-                    .param("timeDistributionPercentages", "0,10,20,30,40,50,60,70,80,90,100")
-                    .cookie(cookie)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isOk())
-            .andReturn();
-
-        final List<MinigameHighscoreDistribution> highscoreDistributions = Arrays.asList(
-            objectMapper.readValue(result.getResponse().getContentAsString(), MinigameHighscoreDistribution[].class)
+        // no score over 100 or below 0
+        assertTrue(
+            highscoreDistributions
+                .stream()
+                .noneMatch(minigameScoreHit -> minigameScoreHit.getScore() > 100 || minigameScoreHit.getScore() < 0)
         );
-        assertSame(10, highscoreDistributions.size());
-        for (int i = 0; i < highscoreDistributions.size() - 2; i++) {
-            assertTrue(
-                highscoreDistributions.get(i).getFromScore() <= highscoreDistributions.get(i + 1).getFromScore()
-            );
-            assertTrue(highscoreDistributions.get(i).getToScore() <= highscoreDistributions.get(i + 1).getToScore());
-        }
-    }
-
-    @Test
-    public void testGetHighscoreDistributionWithOwnPercentages_IllegalList_ThrowsBadRequest() throws Exception {
-        mvc
-            .perform(
-                get(fullURL + "/highscore-distribution")
-                    .param("timeDistributionPercentages", "100,10,20,30,40,50,60,70,80,90,0")
-                    .cookie(cookie)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isBadRequest())
-            .andReturn();
+        // check that highscore distribution is sorted by score
+        assertTrue(
+            IntStream
+                .range(0, highscoreDistributions.size() - 1)
+                .allMatch(i -> highscoreDistributions.get(i).getScore() <= highscoreDistributions.get(i + 1).getScore())
+        );
     }
 
     @Test

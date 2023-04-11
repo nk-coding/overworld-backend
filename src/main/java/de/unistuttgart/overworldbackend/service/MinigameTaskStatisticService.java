@@ -2,7 +2,7 @@ package de.unistuttgart.overworldbackend.service;
 
 import de.unistuttgart.overworldbackend.data.PlayerTaskActionLog;
 import de.unistuttgart.overworldbackend.data.PlayerTaskStatistic;
-import de.unistuttgart.overworldbackend.data.statistics.MinigameHighscoreDistribution;
+import de.unistuttgart.overworldbackend.data.statistics.MinigameScoreHit;
 import de.unistuttgart.overworldbackend.data.statistics.MinigameSuccessRateStatistic;
 import de.unistuttgart.overworldbackend.repositories.PlayerTaskStatisticRepository;
 import java.util.*;
@@ -11,15 +11,15 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @Slf4j
 public class MinigameTaskStatisticService {
 
     @Autowired
     private PlayerTaskStatisticRepository playerTaskStatisticRepository;
-
-    public static final List<Integer> DEFAULT_DISTRIBUTION_PERCENTAGES = Arrays.asList(0, 25, 50, 75, 100);
 
     /**
      * Returns the success rate and amount of tries of a player for a minigame task till success
@@ -72,60 +72,27 @@ public class MinigameTaskStatisticService {
     /**
      * Returns the highscore distribution of a minigame task
      *
+     * For every score between 0 and 100 there is a MinigameScoreHit object with the score and the amount of players that hit that score.
+     * If a score is not hit by any player, it is not included in the list except for 0 and 100.
+     *
      * @param minigameTaskId id of the minigame task to get the statistic for
-     * @param highscorePercentages list of percentages to get the highscore distribution for, e.g. [0, 25, 50, 75, 100]
-     * @throws IllegalArgumentException if highscorePercentages is not sorted, has not as first value 0, at last value 100 or contains values < 0 or > 100
      * @return a minigame highscore distribution for the given minigame task
      */
-    public List<MinigameHighscoreDistribution> getPlayerHighscoreDistributions(
-        final UUID minigameTaskId,
-        final Optional<List<Integer>> highscorePercentages
-    ) {
-        final List<Integer> highscorePercentagesToUse;
-        if (highscorePercentages.isEmpty()) {
-            highscorePercentagesToUse = DEFAULT_DISTRIBUTION_PERCENTAGES;
-        } else {
-            highscorePercentagesToUse = highscorePercentages.get();
-        }
-        if (highscorePercentagesToUse.size() < 2) {
-            throw new IllegalArgumentException("high score percentages must have at least 2 elements");
-        }
-        if (highscorePercentagesToUse.get(0) != 0) {
-            throw new IllegalArgumentException("high score percentages must start with 0");
-        }
-        if (highscorePercentagesToUse.get(highscorePercentagesToUse.size() - 1) != 100) {
-            throw new IllegalArgumentException("high score percentages must end with 100");
-        }
+    public List<MinigameScoreHit> getPlayerHighscoreDistributions(final UUID minigameTaskId) {
         final List<PlayerTaskStatistic> playerTaskStatistics = playerTaskStatisticRepository.findByMinigameTaskIdOrderByHighscore(
             minigameTaskId
         );
-        final List<MinigameHighscoreDistribution> highscoreDistributions = new ArrayList<>();
-        for (int i = 0; i < highscorePercentagesToUse.size() - 1; i++) {
-            final MinigameHighscoreDistribution highscoreDistribution = new MinigameHighscoreDistribution();
-            highscoreDistribution.setFromPercentage(highscorePercentagesToUse.get(i));
-            highscoreDistribution.setToPercentage(highscorePercentagesToUse.get(i + 1));
-            highscoreDistributions.add(highscoreDistribution);
-        }
-
-        // calculate score time borders to time spent distribution percentage
-        int currentStatisticIndex = 0;
-        for (final MinigameHighscoreDistribution highscoreDistribution : highscoreDistributions) {
-            if (currentStatisticIndex >= playerTaskStatistics.size()) {
-                break;
-            }
-            final int endIndex = (int) (
-                (highscoreDistribution.getToPercentage() / 100.0) * (playerTaskStatistics.size() - 1)
-            );
-            PlayerTaskStatistic currentStatistic = playerTaskStatistics.get(currentStatisticIndex);
-            highscoreDistribution.setFromScore(currentStatistic.getHighscore());
-            while (currentStatisticIndex <= endIndex && currentStatisticIndex < playerTaskStatistics.size()) {
-                currentStatistic = playerTaskStatistics.get(currentStatisticIndex);
-                highscoreDistribution.addCount();
-                currentStatisticIndex++;
-            }
-            highscoreDistribution.setToScore(currentStatistic.getHighscore());
-        }
-        return highscoreDistributions;
+        final Map<Long, List<PlayerTaskStatistic>> results = playerTaskStatistics
+            .parallelStream()
+            .collect(Collectors.groupingByConcurrent(PlayerTaskStatistic::getHighscore));
+        results.putIfAbsent(0l, List.of());
+        results.putIfAbsent(100l, List.of());
+        return results
+            .entrySet()
+            .parallelStream()
+            .map(entry -> new MinigameScoreHit(entry.getKey(), entry.getValue().size()))
+            .sorted(Comparator.comparing(MinigameScoreHit::getScore))
+            .toList();
     }
 
     /**
