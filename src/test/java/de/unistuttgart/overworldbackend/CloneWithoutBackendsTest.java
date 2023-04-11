@@ -178,7 +178,6 @@ public class CloneWithoutBackendsTest {
             CourseCloneDTO.class
         );
         final Set<String> errorMessages = courseCloneDTO.getErrorMessages();
-        System.out.println(errorMessages);
         final Set<Minigame> minigames = new HashSet<>();
         courseCloneDTO
             .getWorlds()

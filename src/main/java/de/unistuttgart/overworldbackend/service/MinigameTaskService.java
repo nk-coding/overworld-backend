@@ -3,6 +3,8 @@ package de.unistuttgart.overworldbackend.service;
 import de.unistuttgart.overworldbackend.data.Area;
 import de.unistuttgart.overworldbackend.data.MinigameTask;
 import de.unistuttgart.overworldbackend.data.MinigameTaskDTO;
+import de.unistuttgart.overworldbackend.data.PlayerStatistic;
+import de.unistuttgart.overworldbackend.data.comparator.AreaComparator;
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
 import de.unistuttgart.overworldbackend.data.mapper.MinigameTaskMapper;
 import de.unistuttgart.overworldbackend.repositories.MinigameTaskRepository;
@@ -32,6 +34,9 @@ public class MinigameTaskService {
 
     @Autowired
     private MinigameTaskMapper minigameTaskMapper;
+
+    @Autowired
+    private PlayerStatisticService playerStatisticService;
 
     /**
      * Get a minigame task of an area
@@ -177,6 +182,38 @@ public class MinigameTaskService {
         final Area area = areaService.getAreaFromIndex(courseId, worldIndex, dungeonIndex);
         if (!area.isConfigured()) {
             area.setConfigured(true);
+            unlockAddedArea(area);
+        }
+    }
+
+    /**
+     * unlocks an area for all players which have already unlocked a world or dungeon with a higher index
+     * @param area area which is unlocked
+     */
+    private void unlockAddedArea(final Area area) {
+        final Set<PlayerStatistic> playerStatistics = playerStatisticService.getPlayerStatisticsFromCourse(
+            area.getCourse().getId()
+        );
+        playerStatistics.forEach(playerStatistic -> unlockAreaIfProgressFurther(area, playerStatistic));
+    }
+
+    /**
+     * Unlocks an area if the player has already unlocked a world or dungeon with a higher index
+     * @param area Area which might get unlocked
+     * @param playerStatistic statistic of the player
+     * @throws ResponseStatusException (400) if playerStatistic is not initialized
+     */
+    private void unlockAreaIfProgressFurther(final Area area, final PlayerStatistic playerStatistic) {
+        final AreaComparator areaComparator = new AreaComparator();
+        final Area furthestPlayerArea = playerStatistic
+            .getUnlockedAreas()
+            .stream()
+            .max(areaComparator)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "PlayerStatistic not initiallized"));
+        if (areaComparator.compare(furthestPlayerArea, area) > 0) {
+            playerStatistic.getUnlockedAreas().add(area);
+        } else {
+            playerStatisticService.checkForUnlockedAreas(furthestPlayerArea, playerStatistic);
         }
     }
 

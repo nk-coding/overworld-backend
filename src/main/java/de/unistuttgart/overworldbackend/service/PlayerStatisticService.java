@@ -62,6 +62,16 @@ public class PlayerStatisticService {
     }
 
     /**
+     * get statistics from a player course
+     *
+     * @param courseId the id of the course
+     * @return the found playerstatistic
+     */
+    public Set<PlayerStatistic> getPlayerStatisticsFromCourse(final int courseId) {
+        return playerstatisticRepository.findByCourseId(courseId);
+    }
+
+    /**
      * Create a playerstatistic with initial data in a course.
      *
      * @param courseId the id of the course where the playerstatistic will be created

@@ -12,4 +12,6 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
     boolean existsByCourseIdAndUserId(int courseId, String userId);
     Optional<PlayerStatistic> findByCourseIdAndUserId(int courseId, String userId);
     Set<PlayerStatistic> deletePlayerStatisticsByCourseId(int courseId);
+
+    Set<PlayerStatistic> findByCourseId(int courseId);
 }
