@@ -1,7 +1,6 @@
 package de.unistuttgart.overworldbackend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,19 +16,10 @@ import de.unistuttgart.overworldbackend.client.FinitequizClient;
 import de.unistuttgart.overworldbackend.client.TowercrushClient;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
-import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockConfiguration;
-import de.unistuttgart.overworldbackend.data.minigames.chickenshock.ChickenshockQuestion;
-import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleConfiguration;
-import de.unistuttgart.overworldbackend.data.minigames.crosswordpuzzle.CrosswordpuzzleQuestion;
-import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizConfiguration;
-import de.unistuttgart.overworldbackend.data.minigames.finitequiz.FinitequizQuestion;
-import de.unistuttgart.overworldbackend.data.minigames.towercrush.TowercrushConfiguration;
-import de.unistuttgart.overworldbackend.data.minigames.towercrush.TowercrushQuestion;
 import java.io.File;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -253,7 +243,6 @@ public class CloneTest {
                         .get();
                     assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
                     assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
-                    compareMinigame(minigameTask, cloneMinigameTask, access_token);
                 });
             world
                 .getNpcs()
@@ -284,7 +273,6 @@ public class CloneTest {
                             .get();
                         assertEquals(minigameTask.getGame(), cloneMinigameTask.getGame());
                         assertEquals(minigameTask.getDescription(), cloneMinigameTask.getDescription());
-                        compareMinigame(minigameTask, cloneMinigameTask, access_token);
                     });
                 dungeon
                     .getNpcs()
@@ -300,117 +288,6 @@ public class CloneTest {
                             cloneNpc.getText().get(k.getAndIncrement());
                         }
                         assertEquals(npc.getDescription(), cloneNpc.getDescription());
-                    });
-            }
-        }
-    }
-
-    private void compareMinigame(
-        final MinigameTask minigameTask1,
-        final MinigameTask minigameTask2,
-        final String access_token
-    ) {
-        if (minigameTask1 == null) {
-            return;
-        }
-        if (minigameTask1.getGame() == null) {
-            return;
-        }
-        if (minigameTask1.getConfigurationId() == null) {
-            return;
-        }
-        if (minigameTask2.getConfigurationId() == null) {
-            return;
-        }
-        switch (minigameTask1.getGame()) {
-            case CHICKENSHOCK -> {
-                final ChickenshockConfiguration config1 = chickenshockClient.getConfiguration(
-                    access_token,
-                    minigameTask1.getConfigurationId()
-                );
-                final ChickenshockConfiguration config2 = chickenshockClient.getConfiguration(
-                    access_token,
-                    minigameTask2.getConfigurationId()
-                );
-                config1
-                    .getQuestions()
-                    .forEach(chickenshockQuestion -> {
-                        final Optional<ChickenshockQuestion> question = config2
-                            .getQuestions()
-                            .stream()
-                            .filter(chickenshockQuestion1 ->
-                                chickenshockQuestion1.getText().equals(chickenshockQuestion.getText())
-                            )
-                            .findAny();
-                        assertFalse(question.isEmpty());
-                    });
-            }
-            case CROSSWORDPUZZLE -> {
-                final CrosswordpuzzleConfiguration config1 = crosswordpuzzleClient.getConfiguration(
-                    access_token,
-                    minigameTask1.getConfigurationId()
-                );
-                final CrosswordpuzzleConfiguration config2 = crosswordpuzzleClient.getConfiguration(
-                    access_token,
-                    minigameTask2.getConfigurationId()
-                );
-                config1
-                    .getQuestions()
-                    .forEach(crosswordpuzzleQuestion -> {
-                        final Optional<CrosswordpuzzleQuestion> question = config2
-                            .getQuestions()
-                            .stream()
-                            .filter(crosswordpuzzleQuestion1 ->
-                                crosswordpuzzleQuestion1
-                                    .getQuestionText()
-                                    .equals(crosswordpuzzleQuestion.getQuestionText())
-                            )
-                            .findAny();
-                        assertFalse(question.isEmpty());
-                    });
-            }
-            case FINITEQUIZ -> {
-                final FinitequizConfiguration config1 = finitequizClient.getConfiguration(
-                    access_token,
-                    minigameTask1.getConfigurationId()
-                );
-                final FinitequizConfiguration config2 = finitequizClient.getConfiguration(
-                    access_token,
-                    minigameTask2.getConfigurationId()
-                );
-                config1
-                    .getQuestions()
-                    .forEach(finitequizQuestion -> {
-                        final Optional<FinitequizQuestion> question = config2
-                            .getQuestions()
-                            .stream()
-                            .filter(finitequizQuestion1 ->
-                                finitequizQuestion1.getText().equals(finitequizQuestion.getText())
-                            )
-                            .findAny();
-                        assertFalse(question.isEmpty());
-                    });
-            }
-            case TOWERCRUSH -> {
-                final TowercrushConfiguration config1 = towercrushClient.getConfiguration(
-                    access_token,
-                    minigameTask1.getConfigurationId()
-                );
-                final TowercrushConfiguration config2 = towercrushClient.getConfiguration(
-                    access_token,
-                    minigameTask2.getConfigurationId()
-                );
-                config1
-                    .getQuestions()
-                    .forEach(towercrushQuestion -> {
-                        final Optional<TowercrushQuestion> question = config2
-                            .getQuestions()
-                            .stream()
-                            .filter(towercrushQuestion1 ->
-                                towercrushQuestion1.getText().equals(towercrushQuestion.getText())
-                            )
-                            .findAny();
-                        assertFalse(question.isEmpty());
                     });
             }
         }

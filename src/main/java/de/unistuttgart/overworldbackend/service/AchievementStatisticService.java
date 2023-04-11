@@ -79,7 +79,7 @@ public class AchievementStatisticService {
         final AchievementStatistic achievementStatistic = getAchievementStatisticFromPlayer(playerId, achievementTitle);
         try {
             achievementStatistic.setProgress(achievementStatisticDTO.getProgress());
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "The new progress cannot be smaller than the current one"

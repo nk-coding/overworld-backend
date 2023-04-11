@@ -190,19 +190,19 @@ public class CloneWithoutBackendsTest {
             .parallelStream()
             .forEach(minigameTaskDTO -> minigames.add(minigameTaskDTO.getGame()));
         if (minigames.contains(Minigame.CHICKENSHOCK)) {
-            assertTrue(errorMessages.contains("chickenshock-backend not present"));
+            assertTrue(errorMessages.contains("CHICKENSHOCK-backend not present"));
         }
         if (minigames.contains(Minigame.FINITEQUIZ)) {
-            assertTrue(errorMessages.contains("finitequiz-backend not present"));
+            assertTrue(errorMessages.contains("FINITEQUIZ-backend not present"));
         }
         if (minigames.contains(Minigame.CROSSWORDPUZZLE)) {
-            assertTrue(errorMessages.contains("crosswordpuzzle-backend not present"));
+            assertTrue(errorMessages.contains("CROSSWORDPUZZLE-backend not present"));
         }
         if (minigames.contains(Minigame.BUGFINDER)) {
-            assertTrue(errorMessages.contains("bugfinder-backend not present"));
+            assertTrue(errorMessages.contains("BUGFINDER-backend not present"));
         }
         if (minigames.contains(Minigame.TOWERCRUSH)) {
-            assertTrue(errorMessages.contains("towercrush-backend not present"));
+            assertTrue(errorMessages.contains("TOWERCRUSH-backend not present"));
         }
     }
 }

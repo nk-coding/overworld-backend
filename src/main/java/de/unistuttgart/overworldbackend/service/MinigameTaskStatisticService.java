@@ -106,6 +106,7 @@ public class MinigameTaskStatisticService {
         return successfulPlayerTaskStatistic
             .getPlayerTaskActionLogs()
             .stream()
+            .filter(e -> e.getDate() != null)
             .sorted(Comparator.comparing(PlayerTaskActionLog::getDate))
             .toList();
     }

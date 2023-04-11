@@ -107,7 +107,7 @@ services:
       KC_HTTP_PORT: 80
 
   crosswordpuzzle-backend:
-    image: ghcr.io/gamify-it/crosswordpuzzle-backend:main
+    image: ghcr.io/gamify-it/crosswordpuzzle-backend:maintenance-clone-config
     pull_policy: always
     restart: always
     expose:
@@ -123,7 +123,7 @@ services:
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   chickenshock-backend:
-    image: ghcr.io/gamify-it/chickenshock-backend:main
+    image: ghcr.io/gamify-it/chickenshock-backend:maintenance-clone-config
     pull_policy: always
     restart: always
     expose:
@@ -139,7 +139,7 @@ services:
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   finitequiz-backend:
-    image: ghcr.io/gamify-it/finitequiz-backend:main
+    image: ghcr.io/gamify-it/finitequiz-backend:maintenance-clone-config
     pull_policy: always
     restart: always
     expose:
@@ -155,7 +155,7 @@ services:
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   towercrush-backend:
-    image: ghcr.io/gamify-it/towercrush-backend:main
+    image: ghcr.io/gamify-it/towercrush-backend:maintenance-clone-config
     pull_policy: always
     restart: always
     expose:
@@ -171,7 +171,7 @@ services:
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   bugfinder-backend:
-    image: ghcr.io/gamify-it/bugfinder-backend:main
+    image: ghcr.io/gamify-it/bugfinder-backend:maintenance-clone-config
     pull_policy: always
     restart: always
     expose:

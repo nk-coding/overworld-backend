@@ -37,6 +37,7 @@ services:
         chickenshock/default.sql
         finitequiz/default.sql
         crosswordpuzzle/default.sql
+        bugfinder/default.sql
 
   keycloak-db:
     container_name: keycloak-db
@@ -99,6 +100,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  towercrush-db:
+    image: postgres:14-alpine
+    pull_policy: always
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
   # --- backends ---
   # These backend services contain the logic of the Gamify-IT services.
   keycloak:
@@ -141,6 +152,7 @@ services:
       - CROSSWORDPUZZLE_URL=http://crosswordpuzzle-backend/api/v1
       - FINITEQUIZ_URL=http://finitequiz-backend/api/v1
       - BUGFINDER_URL=http://bugfinder-backend/api/v1
+      - TOWERCRUSH_URL=http://towercrush-backend/api/v1
       - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
@@ -210,6 +222,21 @@ services:
       - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
       - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
+  towercrush-backend:
+    image: ghcr.io/gamify-it/towercrush-backend:main
+    pull_policy: always
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - bugfinder-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_URL=postgresql://towercrush-db:5432/postgres
+      - OVERWORLD_URL=http://overworld-backend/api/v1
+      - KEYCLOAK_ISSUER=http://localhost/keycloak/realms/Gamify-IT
+      - KEYCLOAK_URL=http://keycloak/keycloak/realms/Gamify-IT
 
   # --- frontends ---
   # These frontend services contain the user interface of the Gamify-IT services.
