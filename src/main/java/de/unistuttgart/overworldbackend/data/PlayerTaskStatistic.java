@@ -16,6 +16,9 @@ import lombok.experimental.FieldDefaults;
  * @see MinigameTask
  */
 @Entity
+@Table(
+    uniqueConstraints = { @UniqueConstraint(columnNames = { "player_statistic_id", "minigame_task_id", "course_id" }) }
+)
 @Getter
 @Setter
 @NoArgsConstructor

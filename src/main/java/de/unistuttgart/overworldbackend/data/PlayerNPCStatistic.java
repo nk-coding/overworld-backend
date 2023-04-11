@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
  * @see NPC
  */
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "player_statistic_id", "npc_id", "course_id" }) })
 @Getter
 @Setter
 @NoArgsConstructor
