@@ -1,14 +1,15 @@
 package de.unistuttgart.overworldbackend.data;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 /**
  * Represents an area of the overworld map.
@@ -71,14 +72,14 @@ public class Area {
     @ManyToOne
     Course course;
 
-    protected Area(
-        final String staticName,
-        final String topicName,
-        final boolean active,
-        final Set<MinigameTask> minigameTasks,
-        final Set<NPC> npcs,
-        final Set<Book> books,
-        final int index
+    protected Area( //NOSONAR
+                    final String staticName,
+                    final String topicName,
+                    final boolean active,
+                    final Set<MinigameTask> minigameTasks,
+                    final Set<NPC> npcs,
+                    final Set<Book> books,
+                    final int index
     ) {
         this.staticName = staticName;
         this.topicName = topicName;
@@ -90,14 +91,14 @@ public class Area {
     }
 
     protected Area(
-        final String staticName,
-        final String topicName,
-        final boolean active,
-        final boolean configured,
-        final Set<MinigameTask> minigameTasks,
-        final Set<NPC> npcs,
-        final Set<Book> books,
-        final int index
+            final String staticName,
+            final String topicName,
+            final boolean active,
+            final boolean configured,
+            final Set<MinigameTask> minigameTasks,
+            final Set<NPC> npcs,
+            final Set<Book> books,
+            final int index
     ) {
         this.staticName = staticName;
         this.topicName = topicName;
