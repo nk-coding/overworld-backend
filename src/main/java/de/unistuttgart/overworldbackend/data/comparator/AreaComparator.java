@@ -2,7 +2,6 @@ package de.unistuttgart.overworldbackend.data.comparator;
 
 import de.unistuttgart.overworldbackend.data.Area;
 import de.unistuttgart.overworldbackend.data.Dungeon;
-
 import java.util.Comparator;
 
 public class AreaComparator implements Comparator<Area> {

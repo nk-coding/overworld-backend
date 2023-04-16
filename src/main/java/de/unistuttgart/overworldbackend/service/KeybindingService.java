@@ -6,6 +6,7 @@ import de.unistuttgart.overworldbackend.data.Player;
 import de.unistuttgart.overworldbackend.data.enums.Binding;
 import de.unistuttgart.overworldbackend.repositories.KeybindingRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -13,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -51,11 +50,11 @@ public class KeybindingService {
      */
     public List<Keybinding> getKeybindingStatisticsFromPlayer(final String playerId) {
         return playerRepository
-                .findById(playerId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Player with id " + playerId + " does not exist")
-                )
-                .getKeybindings();
+            .findById(playerId)
+            .orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Player with id " + playerId + " does not exist")
+            )
+            .getKeybindings();
     }
 
     /**
@@ -68,15 +67,15 @@ public class KeybindingService {
      */
     public Keybinding getKeybindingStatisticFromPlayer(final String playerId, final Binding binding) {
         return getKeybindingStatisticsFromPlayer(playerId)
-                .stream()
-                .filter(keybindingStatistic -> keybindingStatistic.getBinding().equals(binding))
-                .findFirst()
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                String.format("There is no keybinding statistic for binding %s", binding)
-                        )
-                );
+            .stream()
+            .filter(keybindingStatistic -> keybindingStatistic.getBinding().equals(binding))
+            .findFirst()
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    String.format("There is no keybinding statistic for binding %s", binding)
+                )
+            );
     }
 
     /**
@@ -90,15 +89,15 @@ public class KeybindingService {
      * @throws ResponseStatusException (404) if the player or the keybinding does not exist
      */
     public Keybinding updateKeybindingStatistic(
-            final String playerId,
-            final Binding binding,
-            final KeybindingDTO keybindingDTO
+        final String playerId,
+        final Binding binding,
+        final KeybindingDTO keybindingDTO
     ) {
         final Keybinding keybinding = getKeybindingStatisticFromPlayer(playerId, binding);
         if (!keybindingDTO.getBinding().equals(binding)) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "The path binding doesn't match the given binding"
+                HttpStatus.BAD_REQUEST,
+                "The path binding doesn't match the given binding"
             );
         }
         keybinding.setKey(keybindingDTO.getKey());

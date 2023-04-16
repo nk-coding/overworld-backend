@@ -1,12 +1,11 @@
 package de.unistuttgart.overworldbackend.data;
 
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
+import javax.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 /**
  * An action log to log a player's minigame run.

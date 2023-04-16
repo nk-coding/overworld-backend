@@ -1,14 +1,13 @@
 package de.unistuttgart.overworldbackend.data;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 /**
  * A world is an instance of an Area.
@@ -29,29 +28,29 @@ public class World extends Area {
     List<Dungeon> dungeons;
 
     public World( //NOSONAR
-                  final String staticName,
-                  final String topicName,
-                  final boolean active,
-                  final Set<MinigameTask> minigameTasks,
-                  final Set<NPC> npcs,
-                  final Set<Book> books,
-                  final List<Dungeon> dungeons,
-                  final int index
+        final String staticName,
+        final String topicName,
+        final boolean active,
+        final Set<MinigameTask> minigameTasks,
+        final Set<NPC> npcs,
+        final Set<Book> books,
+        final List<Dungeon> dungeons,
+        final int index
     ) {
         super(staticName, topicName, active, minigameTasks, npcs, books, index);
         this.dungeons = dungeons;
     }
 
     public World( //NOSONAR
-                  final String staticName,
-                  final String topicName,
-                  final boolean active,
-                  final boolean configured,
-                  final Set<MinigameTask> minigameTasks,
-                  final Set<NPC> npcs,
-                  final Set<Book> books,
-                  final List<Dungeon> dungeons,
-                  final int index
+        final String staticName,
+        final String topicName,
+        final boolean active,
+        final boolean configured,
+        final Set<MinigameTask> minigameTasks,
+        final Set<NPC> npcs,
+        final Set<Book> books,
+        final List<Dungeon> dungeons,
+        final int index
     ) {
         super(staticName, topicName, active, configured, minigameTasks, npcs, books, index);
         this.dungeons = dungeons;
