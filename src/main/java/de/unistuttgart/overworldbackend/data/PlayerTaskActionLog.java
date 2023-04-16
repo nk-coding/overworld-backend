@@ -1,15 +1,12 @@
 package de.unistuttgart.overworldbackend.data;
 
 import de.unistuttgart.overworldbackend.data.enums.Minigame;
-import java.util.Date;
-import java.util.UUID;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * An action log to log a player's minigame run.
