@@ -1,11 +1,5 @@
 package de.unistuttgart.overworldbackend;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
@@ -16,9 +10,6 @@ import de.unistuttgart.overworldbackend.repositories.CourseRepository;
 import de.unistuttgart.overworldbackend.repositories.PlayerStatisticRepository;
 import de.unistuttgart.overworldbackend.service.PlayerStatisticService;
 import de.unistuttgart.overworldbackend.service.PlayerTaskStatisticService;
-import java.util.*;
-import java.util.stream.IntStream;
-import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +26,16 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import javax.servlet.http.Cookie;
+import java.util.*;
+import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @AutoConfigureMockMvc
 @Transactional
 @SpringBootTest
@@ -43,9 +44,9 @@ public class MinigameTaskStatisticTest {
 
     @Container
     public static PostgreSQLContainer postgresDB = new PostgreSQLContainer("postgres:14-alpine")
-        .withDatabaseName("postgres")
-        .withUsername("postgres")
-        .withPassword("postgres");
+            .withDatabaseName("postgres")
+            .withUsername("postgres")
+            .withPassword("postgres");
 
     @DynamicPropertySource
     public static void properties(final DynamicPropertyRegistry registry) {
@@ -102,56 +103,56 @@ public class MinigameTaskStatisticTest {
         world.setMinigameTasks(worldMinigames);
         world.setNpcs(Set.of());
         world.setBooks(Set.of());
-        world.setDungeons(Arrays.asList());
+        world.setDungeons(List.of());
         world.setConfigured(true);
 
         final Course course = new Course(
-            "PSE",
-            "SS-22",
-            "Basic lecture of computer science students",
-            true,
-            Arrays.asList(world)
+                "PSE",
+                "SS-22",
+                "Basic lecture of computer science students",
+                true,
+                List.of(world)
         );
         initialCourse = courseRepository.save(course);
 
         initialWorld = initialCourse.getWorlds().stream().findFirst().get();
 
         initialTask =
-            initialWorld
-                .getMinigameTasks()
-                .stream()
-                .filter(task -> task.getIndex() == minigameTask1.getIndex())
-                .findAny()
-                .get();
+                initialWorld
+                        .getMinigameTasks()
+                        .stream()
+                        .filter(task -> task.getIndex() == minigameTask1.getIndex())
+                        .findAny()
+                        .get();
 
         assertNotNull(initialWorld.getId());
         assertNotNull(initialTask.getId());
 
         fullURL =
-            String.format(
-                "/courses/%d/worlds/%d/minigame-tasks/%d/statistics",
-                initialCourse.getId(),
-                initialWorld.getIndex(),
-                minigameTask1.getIndex()
-            );
+                String.format(
+                        "/courses/%d/worlds/%d/minigame-tasks/%d/statistics",
+                        initialCourse.getId(),
+                        initialWorld.getIndex(),
+                        minigameTask1.getIndex()
+                );
 
         // create 100 player statistics with random tries of minigame runs
         for (int i = 0; i < 100; i++) {
             final PlayerStatisticDTO playerStatisticDTO = playerStatisticService.createPlayerStatisticInCourse(
-                course.getId(),
-                new PlayerRegistrationDTO(String.valueOf(i), "testUser" + i)
+                    course.getId(),
+                    new PlayerRegistrationDTO(String.valueOf(i), "testUser" + i)
             );
 
             final int tries = new Random().nextInt(1, 5);
             for (int j = 0; j < tries; j++) {
                 final int score = new Random().nextInt(0, 100);
                 playerTaskStatisticService.submitData(
-                    new PlayerTaskStatisticData(
-                        minigameTask1.getGame(),
-                        minigameTask1.getConfigurationId(),
-                        score,
-                        playerStatisticDTO.getUserId()
-                    )
+                        new PlayerTaskStatisticData(
+                                minigameTask1.getGame(),
+                                minigameTask1.getConfigurationId(),
+                                score,
+                                playerStatisticDTO.getUserId()
+                        )
                 );
             }
         }
@@ -163,49 +164,49 @@ public class MinigameTaskStatisticTest {
     }
 
     @Test
-    public void testGetHighscoreDistribution() throws Exception {
+    void testGetHighscoreDistribution() throws Exception {
         final MvcResult result = mvc
-            .perform(get(fullURL + "/highscore-distribution").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+                .perform(get(fullURL + "/highscore-distribution").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
 
         final List<MinigameScoreHit> highscoreDistributions = Arrays.asList(
-            objectMapper.readValue(result.getResponse().getContentAsString(), MinigameScoreHit[].class)
+                objectMapper.readValue(result.getResponse().getContentAsString(), MinigameScoreHit[].class)
         );
         // check that highscore distribution has no zero entries except score 0 and 100
         assertTrue(
-            highscoreDistributions
-                .stream()
-                .noneMatch(minigameScoreHit ->
-                    minigameScoreHit.getAmount() == 0 &&
-                    minigameScoreHit.getScore() != 0 &&
-                    minigameScoreHit.getScore() != 100
-                )
+                highscoreDistributions
+                        .stream()
+                        .noneMatch(minigameScoreHit ->
+                                minigameScoreHit.getAmount() == 0 &&
+                                        minigameScoreHit.getScore() != 0 &&
+                                        minigameScoreHit.getScore() != 100
+                        )
         );
         // no score over 100 or below 0
         assertTrue(
-            highscoreDistributions
-                .stream()
-                .noneMatch(minigameScoreHit -> minigameScoreHit.getScore() > 100 || minigameScoreHit.getScore() < 0)
+                highscoreDistributions
+                        .stream()
+                        .noneMatch(minigameScoreHit -> minigameScoreHit.getScore() > 100 || minigameScoreHit.getScore() < 0)
         );
         // check that highscore distribution is sorted by score
         assertTrue(
-            IntStream
-                .range(0, highscoreDistributions.size() - 1)
-                .allMatch(i -> highscoreDistributions.get(i).getScore() <= highscoreDistributions.get(i + 1).getScore())
+                IntStream
+                        .range(0, highscoreDistributions.size() - 1)
+                        .allMatch(i -> highscoreDistributions.get(i).getScore() <= highscoreDistributions.get(i + 1).getScore())
         );
     }
 
     @Test
-    public void testGetSuccessRateStatistic() throws Exception {
+    void testGetSuccessRateStatistic() throws Exception {
         final MvcResult result = mvc
-            .perform(get(fullURL + "/success-rate").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
+                .perform(get(fullURL + "/success-rate").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
 
         final MinigameSuccessRateStatistic minigameSuccessRateStatistic = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            MinigameSuccessRateStatistic.class
+                result.getResponse().getContentAsString(),
+                MinigameSuccessRateStatistic.class
         );
 
         final int actualAmountOfTotalPlayerStatistics = initialCourse.getPlayerStatistics().size();
@@ -220,9 +221,9 @@ public class MinigameTaskStatisticTest {
         }
         assertSame(actualAmountOfTotalPlayerStatistics, amountOfPlayerStatisticsInStatistic);
         assertEquals(
-            successPlayers / actualAmountOfTotalPlayerStatistics,
-            minigameSuccessRateStatistic.getSuccessRate(),
-            0.01
+                successPlayers / actualAmountOfTotalPlayerStatistics,
+                minigameSuccessRateStatistic.getSuccessRate(),
+                0.01
         );
     }
 }
