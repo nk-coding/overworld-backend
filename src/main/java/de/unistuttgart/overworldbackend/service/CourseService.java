@@ -41,6 +41,9 @@ public class CourseService {
     ChickenshockClient chickenshockClient;
 
     @Autowired
+    MemoryClient memoryClient;
+
+    @Autowired
     FinitequizClient finitequizClient;
 
     @Autowired
@@ -365,6 +368,8 @@ public class CourseService {
                     case BUGFINDER:
                         cloneId = bugfinderClient.postClone(accessToken, minigameTask.getConfigurationId());
                         break;
+                    case MEMORY:
+                        cloneId = memoryClient.postClone(accessToken,minigameTask.getConfigurationId());
                     default:
                         minigameTask.setGame(Minigame.NONE);
                 }
