@@ -74,9 +74,9 @@ public class CourseService {
     }
 
     /**
-     * @throws ResponseStatusException (404) when course by its id could not be found
      * @param id the id of the course searching for
      * @return the found course
+     * @throws ResponseStatusException (404) when course by its id could not be found
      */
     public Course getCourse(final int id) {
         return courseRepository
@@ -88,13 +88,13 @@ public class CourseService {
 
     /**
      * Update a course by its id.
-     *
+     * <p>
      * Only the course name and description is updatable.
      *
-     * @throws ResponseStatusException (404) if course, world or dungeon by its id do not exist
-     * @param courseId the id of the course that should get updated
+     * @param courseId  the id of the course that should get updated
      * @param courseDTO the updated parameters
      * @return the updated course as DTO
+     * @throws ResponseStatusException (404) if course, world or dungeon by its id do not exist
      */
     public CourseDTO updateCourse(final int courseId, final CourseDTO courseDTO) {
         final Course course = getCourse(courseId);
@@ -108,7 +108,7 @@ public class CourseService {
 
     /**
      * Create a course with initial data.
-     *
+     * <p>
      * Creates a course with pre generated worlds, dungeons, minigame tasks and npcs.
      *
      * @param courseInit the initial data with the course should be created with
@@ -132,6 +132,7 @@ public class CourseService {
 
     /**
      * Returns all courses
+     *
      * @return all courses
      */
     public List<Course> getAllCourses() {
@@ -141,9 +142,9 @@ public class CourseService {
     /**
      * Delete a course by its id
      *
-     * @throws ResponseStatusException (404) when course with its id does not exist
      * @param id the course that should be deleted
      * @return the deleted course as DTO
+     * @throws ResponseStatusException (404) when course with its id does not exist
      */
     public CourseDTO deleteCourse(final int id) {
         final Course course = getCourse(id);
@@ -252,9 +253,10 @@ public class CourseService {
 
     /**
      * Clones a world
-     *
+     * <p>
      * Configured needs to calculated because minigames can become not configured if the minigame-backend isn't available.
-     * @param oldWorld world to be cloned
+     *
+     * @param oldWorld    world to be cloned
      * @param accessToken access Token in the cookie
      * @return cloned world
      */
@@ -287,9 +289,10 @@ public class CourseService {
 
     /**
      * Clones a dungeon
-     *
+     * <p>
      * Configured needs to calculated because minigames can become not configured if the minigame-backend isn't available.
-     * @param oldDungeon dungeon to be cloned
+     *
+     * @param oldDungeon  dungeon to be cloned
      * @param accessToken access Token in the cookie
      * @return cloned dungeon
      */
@@ -369,7 +372,8 @@ public class CourseService {
                         cloneId = bugfinderClient.postClone(accessToken, minigameTask.getConfigurationId());
                         break;
                     case MEMORY:
-                        cloneId = memoryClient.postClone(accessToken,minigameTask.getConfigurationId());
+                        cloneId = memoryClient.postClone(accessToken, minigameTask.getConfigurationId());
+                        break;
                     default:
                         minigameTask.setGame(Minigame.NONE);
                 }
