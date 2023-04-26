@@ -43,9 +43,10 @@ public class KeybindingService {
 
     /**
      * Returns all keybinding statistics for a given player.
+     *
      * @param playerId the id of the player
-     * @throws ResponseStatusException (404) if the player does not exist
      * @return a list of keybinding statistics for the given player
+     * @throws ResponseStatusException (404) if the player does not exist
      */
     public List<Keybinding> getKeybindingStatisticsFromPlayer(final String playerId) {
         return playerRepository
@@ -58,10 +59,11 @@ public class KeybindingService {
 
     /**
      * Returns the keybinding statistic for a given player and binding.
+     *
      * @param playerId the id of the player
-     * @param binding the binding of the keybinding
-     * @throws ResponseStatusException (404) if the player or the keybinding does not exist
+     * @param binding  the binding of the keybinding
      * @return the keybinding statistic for the given player and binding
+     * @throws ResponseStatusException (404) if the player or the keybinding does not exist
      */
     public Keybinding getKeybindingStatisticFromPlayer(final String playerId, final Binding binding) {
         return getKeybindingStatisticsFromPlayer(playerId)
@@ -78,12 +80,13 @@ public class KeybindingService {
 
     /**
      * Updates the key of the given keybinding statistic
-     * @param playerId the if of the player
-     * @param binding the binding of the keybinding
+     *
+     * @param playerId      the if of the player
+     * @param binding       the binding of the keybinding
      * @param keybindingDTO the updated parameters
+     * @return the updated keybinding statistic
      * @throws ResponseStatusException (400) if path doesn't match the provided binding
      * @throws ResponseStatusException (404) if the player or the keybinding does not exist
-     * @return the updated keybinding statistic
      */
     public Keybinding updateKeybindingStatistic(
         final String playerId,
@@ -94,11 +97,10 @@ public class KeybindingService {
         if (!keybindingDTO.getBinding().equals(binding)) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                String.format("The path binding doesn't match the given binding")
+                "The path binding doesn't match the given binding"
             );
         }
         keybinding.setKey(keybindingDTO.getKey());
-        final Keybinding updatedKeybinding = keybindingRepository.save(keybinding);
-        return updatedKeybinding;
+        return keybindingRepository.save(keybinding);
     }
 }

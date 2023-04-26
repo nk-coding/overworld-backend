@@ -71,7 +71,7 @@ public class Area {
     @ManyToOne
     Course course;
 
-    protected Area(
+    protected Area( //NOSONAR
         final String staticName,
         final String topicName,
         final boolean active,

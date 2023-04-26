@@ -7,7 +7,7 @@ import java.util.Comparator;
 public class AreaComparator implements Comparator<Area> {
 
     @Override
-    public int compare(final Area a1, final Area a2) {
+    public int compare(final Area a1, final Area a2) { //NOSONAR
         if (a1 instanceof Dungeon d1) {
             if (a2 instanceof Dungeon d2) {
                 if (d1.getWorld().getIndex() == d2.getWorld().getIndex()) {

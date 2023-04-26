@@ -102,7 +102,7 @@ public class MinigameTaskStatisticTest {
         world.setMinigameTasks(worldMinigames);
         world.setNpcs(Set.of());
         world.setBooks(Set.of());
-        world.setDungeons(Arrays.asList());
+        world.setDungeons(List.of());
         world.setConfigured(true);
 
         final Course course = new Course(
@@ -110,7 +110,7 @@ public class MinigameTaskStatisticTest {
             "SS-22",
             "Basic lecture of computer science students",
             true,
-            Arrays.asList(world)
+            List.of(world)
         );
         initialCourse = courseRepository.save(course);
 
@@ -163,7 +163,7 @@ public class MinigameTaskStatisticTest {
     }
 
     @Test
-    public void testGetHighscoreDistribution() throws Exception {
+    void testGetHighscoreDistribution() throws Exception {
         final MvcResult result = mvc
             .perform(get(fullURL + "/highscore-distribution").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -197,7 +197,7 @@ public class MinigameTaskStatisticTest {
     }
 
     @Test
-    public void testGetSuccessRateStatistic() throws Exception {
+    void testGetSuccessRateStatistic() throws Exception {
         final MvcResult result = mvc
             .perform(get(fullURL + "/success-rate").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())

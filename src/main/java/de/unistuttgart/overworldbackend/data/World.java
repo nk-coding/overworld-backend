@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
  * A world is an instance of an Area.
  * <p>
  * In addition to the functionality offered by dungeons, a world can also hold several dungeons as "sub-levels".
+ *
  * @see Dungeon
  */
 @Entity
@@ -26,7 +27,7 @@ public class World extends Area {
     @OneToMany(cascade = CascadeType.ALL)
     List<Dungeon> dungeons;
 
-    public World(
+    public World( //NOSONAR
         final String staticName,
         final String topicName,
         final boolean active,
@@ -40,7 +41,7 @@ public class World extends Area {
         this.dungeons = dungeons;
     }
 
-    public World(
+    public World( //NOSONAR
         final String staticName,
         final String topicName,
         final boolean active,

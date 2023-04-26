@@ -1,7 +1,6 @@
 package de.unistuttgart.overworldbackend;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -177,7 +176,7 @@ public class KeybindingTest {
             KeybindingDTO.class
         );
         assertSame(binding, updatedkeybindingDTO.getBinding());
-        assertTrue(keybindingDTO.getKey().equals(updatedkeybindingDTO.getKey()));
+        assertEquals(keybindingDTO.getKey(), updatedkeybindingDTO.getKey());
     }
 
     @Test
