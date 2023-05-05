@@ -7,7 +7,8 @@ public enum Minigame {
     CROSSWORDPUZZLE,
     FINITEQUIZ,
     MEMORY,
-    TOWERCRUSH;
+    TOWERCRUSH,
+    REGEXGAME;
 
     /**
      * Checks if a minigame is configured

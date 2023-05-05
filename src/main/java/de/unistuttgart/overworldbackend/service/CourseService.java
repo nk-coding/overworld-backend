@@ -56,6 +56,9 @@ public class CourseService {
     BugfinderClient bugfinderClient;
 
     @Autowired
+    RegexgameClient regexgameClient;
+
+    @Autowired
     private CourseRepository courseRepository;
 
     @Autowired
@@ -373,6 +376,9 @@ public class CourseService {
                         break;
                     case MEMORY:
                         cloneId = memoryClient.postClone(accessToken, minigameTask.getConfigurationId());
+                        break;
+                    case REGEXGAME:
+                        cloneId = regexgameClient.postClone(accessToken, minigameTask.getConfigurationId());
                         break;
                     default:
                         minigameTask.setGame(Minigame.NONE);
