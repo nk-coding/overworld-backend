@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
@@ -134,6 +135,7 @@ class TeleporterInputControllerTest {
 
         fullURL = "/courses/" + initialCourse.getId() + "/teleporters";
         objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
         when(jwtValidatorService.extractUserId("testToken")).thenReturn("testUser");

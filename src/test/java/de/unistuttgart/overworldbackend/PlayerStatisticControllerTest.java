@@ -1,13 +1,13 @@
 package de.unistuttgart.overworldbackend;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.unistuttgart.gamifyit.authentificationvalidator.JWTValidatorService;
 import de.unistuttgart.overworldbackend.data.*;
 import de.unistuttgart.overworldbackend.data.mapper.CourseMapper;
@@ -168,6 +168,7 @@ class PlayerStatisticControllerTest {
         fullURL = "/courses/" + initialCourseDTO.getId() + "/playerstatistics";
 
         objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         doNothing().when(jwtValidatorService).validateTokenOrThrow("testToken");
         when(jwtValidatorService.extractUserId("testToken")).thenReturn(initialPlayerStatistic.getUserId());
@@ -319,5 +320,27 @@ class PlayerStatisticControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void setActiveDate() throws Exception {
+        final PlayerStatisticDTO updatedPlayerStatistic = playerstatisticMapper.playerStatisticToPlayerstatisticDTO(
+            initialPlayerStatistic
+        );
+
+        final MvcResult result = mvc
+            .perform(post(fullURL + "/active").cookie(cookie).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        final PlayerStatisticDTO updatedPlayerStatisticDTOResult = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            PlayerStatisticDTO.class
+        );
+
+        assertNotEquals(updatedPlayerStatistic.getLastActive(), updatedPlayerStatisticDTOResult.getLastActive());
+        assertEquals(initialPlayerStatistic.getId(), updatedPlayerStatisticDTOResult.getId());
+        assertEquals(initialPlayerStatistic.getUserId(), updatedPlayerStatisticDTOResult.getUserId());
+        assertEquals(initialPlayerStatistic.getUsername(), updatedPlayerStatisticDTOResult.getUsername());
     }
 }

@@ -48,7 +48,7 @@ class AchievementStatisticTest {
         .withPassword("postgres");
 
     @DynamicPropertySource
-    public static void properties(DynamicPropertyRegistry registry) {
+    public static void properties(final DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
         registry.add("spring.datasource.username", postgresDB::getUsername);
         registry.add("spring.datasource.password", postgresDB::getPassword);

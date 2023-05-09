@@ -81,4 +81,16 @@ public class PlayerStatisticController {
         log.debug("update playerStatistic for userId {} in course {} with {}", playerId, courseId, playerstatisticDTO);
         return playerStatisticService.updatePlayerStatisticInCourse(courseId, playerId, playerstatisticDTO);
     }
+
+    @Operation(summary = "Set playerStatistic.active to current time")
+    @PostMapping("/active")
+    public PlayerStatisticDTO setActive(
+        @PathVariable final int courseId,
+        @CookieValue("access_token") final String accessToken
+    ) {
+        jwtValidatorService.validateTokenOrThrow(accessToken);
+        final String playerId = jwtValidatorService.extractUserId(accessToken);
+        log.debug("set playerStatistic.active to current time for userId {} in course {}", playerId, courseId);
+        return playerStatisticService.setActive(courseId, playerId);
+    }
 }

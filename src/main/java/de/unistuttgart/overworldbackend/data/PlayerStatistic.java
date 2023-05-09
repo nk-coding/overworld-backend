@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class PlayerStatistic {
     @ManyToOne(cascade = CascadeType.ALL)
     Area currentArea;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     Course course;
 
     @NotNull
@@ -48,11 +49,21 @@ public class PlayerStatistic {
     @NotNull
     String username;
 
+    LocalDateTime created;
+
+    LocalDateTime lastActive;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     Set<PlayerTaskStatistic> playerTaskStatistics = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     Set<PlayerNPCStatistic> playerNPCStatistics = new HashSet<>();
+
+    @PrePersist
+    void onCreate() {
+        lastActive = LocalDateTime.now();
+        created = LocalDateTime.now();
+    }
 
     long knowledge = 0;
 

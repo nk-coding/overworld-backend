@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -33,6 +34,10 @@ public class PlayerStatisticDTO {
 
     String userId;
     String username;
+
+    LocalDateTime created;
+
+    LocalDateTime lastActive;
 
     long knowledge;
 }
