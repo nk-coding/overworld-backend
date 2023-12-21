@@ -1,5 +1,6 @@
 package de.unistuttgart.overworldbackend.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.HashSet;
 import java.util.Objects;
@@ -33,7 +34,7 @@ public class Area {
     /**
      * A name given by the Gamify-IT development team to be displayed in the overworld.
      */
-    @NotNull
+    //@NotNull
     String staticName;
 
     /**
@@ -71,6 +72,10 @@ public class Area {
     @ManyToOne
     Course course;
 
+    @JsonManagedReference(value = "area-map")
+    @OneToOne(cascade = CascadeType.ALL)
+    AreaMap areaMap;
+
     protected Area( //NOSONAR
         final String staticName,
         final String topicName,
@@ -87,6 +92,7 @@ public class Area {
         this.npcs = npcs;
         this.books = books;
         this.index = index;
+        areaMap = new AreaMap(this);
     }
 
     protected Area(
@@ -107,6 +113,7 @@ public class Area {
         this.npcs = npcs;
         this.books = books;
         this.index = index;
+        areaMap = new AreaMap(this);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package de.unistuttgart.overworldbackend.data.mapper;
 
 import de.unistuttgart.overworldbackend.data.Area;
+import de.unistuttgart.overworldbackend.data.AreaLocation;
 import de.unistuttgart.overworldbackend.data.AreaLocationDTO;
 import de.unistuttgart.overworldbackend.data.Dungeon;
 import java.util.List;
@@ -17,4 +18,6 @@ public interface AreaLocationMapper {
     default List<AreaLocationDTO> areaToAreaLocationDTOs(final List<Area> areaLocations) {
         return areaLocations.parallelStream().map(this::areaToAreaLocationDTO).toList();
     }
+
+    AreaLocation areaLocationDTOToAreaLocation(final AreaLocationDTO areaLocationDTO);
 }
