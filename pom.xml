@@ -25,9 +25,8 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>sqa-artifactory</id>
-			<name>SQA Artifactory-releases</name>
-			<url>https://rss-artifactory.ddnss.org/artifactory/libs-release</url>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -103,7 +102,7 @@
 			<version>2.15.0</version>
 		</dependency>
 		<dependency>
-			<groupId>de.uni-stuttgart.gamify-it</groupId>
+			<groupId>com.github.Gamify-IT</groupId>
 			<artifactId>authentification-validator</artifactId>
 			<version>${de.uni-stuttgart.gamify-it.authentification-validator.version}</version>
 		</dependency>
